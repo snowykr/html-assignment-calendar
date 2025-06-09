@@ -21,6 +21,8 @@
             justify-content: center;
             align-items: center;
             color: #1c1c1e; /* Default text color */
+            transform: scale(0.9); /* Page scaled to 90% */
+            transform-origin: center; /* Scale from center */
         }
 
         /* --- MODIFIED: Using image for phone frame --- */
@@ -154,6 +156,10 @@
             color: #000;
             text-align: center;
             flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
         }
         .calendar-nav button {
             background: none;
@@ -808,6 +814,27 @@
                 document.getElementById(tabName + '-tab').classList.add('active');
             },
 
+            adjustCalendarTitleFontSize: function(titleElement) {
+                // 초기 폰트 크기로 리셋 -------- 적용 안됨
+                titleElement.style.fontSize = '18px';
+                
+                // 컨테이너 너비 확인 (버튼들 제외한 실제 사용 가능한 너비)
+                const container = titleElement.parentElement;
+                const containerWidth = container.offsetWidth;
+                const buttons = container.querySelectorAll('button');
+                let buttonsWidth = 0;
+                buttons.forEach(btn => buttonsWidth += btn.offsetWidth + 20); // 마진 포함
+                
+                const availableWidth = containerWidth - buttonsWidth - 40; // 여유 공간
+                
+                // 텍스트가 넘치는지 확인하고 폰트 크기 조정
+                let fontSize = 18;
+                while (titleElement.scrollWidth > availableWidth && fontSize > 14) {
+                    fontSize -= 1;
+                    titleElement.style.fontSize = fontSize + 'px';
+                }
+            },
+
             renderCalendar: function() {
                 const grid = document.getElementById('calendar-grid-main');
                 const headerGrid = document.getElementById('calendar-days-header');
@@ -829,6 +856,9 @@
 
                 monthYearTitle.textContent = 
                     `${startDate.getFullYear()}年 ${startDate.getMonth() + 1}月 ${startDate.getDate()}日 - ${endDateForTitle.getFullYear()}年 ${endDateForTitle.getMonth() + 1}月 ${endDateForTitle.getDate()}日`;
+
+                // 날짜 텍스트 길이에 따라 폰트 크기 자동 조정
+                this.adjustCalendarTitleFontSize(monthYearTitle);
 
                 const todayForHighlight = new Date(this.referenceToday); 
                 todayForHighlight.setHours(0,0,0,0);
