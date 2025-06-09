@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>課題管理アプリ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Base styles from original, with Tailwind for new elements if needed */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f2f2f7; /* Light gray background for the page */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #1c1c1e; /* Default text color */
+        }
+
+        /* --- MODIFIED: Using image for phone frame --- */
+        .phone-container {
+            width: 393px; /* PNG画像の実際の幅に合わせるか、希望するサイズに設定 */
+            height: 852px; /* PNG画像の実際の高さに合わせるか、希望するサイズに設定 */
+            position: relative; /* 子要素(.screen)のabsolute位置基準 */
+        }
+
+        .phone-bezel-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 393px; /* phone-containerと同じに設定 */
+            height: 852px; /* phone-containerと同じに設定 */
+            z-index: 9999; /* すべての要素の上に表示 */
+            pointer-events: none; /* 画像クリック防止（アプリ内部要素クリック可能に） */
+            /*box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2); /* 影効果追加 */
+        }
+
+        .screen {
+            width: calc(100% - 28px);  /* 例：(393px - (左右ベゼル厚さの合計)) フレーム画像の透明領域幅に合わせて調整 */
+            height: calc(100% - 30px); /* 例：(852px - (上下ベゼル厚さの合計)) フレーム画像の透明領域高さに合わせて調整 */
+            background: #f2f2f7;
+            position: absolute; /* 親(.phone-container)基準で位置設定 */
+            top: 15px;      /* 例：フレーム画像上端から透明領域開始位置Y */
+            left: 14px;     /* 例：フレーム画像左端から透明領域開始位置X */
+            border-radius: 45px; /* フレーム画像の画面部の曲率に合わせて調整 */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        /* --- END MODIFICATION --- */
+
+        .status-bar {
+            height: 47px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            padding-top: 20px; /* 10ピクセル上に移動（30px -> 20px） */
+            background: #f2f2f7;
+            font-size: 18px; /* 15pxから20%増加 */
+            font-weight: 600;
+            color: #000; 
+            flex-shrink: 0; 
+        }
+        .status-bar-icons {
+            display: flex;
+            align-items: center;
+        }
+        #current-time {
+            font-size: 17px; /* 時間テキストサイズを17pxに設定 */
+            position: relative;
+            left: 30px; /* 20ピクセル + 10ピクセル右に移動 */
+            top: 3px; /* 5ピクセル - 2ピクセル = 3ピクセル下に移動 */
+        }
+        .status-bar-icons svg {
+            height: 13px;
+            margin-left: 5px;
+            transform: scale(1);
+            transform-origin: center;
+            vertical-align: middle;
+            position: relative;
+            top: 2px; /* すべてのアイコンを2ピクセル下に移動 */
+        }
+        
+        /* 最初のアイコン（信号）を右に5ピクセル移動 */
+        .status-bar-icons svg:nth-child(1) {
+            position: relative;
+            left: 5px;
+        }
+        
+        /* 3番目のアイコン（バッテリー）を左に5ピクセル移動 */
+        .status-bar-icons svg:nth-child(3) {
+            position: relative;
+            left: -5px;
+        }
+
+
+        .header {
+            background: #f2f2f7;
+            padding: 0 20px 15px;
+            border-bottom: 1px solid #d1d1d6; 
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 34px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 5px; 
+        }
+
+        .content { 
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px;
+        }
+        #subjects-tab > .content {
+            padding-top: 15px;
+        }
+
+
+        .tab-content {
+            display: none;
+            flex: 1; 
+            overflow-y: auto; 
+            flex-direction: column; 
+        }
+
+        .tab-content.active {
+            display: flex; 
+        }
+
+        .calendar-section {
+            margin: 15px 0; 
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px; 
+        }
+
+        .calendar-title {
+            font-size: 18px; 
+            font-weight: 600;
+            color: #000;
+            text-align: center;
+            flex-grow: 1;
+        }
+        .calendar-nav button {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #007aff; 
+            padding: 5px 10px; 
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px; 
+            margin-bottom: 15px;
+        }
+        .calendar-day-header {
+            text-align: center;
+            font-size: 11px; 
+            font-weight: 500;
+            color: #8e8e93; 
+            padding-bottom: 6px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #fff; 
+            border-radius: 14px; 
+            position: relative;
+            font-size: 15px; 
+            font-weight: 500;
+            color: #1c1c1e;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .calendar-day:hover {
+            background-color: #e5e5ea;
+        }
+        .calendar-day.empty { 
+            background: transparent;
+            cursor: default;
+            pointer-events: none;
+        }
+        .calendar-day.empty:hover {
+            background-color: transparent;
+        }
+        .calendar-day.other-month .day-number { 
+            color: #aeaeb2; 
+        }
+
+
+        .calendar-day.today {
+            background: #007aff; 
+            color: #fff;
+        }
+        .calendar-day.today .day-number {
+             color: #fff;
+        }
+
+
+        .assignment-dot-container {
+            display: flex;
+            position: absolute;
+            bottom: 5px; 
+            left: 50%;
+            transform: translateX(-50%);
+            gap: 2px; 
+        }
+        .assignment-dot {
+            width: 4px; 
+            height: 4px;
+            border-radius: 50%;
+        }
+
+        .dot-teams { background: #003366; } 
+        .dot-openlms { background: #FF6B35; } 
+
+
+        .filter-section {
+            display: flex;
+            flex-direction: column; 
+            gap: 10px; 
+            margin: 15px 0; 
+            padding: 15px; 
+            background: #fff;
+            border-radius: 16px; 
+        }
+        .filter-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-size: 15px; 
+            font-weight: 500;
+            color: #000;
+        }
+
+        .toggle-switch {
+            width: 44px; 
+            height: 26px; 
+            background: #007aff; 
+            border-radius: 13px; 
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.off {
+            background: #e5e5ea; 
+        }
+
+        .toggle-slider {
+            width: 22px; 
+            height: 22px; 
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); 
+        }
+
+        .toggle-switch.off .toggle-slider {
+            right: 20px; 
+        }
+
+        .assignments-list { 
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 100px; 
+        }
+
+        .assignment-box { 
+            background: #fff; 
+            border-radius: 16px; 
+            padding: 16px; 
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); 
+            border-width: 3px; 
+            border-style: solid;
+        }
+
+        .assignment-box.teams {
+            border-color: #003366; 
+        }
+
+        .assignment-box.openlms {
+            border-color: #FF6B35; 
+        }
+
+
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .course-name { 
+            font-size: 17px; 
+            font-weight: 600;
+            color: #000; 
+        }
+
+        .assignment-round { 
+            font-size: 13px; 
+            color: #8e8e93; 
+            font-weight: 500;
+        }
+
+        .assignment-title { 
+            font-size: 15px; 
+            color: #3c3c43; 
+            margin-bottom: 12px;
+        }
+
+        .deadline {
+            padding: 6px 10px; 
+            border-radius: 10px; 
+            font-size: 13px; 
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .deadline.overdue {
+            background: #ff3b30; 
+            color: #fff;
+        }
+
+        .deadline.due-soon {
+            background: #ff9500; 
+            color: #fff;
+        }
+
+        .deadline.completed {
+            background: #34c759; 
+            color: #fff;
+        }
+
+        .deadline.normal {
+            background: #f2f2f7; 
+            color: #3c3c43;
+        }
+
+        .subjects-list { 
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 0 0 100px; 
+        }
+
+        .subject-box { 
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            background-color: #fff; 
+            border-width: 3px; 
+            border-style: solid;
+            cursor: pointer;
+        }
+        .subject-box.teams { border-color: #003366; }
+        .subject-box.openlms { border-color: #FF6B35; }
+
+
+        .subject-header-content { 
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center; 
+        }
+        .subject-header-main { 
+            flex-grow: 1;
+        }
+
+        .subject-name-header { 
+            font-size: 18px; 
+            font-weight: 600;
+            color: #000; 
+            margin-bottom: 8px; 
+        }
+
+        .expand-icon-subject { 
+            font-size: 20px; 
+            color: #8e8e93; 
+            transition: transform 0.3s ease;
+            margin-left: 10px; 
+        }
+
+        .subject-box.expanded .expand-icon-subject {
+            transform: rotate(180deg);
+        }
+
+        .subject-assignments { 
+            background: #fff; 
+            padding: 0; 
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out; 
+        }
+
+        .subject-box.expanded .subject-assignments {
+            max-height: 500px; 
+            padding: 0px 20px 20px 20px; 
+            border-top: 1px solid #e5e5ea; 
+            margin-top: -1px; 
+        }
+        .subject-assignments-inner-list { 
+             display: flex;
+             flex-direction: column;
+             gap: 0; 
+             padding-top: 15px; 
+        }
+
+
+        .subject-assignment-item { 
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e5ea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .subject-assignment-item:last-child {
+            border-bottom: none;
+        }
+        .subject-assignment-title {
+            font-weight: 500; 
+            font-size: 15px;
+            color: #1c1c1e;
+        }
+        .subject-assignment-due {
+            font-size: 13px;
+        }
+        .subject-assignment-due.overdue { color: #ff3b30; }
+        .subject-assignment-due.due-soon { color: #ff9500; }
+        .subject-assignment-due.completed { color: #34c759; }
+        .subject-assignment-due.normal { color: #8e8e93; }
+
+
+        .assignment-nav { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0 5px 0; 
+            border-top: 1px solid #e5e5ea;
+            margin-top: 15px;
+        }
+
+        .nav-button {
+            background: #007aff; 
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px; 
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-button:disabled {
+            background: #e5e5ea;
+            color: #8e8e93;
+            cursor: not-allowed;
+        }
+
+        .bottom-tabs {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 83px; 
+            background: rgba(248, 248, 248, 0.92); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px); 
+            border-top: 0.5px solid rgba(0,0,0,0.2); 
+            display: flex;
+            padding-bottom: env(safe-area-inset-bottom, 34px); 
+            flex-shrink: 0;
+        }
+
+        .tab-button {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            padding: 8px 0; 
+            cursor: pointer;
+            color: #8e8e93; 
+            font-size: 10px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .tab-button.active {
+            color: #007aff; 
+        }
+
+        .tab-icon {
+            font-size: 22px; 
+            margin-bottom: 3px; 
+        }
+
+        .app-container { 
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative; 
+        }
+
+        .main-content-area { 
+            flex: 1;
+            overflow-y: hidden; 
+            display: flex; 
+            position: relative;
+        }
+        
+        .popup-modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.4); 
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-modal.show {
+            display: flex; 
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888; 
+            width: 80%; /* 90%から80%に縮小して余白を拡大 */
+            max-width: 320px; /* 360pxから320pxに縮小 */
+            border-radius: 18px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            animation: fadeInPopup 0.3s ease-out;
+            max-height: 70vh; 
+            overflow-y: auto; 
+        }
+        #popup-assignment-list .assignment-box {
+            margin-bottom: 10px; 
+        }
+        #popup-assignment-list .assignment-box:last-child {
+            margin-bottom: 0;
+        }
+
+
+        @keyframes fadeInPopup {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e5ea;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .popup-header h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .popup-close {
+            color: #007aff; 
+            font-size: 28px;
+            font-weight: normal; 
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0 5px;
+            line-height: 1;
+        }
+        .popup-close:hover {
+            color: #005ecb;
+        }
+
+        #popup-assignment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0; 
+        }
+        
+        .no-assignments-popup {
+            text-align: center;
+            color: #8e8e93;
+            padding: 10px 0;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <img src="https://i.ibb.co/WpvYmTkz/i-Phone16-Pro.png" alt="iPhone 16 Pro Bezel" class="phone-bezel-image">
+
+    <div class="phone-container">
+        <div class="screen">
+            <div class="app-container">
+                <div class="status-bar">
+                    <span id="current-time">9:41</span>
+                    <span class="status-bar-icons">
+                        <svg width="29" height="20" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M19.8652 2.03302C19.8652 1.39997 19.3876 0.886791 18.7985 0.886791H17.7318C17.1427 0.886791 16.6652 1.39997 16.6652 2.03302V11.967C16.6652 12.6 17.1427 13.1132 17.7318 13.1132H18.7985C19.3876 13.1132 19.8652 12.6 19.8652 11.967V2.03302ZM12.431 3.33207H13.4977C14.0868 3.33207 14.5644 3.85757 14.5644 4.50581V11.9395C14.5644 12.5877 14.0868 13.1132 13.4977 13.1132H12.431C11.8419 13.1132 11.3644 12.5877 11.3644 11.9395V4.50581C11.3644 3.85757 11.8419 3.33207 12.431 3.33207ZM8.09928 5.98112H7.03261C6.44351 5.98112 5.96594 6.51331 5.96594 7.1698V11.9245C5.96594 12.581 6.44351 13.1132 7.03261 13.1132H8.09928C8.68838 13.1132 9.16594 12.581 9.16594 11.9245V7.1698C9.16594 6.51331 8.68838 5.98112 8.09928 5.98112ZM2.79849 8.42641H1.73183C1.14272 8.42641 0.665161 8.951 0.665161 9.59811V11.9415C0.665161 12.5886 1.14272 13.1132 1.73183 13.1132H2.79849C3.3876 13.1132 3.86516 12.5886 3.86516 11.9415V9.59811C3.86516 8.951 3.3876 8.42641 2.79849 8.42641Z" fill="black"/>
+                        </svg>
+                        <svg width="26" height="20" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.43645 3.30213C11.9236 3.30223 14.3156 4.22432 16.1181 5.8778C16.2538 6.00545 16.4708 6.00384 16.6044 5.87419L17.9019 4.61072C17.9696 4.54496 18.0074 4.45588 18.0068 4.3632C18.0062 4.27052 17.9674 4.18187 17.8989 4.11688C13.1679 -0.257833 5.70421 -0.257833 0.973199 4.11688C0.904667 4.18183 0.865783 4.27044 0.865151 4.36313C0.864519 4.45581 0.902191 4.54491 0.969832 4.61072L2.2677 5.87419C2.40129 6.00404 2.61842 6.00565 2.75407 5.8778C4.55681 4.22421 6.94909 3.30212 9.43645 3.30213ZM9.43309 7.5224C10.7904 7.52232 12.0993 8.03406 13.1054 8.95819C13.2415 9.08934 13.4559 9.0865 13.5885 8.95178L14.8758 7.63247C14.9436 7.56327 14.9812 7.46939 14.9802 7.37184C14.9792 7.27429 14.9398 7.18121 14.8706 7.11342C11.8068 4.22257 7.06202 4.22257 3.99819 7.11342C3.92898 7.18121 3.8895 7.27434 3.88859 7.37192C3.88768 7.4695 3.92543 7.56337 3.99336 7.63247L5.28027 8.95178C5.41292 9.0865 5.62729 9.08934 5.76337 8.95819C6.76882 8.03467 8.07667 7.52297 9.43309 7.5224ZM11.9575 10.316C11.9594 10.4213 11.9224 10.5229 11.8551 10.5967L9.67841 13.0514C9.61461 13.1236 9.52761 13.1642 9.43684 13.1642C9.34608 13.1642 9.25908 13.1236 9.19528 13.0514L7.01825 10.5967C6.951 10.5228 6.914 10.4212 6.91599 10.3159C6.91799 10.2105 6.9588 10.1108 7.02878 10.0401C8.41888 8.72625 10.4548 8.72625 11.8449 10.0401C11.9148 10.1108 11.9556 10.2106 11.9575 10.316Z" fill="black"/>
+                        </svg>
+                        <svg width="34" height="17" viewBox="0 0 28 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect opacity="0.35" x="0.506836" y="1" width="24" height="12" rx="3.8" stroke="black"/>
+                            <path opacity="0.4" d="M26.0068 5.28113V9.3566C26.8116 9.01143 27.3349 8.20847 27.3349 7.31886C27.3349 6.42926 26.8116 5.6263 26.0068 5.28113Z" fill="black"/>
+                            <rect x="2.00684" y="2.5" width="21" height="9" rx="2.5" fill="black"/>
+                        </svg>
+                        <!-- REMOVED: <span class="battery-text">100%</span> -->
+                    </span>
+                </div>
+                
+                <div class="header">
+
+                </div>
+                
+                <div class="main-content-area">
+                    <div class="tab-content active" id="calendar-tab">
+                        <div class="content">
+                            <div class="calendar-section">
+                                <div class="calendar-header">
+                                    <button onclick="app.navigateWeek(-1)">&#9664;</button> <span class="calendar-title" id="calendar-month-year"></span>
+                                    <button onclick="app.navigateWeek(1)">&#9654;</button> </div>
+                                <div class="calendar-grid" id="calendar-days-header">
+                                    </div>
+                                <div class="calendar-grid" id="calendar-grid-main">
+                                    </div>
+                            </div>
+                            
+                            <div class="filter-section">
+                                <div class="filter-row">
+                                    <span class="filter-label">提出済み課題を隠す</span>
+                                    <div class="toggle-switch" id="filter-unsubmitted-toggle" onclick="app.toggleFilterUnsubmitted(this)">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                                <div class="filter-row"> 
+                                    <span class="filter-label">期限切れ課題を隠す</span>
+                                    <div class="toggle-switch off" id="filter-overdue-toggle" onclick="app.toggleFilterOverdue(this)">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="assignments-list" id="calendar-assignments-list">
+                                </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="subjects-tab">
+                        <div class="content">
+                            <div class="filter-section" id="subjects-filter-section">
+                                <div class="filter-row">
+                                    <span class="filter-label">期限切れ課題を隠す</span>
+                                    <div class="toggle-switch off" id="filter-overdue-subjects-toggle" onclick="app.toggleFilterOverdueInSubjects(this)">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="subjects-list" id="subjects-list-container">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bottom-tabs">
+                    <button class="tab-button active" onclick="app.switchTab('calendar', this)">
+                        <div class="tab-icon">📅</div>
+                        <span>カレンダー</span>
+                    </button>
+                    <button class="tab-button" onclick="app.switchTab('subjects', this)">
+                        <div class="tab-icon">📚</div>
+                        <span>科目</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="assignment-popup" class="popup-modal">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 id="popup-date-title">課題</h3>
+                <button class="popup-close" onclick="app.closeAssignmentsPopup()">&times;</button>
+            </div>
+            <div id="popup-assignment-list"> 
+                </div>
+        </div>
+    </div>
+
+    <script>
+        const app = {
+            viewStartDate: new Date(), 
+            referenceToday: new Date(2025, 5, 3), 
+
+            assignmentsData: [ 
+                { id: 1, courseName: "モバイルプログラミング", round: "1回目", title: "開発環境設定", dueDate: "2025-05-15", dueTime: "23:59", platform: "teams", completed: true },
+                { id: 2, courseName: "モバイルプログラミング", round: "2回目", title: "Dart言語基礎", dueDate: "2025-05-22", dueTime: "23:59", platform: "teams", completed: true },
+                { id: 3, courseName: "モバイルプログラミング", round: "3回目", title: "Flutterウィジェット使用法", dueDate: "2025-05-29", dueTime: "23:59", platform: "teams", completed: false }, 
+                { id: 4, courseName: "モバイルプログラミング", round: "4回目", title: "状態管理 (Provider)", dueDate: "2025-06-05", dueTime: "23:59", platform: "teams", completed: false }, 
+                { id: 5, courseName: "モバイルプログラミング", round: "5回目", title: "API連携実習", dueDate: "2025-06-12", dueTime: "23:59", platform: "teams", completed: false },
+                { id: 6, courseName: "モバイルプログラミング", round: "6回目", title: "Firebase連携", dueDate: "2025-06-19", dueTime: "23:59", platform: "teams", completed: false },
+                
+                { id: 7, courseName: "Webプログラミング", round: "1回目", title: "HTML/CSS基本", dueDate: "2025-05-13", dueTime: "23:59", platform: "openlms", completed: true },
+                { id: 8, courseName: "Webプログラミング", round: "2回目", title: "JavaScript ES6+", dueDate: "2025-05-20", dueTime: "23:59", platform: "openlms", completed: true },
+                { id: 9, courseName: "Webプログラミング", round: "3回目", title: "React基礎", dueDate: "2025-05-27", dueTime: "23:59", platform: "openlms", completed: false }, 
+                { id: 10, courseName: "Webプログラミング", round: "4回目", title: "Reactコンポーネント応用", dueDate: "2025-06-03", dueTime: "23:59", platform: "openlms", completed: false }, 
+                { id: 11, courseName: "Webプログラミング", round: "5回目", title: "SPAルーティング実装", dueDate: "2025-06-10", dueTime: "23:59", platform: "openlms", completed: false },
+                { id: 12, courseName: "Webプログラミング", round: "6回目", title: "状態管理 (Redux/Zustand)", dueDate: "2025-06-17", dueTime: "23:59", platform: "openlms", completed: false },
+                { id: 13, courseName: "Webプログラミング", round: "7回目", title: "バックエンドAPI連携", dueDate: "2025-06-24", dueTime: "23:59", platform: "openlms", completed: false },
+
+                { id: 14, courseName: "データベース", round: "1回目", title: "DB概論", dueDate: "2025-05-18", dueTime: "23:59", platform: "teams", completed: true },
+                { id: 15, courseName: "データベース", round: "2回目", title: "ERD設計", dueDate: "2025-05-25", dueTime: "23:59", platform: "teams", completed: true },
+                { id: 16, courseName: "データベース", round: "3回目", title: "SQL基本クエリ", dueDate: "2025-06-01", dueTime: "23:59", platform: "teams", completed: false }, 
+                { id: 17, courseName: "データベース", round: "4回目", title: "SQL上級クエリと最適化", dueDate: "2025-06-08", dueTime: "23:59", platform: "teams", completed: false },
+
+                { id: 18, courseName: "ソフトウェア工学", round: "1回目", title: "要求分析", dueDate: "2025-05-28", dueTime: "23:59", platform: "openlms", completed: true },
+                { id: 19, courseName: "ソフトウェア工学", round: "2回目", title: "UMLダイアグラム作成", dueDate: "2025-06-04", dueTime: "23:59", platform: "openlms", completed: false }, 
+                { id: 20, courseName: "ソフトウェア工学", round: "3回目", title: "アジャイル手法", dueDate: "2025-06-11", dueTime: "23:59", platform: "openlms", completed: false },
+
+                { id: 21, courseName: "データ構造", round: "特別課題", title: "グラフ走査アルゴリズムレポート", dueDate: "2025-06-10", dueTime: "18:00", platform: "openlms", completed: false },
+                { id: 22, courseName: "オペレーティングシステム", round: "3週目", title: "プロセス同期問題演習", dueDate: "2025-06-10", dueTime: "23:00", platform: "teams", completed: true },
+                
+                { id: 23, courseName: "キャップストーンデザイン", round: "中間発表資料", title: "プロトタイプデモ準備", dueDate: "2025-06-10", dueTime: "17:00", platform: "teams", completed: false },
+                { id: 24, courseName: "情報セキュリティ", round: "2次課題", title: "最新ランサムウェア動向分析", dueDate: "2025-06-10", dueTime: "23:59", platform: "openlms", completed: false },
+                { id: 25, courseName: "Webプログラミング", round: "補充課題", title: "Webアクセシビリティ改善レポート", dueDate: "2025-06-10", dueTime: "23:59", platform: "openlms", completed: true },
+            ],
+            filterUnsubmittedOnly: false, 
+            filterHideOverdueCalendar: true, 
+            filterHideOverdueSubjects: true, 
+            subjectsPagination: {}, 
+
+            init: function() {
+                const today = new Date(this.referenceToday); 
+                const dayOfWeek = today.getDay(); 
+                const diffToMonday = (dayOfWeek === 0) ? -6 : 1 - dayOfWeek;
+                this.viewStartDate = new Date(today.setDate(today.getDate() + diffToMonday));
+                this.viewStartDate.setHours(0,0,0,0);
+
+                this.updateTime();
+                setInterval(this.updateTime, 60000); 
+                this.renderCalendar();
+                this.renderAssignmentsList(); 
+                this.renderSubjectsList(); 
+                this.initSubjectPagination();
+
+                document.getElementById('filter-unsubmitted-toggle').classList.toggle('off', !this.filterUnsubmittedOnly);
+                document.getElementById('filter-overdue-toggle').classList.toggle('off', !this.filterHideOverdueCalendar);
+                document.getElementById('filter-overdue-subjects-toggle').classList.toggle('off', !this.filterHideOverdueSubjects);
+
+            },
+
+            updateTime: function() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                document.getElementById('current-time').textContent = `${hours}:${minutes}`;
+            },
+            
+            switchTab: function(tabName, clickedButton) {
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                clickedButton.classList.add('active');
+                document.getElementById(tabName + '-tab').classList.add('active');
+            },
+
+            renderCalendar: function() {
+                const grid = document.getElementById('calendar-grid-main');
+                const headerGrid = document.getElementById('calendar-days-header');
+                const monthYearTitle = document.getElementById('calendar-month-year');
+                grid.innerHTML = ''; 
+                headerGrid.innerHTML = ''; 
+
+                const dayHeaders = ['月', '火', '水', '木', '金', '土', '日']; 
+                dayHeaders.forEach(day => {
+                    const dayEl = document.createElement('div');
+                    dayEl.classList.add('calendar-day-header');
+                    dayEl.textContent = day;
+                    headerGrid.appendChild(dayEl);
+                });
+                
+                const startDate = new Date(this.viewStartDate);
+                const endDateForTitle = new Date(startDate);
+                endDateForTitle.setDate(startDate.getDate() + 13); 
+
+                monthYearTitle.textContent = 
+                    `${startDate.getFullYear()}年 ${startDate.getMonth() + 1}月 ${startDate.getDate()}日 - ${endDateForTitle.getFullYear()}年 ${endDateForTitle.getMonth() + 1}月 ${endDateForTitle.getDate()}日`;
+
+                const todayForHighlight = new Date(this.referenceToday); 
+                todayForHighlight.setHours(0,0,0,0);
+
+                for (let i = 0; i < 14; i++) { 
+                    const currentDate = new Date(startDate);
+                    currentDate.setDate(startDate.getDate() + i);
+                    currentDate.setHours(0,0,0,0);
+
+                    const dayCell = document.createElement('div');
+                    dayCell.classList.add('calendar-day');
+                    
+                    const dayNumberSpan = document.createElement('span');
+                    dayNumberSpan.classList.add('day-number');
+                    dayNumberSpan.textContent = currentDate.getDate();
+                    dayCell.appendChild(dayNumberSpan);
+
+                    const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                    dayCell.dataset.date = dateStr;
+
+                    if (currentDate.getTime() === todayForHighlight.getTime()) {
+                        dayCell.classList.add('today');
+                    }
+                    
+                    const assignmentsOnThisDay = this.assignmentsData.filter(a => {
+                        const isOverdueForCalendar = a.completed ? false : (new Date(a.dueDate + "T" + a.dueTime) < this.referenceToday);
+                        return a.dueDate === dateStr && 
+                               !(this.filterHideOverdueCalendar && isOverdueForCalendar && !a.completed) && 
+                               (!this.filterUnsubmittedOnly || !a.completed);
+                    });
+
+                    if (assignmentsOnThisDay.length > 0) {
+                        const dotContainer = document.createElement('div');
+                        dotContainer.classList.add('assignment-dot-container');
+                        
+                        const platformsOnDay = new Set(assignmentsOnThisDay.map(a => a.platform));
+                        platformsOnDay.forEach(platform => {
+                            const dot = document.createElement('div');
+                            dot.classList.add('assignment-dot', `dot-${platform}`);
+                            dotContainer.appendChild(dot);
+                        });
+                        dayCell.appendChild(dotContainer);
+                    }
+                    
+                    dayCell.onclick = () => this.openAssignmentsPopup(dateStr);
+                    grid.appendChild(dayCell);
+                }
+            },
+
+            navigateWeek: function(direction) { 
+                this.viewStartDate.setDate(this.viewStartDate.getDate() + (7 * direction));
+                this.renderCalendar();
+            },
+
+            openAssignmentsPopup: function(dateString) {
+                const popup = document.getElementById('assignment-popup');
+                const popupDateTitle = document.getElementById('popup-date-title');
+                const popupListDiv = document.getElementById('popup-assignment-list'); 
+
+                const [year, month, day] = dateString.split('-');
+                popupDateTitle.textContent = `課題: ${parseInt(month)}月 ${parseInt(day)}日`; 
+                popupListDiv.innerHTML = ''; 
+
+                const assignmentsForDate = this.assignmentsData.filter(a => a.dueDate === dateString)
+                                               .sort((a,b) => new Date(a.dueDate + "T" + a.dueTime) - new Date(b.dueDate + "T" + b.dueTime));
+
+                if (assignmentsForDate.length > 0) {
+                    assignmentsForDate.forEach(a => {
+                        const assignmentBoxElement = this.createAssignmentBoxElement(a, true); 
+                        popupListDiv.appendChild(assignmentBoxElement);
+                    });
+                } else {
+                    const noAssignmentsItem = document.createElement('div');
+                    noAssignmentsItem.classList.add('no-assignments-popup');
+                    noAssignmentsItem.textContent = 'この日付に予定された課題はありません。';
+                    popupListDiv.appendChild(noAssignmentsItem);
+                }
+                popup.classList.add('show');
+            },
+            
+            createAssignmentBoxElement: function(assignment, isPopup = false) {
+                const box = document.createElement('div');
+                box.classList.add('assignment-box', assignment.platform); 
+                box.dataset.id = assignment.id;
+
+                const header = document.createElement('div');
+                header.classList.add('assignment-header');
+                header.innerHTML = `<span class="course-name">${assignment.courseName}</span><span class="assignment-round">${assignment.round}</span>`;
+                
+                const titleDiv = document.createElement('div');
+                titleDiv.classList.add('assignment-title');
+                titleDiv.textContent = assignment.title;
+
+                const deadlineDiv = document.createElement('div');
+                let deadlineText = `${new Date(assignment.dueDate).toLocaleDateString('ja-JP', { month: 'long', day: 'numeric' })} ${assignment.dueTime}`;
+                let statusClass = 'normal';
+                const dueDateObj = new Date(assignment.dueDate + "T" + assignment.dueTime);
+                
+                if (assignment.completed) {
+                    statusClass = 'completed';
+                    deadlineText += ` (提出完了)`;
+                } else {
+                    const diffTime = dueDateObj.getTime() - this.referenceToday.getTime();
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (dueDateObj < this.referenceToday) {
+                        statusClass = 'overdue';
+                        deadlineText += ` (期限切れ)`;
+                    } else if (dueDateObj.toDateString() === this.referenceToday.toDateString()) {
+                        statusClass = 'due-soon';
+                        deadlineText += ` (今日締切)`;
+                    } else if (diffDays <= 3) {
+                        statusClass = 'due-soon';
+                        deadlineText += ` (${diffDays}日後)`;
+                    } else {
+                        statusClass = 'normal';
+                        deadlineText += ` (${diffDays}日後)`;
+                    }
+                }
+                deadlineDiv.classList.add('deadline', statusClass);
+                deadlineDiv.textContent = deadlineText;
+
+                box.appendChild(header);
+                box.appendChild(titleDiv);
+                box.appendChild(deadlineDiv);
+                return box;
+            },
+
+            closeAssignmentsPopup: function() {
+                document.getElementById('assignment-popup').classList.remove('show');
+            },
+            
+            toggleFilterUnsubmitted: function(element) { 
+                element.classList.toggle('off');
+                this.filterUnsubmittedOnly = !element.classList.contains('off');
+                this.renderAssignmentsList(); 
+                this.renderCalendar(); 
+            },
+
+            toggleFilterOverdue: function(element) { 
+                element.classList.toggle('off');
+                this.filterHideOverdueCalendar = !element.classList.contains('off');
+                this.renderAssignmentsList(); 
+                this.renderCalendar(); 
+            },
+            
+            toggleFilterOverdueInSubjects: function(element) {
+                element.classList.toggle('off');
+                this.filterHideOverdueSubjects = !element.classList.contains('off');
+                this.renderSubjectsList(); 
+            },
+            
+            isAssignmentOverdueAndHidden(assignment) { 
+                if (!this.filterHideOverdueCalendar) return false; 
+                if (assignment.completed) return false; 
+                const dueDateObj = new Date(assignment.dueDate + "T" + assignment.dueTime);
+                return dueDateObj < this.referenceToday; 
+            },
+
+            renderAssignmentsList: function() { 
+                const listContainer = document.getElementById('calendar-assignments-list');
+                listContainer.innerHTML = ''; 
+
+                let filteredAssignments = this.assignmentsData;
+
+                if (this.filterUnsubmittedOnly) {
+                    filteredAssignments = filteredAssignments.filter(a => !a.completed);
+                }
+
+                if (this.filterHideOverdueCalendar) {
+                    filteredAssignments = filteredAssignments.filter(a => {
+                        if (a.completed) return true; 
+                        const dueDateObj = new Date(a.dueDate + "T" + a.dueTime);
+                        return dueDateObj >= this.referenceToday; 
+                    });
+                }
+                
+                filteredAssignments.sort((a, b) => {
+                    if (a.completed !== b.completed) {
+                        return a.completed ? 1 : -1;
+                    }
+                    const dateA = new Date(a.dueDate + "T" + a.dueTime);
+                    const dateB = new Date(b.dueDate + "T" + b.dueTime);
+                    return dateA - dateB;
+                });
+
+                filteredAssignments.forEach(a => {
+                    const assignmentBoxElement = this.createAssignmentBoxElement(a, false); 
+                    listContainer.appendChild(assignmentBoxElement);
+                });
+            },
+
+            renderSubjectsList: function() { 
+                const container = document.getElementById('subjects-list-container');
+                container.innerHTML = '';
+
+                const subjects = {};
+                this.assignmentsData.forEach(a => {
+                    if (!subjects[a.courseName]) {
+                        subjects[a.courseName] = { assignments: [], platform: a.platform };
+                    }
+                    subjects[a.courseName].assignments.push(a);
+                });
+
+                Object.keys(subjects).forEach(subjectName => {
+                    const subjectData = subjects[subjectName];
+                    
+                    const subjectBox = document.createElement('div');
+                    subjectBox.classList.add('subject-box', subjectData.platform); 
+                    
+                    subjectBox.onclick = (event) => { 
+                        if (event.target.closest('.assignment-nav')) return;
+                        this.toggleSubjectExpansion(subjectBox, subjectName); 
+                    };
+
+                    const subjectHeaderContent = document.createElement('div');
+                    subjectHeaderContent.classList.add('subject-header-content');
+
+                    const subjectHeaderMain = document.createElement('div');
+                    subjectHeaderMain.classList.add('subject-header-main');
+
+                    const subjectNameDiv = document.createElement('div');
+                    subjectNameDiv.classList.add('subject-name-header');
+                    subjectNameDiv.textContent = subjectName;
+                    subjectHeaderMain.appendChild(subjectNameDiv);
+
+                    let uncompletedAssignments = subjectData.assignments.filter(a => !a.completed);
+                    if (this.filterHideOverdueSubjects) { // Apply subject-specific overdue filter for this status display
+                        uncompletedAssignments = uncompletedAssignments.filter(a => {
+                            const dueDateObj = new Date(a.dueDate + "T" + a.dueTime);
+                            return dueDateObj >= this.referenceToday;
+                        });
+                    }
+
+
+                    let overallStatusText = "すべての課題完了";
+                    let overallStatusClass = "completed";
+
+                    if (uncompletedAssignments.length > 0) {
+                        uncompletedAssignments.sort((a,b) => new Date(a.dueDate + "T" + a.dueTime) - new Date(b.dueDate + "T" + b.dueTime));
+                        const mostUrgentAssignment = uncompletedAssignments[0];
+                        const dueDateObj = new Date(mostUrgentAssignment.dueDate + "T" + mostUrgentAssignment.dueTime);
+                        
+                        if (dueDateObj < this.referenceToday) {
+                            overallStatusText = `期限切れ (最も早い: ${new Date(mostUrgentAssignment.dueDate).toLocaleDateString('ja-JP', {month:'numeric', day:'numeric'})})`;
+                            overallStatusClass = "overdue";
+                        } else if (dueDateObj.toDateString() === this.referenceToday.toDateString()) {
+                            overallStatusText = `今日締切 (${mostUrgentAssignment.dueTime})`;
+                            overallStatusClass = "due-soon";
+                        } else {
+                            const diffTime = dueDateObj.getTime() - this.referenceToday.getTime();
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                            overallStatusText = `${diffDays}日後 (最も早い: ${new Date(mostUrgentAssignment.dueDate).toLocaleDateString('ja-JP', {month:'numeric', day:'numeric'})})`;
+                            overallStatusClass = (diffDays <=3) ? "due-soon" : "normal";
+                        }
+                    }
+                    
+                    const deadlineStatusDiv = document.createElement('div');
+                    deadlineStatusDiv.classList.add('deadline', overallStatusClass);
+                    deadlineStatusDiv.textContent = overallStatusText;
+                    subjectHeaderMain.appendChild(deadlineStatusDiv);
+                    
+                    subjectHeaderContent.appendChild(subjectHeaderMain);
+
+                    const expandIcon = document.createElement('span');
+                    expandIcon.classList.add('expand-icon-subject');
+                    expandIcon.innerHTML = '▼';
+                    subjectHeaderContent.appendChild(expandIcon);
+                    
+                    subjectBox.appendChild(subjectHeaderContent); 
+
+                    const subjectAssignmentsDiv = document.createElement('div');
+                    subjectAssignmentsDiv.classList.add('subject-assignments'); 
+                    
+                    const innerList = document.createElement('div'); 
+                    innerList.classList.add('subject-assignments-inner-list'); 
+                    subjectAssignmentsDiv.appendChild(innerList);
+
+                    const navDiv = document.createElement('div');
+                    navDiv.classList.add('assignment-nav');
+                    navDiv.innerHTML = `
+                        <button class="nav-button prev" onclick="event.stopPropagation(); app.handleSubjectNav('${subjectName}', 'prev', this)">前へ</button>
+                        <span class="page-info"></span>
+                        <button class="nav-button next" onclick="event.stopPropagation(); app.handleSubjectNav('${subjectName}', 'next', this)">次へ</button>
+                    `;
+                    
+                    subjectAssignmentsDiv.appendChild(navDiv);
+                    subjectBox.appendChild(subjectAssignmentsDiv); 
+                    container.appendChild(subjectBox);
+
+                    if (!this.subjectsPagination[subjectName]) {
+                        this.subjectsPagination[subjectName] = { currentPage: 0, itemsPerPage: 3 }; 
+                    }
+                    if (subjectBox.classList.contains('expanded')) {
+                        this.renderSubjectPage(subjectName, subjectBox);
+                    }
+                });
+            },
+            
+            initSubjectPagination: function() {
+                 this.assignmentsData.forEach(a => {
+                    if (!this.subjectsPagination[a.courseName]) {
+                         this.subjectsPagination[a.courseName] = { currentPage: 0, itemsPerPage: 3 }; 
+                    }
+                });
+            },
+
+            renderSubjectPage: function(subjectName, subjectBoxElement) { 
+                let subjectAssignments = this.assignmentsData.filter(a => a.courseName === subjectName);
+                
+                if (this.filterHideOverdueSubjects) {
+                    subjectAssignments = subjectAssignments.filter(a => {
+                        if (a.completed) return true;
+                        const dueDateObj = new Date(a.dueDate + "T" + a.dueTime);
+                        return dueDateObj >= this.referenceToday;
+                    });
+                }
+                
+                subjectAssignments.sort((a,b) => new Date(a.dueDate + "T" + a.dueTime) - new Date(b.dueDate + "T" + b.dueTime));
+
+                const paginationState = this.subjectsPagination[subjectName];
+                const listElement = subjectBoxElement.querySelector('.subject-assignments-inner-list');
+                const pageInfoSpan = subjectBoxElement.querySelector('.page-info');
+                const prevButton = subjectBoxElement.querySelector('.nav-button.prev');
+                const nextButton = subjectBoxElement.querySelector('.nav-button.next');
+                const navElement = subjectBoxElement.querySelector('.assignment-nav');
+
+                const totalItems = subjectAssignments.length;
+                const totalPages = Math.ceil(totalItems / paginationState.itemsPerPage);
+
+                listElement.innerHTML = ''; 
+
+                const start = paginationState.currentPage * paginationState.itemsPerPage;
+                const end = start + paginationState.itemsPerPage;
+                const pageItems = subjectAssignments.slice(start, end);
+
+                if (pageItems.length === 0 && subjectAssignments.length > 0) { 
+                    listElement.innerHTML = `<div class="no-assignments-popup" style="padding: 10px 0;">表示する課題がありません（フィルター適用中）。</div>`;
+                } else if (subjectAssignments.length === 0) { 
+                     listElement.innerHTML = `<div class="no-assignments-popup" style="padding: 10px 0;">この科目に該当する課題はありません。</div>`;
+                }
+
+                pageItems.forEach(a => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('subject-assignment-item');
+                    
+                    let dueDateText = `${new Date(a.dueDate).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' })} ${a.dueTime}`;
+                    let dueClass = 'normal';
+                    const dueDateObj = new Date(a.dueDate + "T" + a.dueTime);
+
+                    if (a.completed) {
+                        dueClass = 'completed';
+                        dueDateText += ` (提出完了)`;
+                    } else {
+                         if (dueDateObj < this.referenceToday) {
+                             dueClass = 'overdue';
+                             dueDateText += ` (期限切れ)`;
+                         } else if (dueDateObj.toDateString() === this.referenceToday.toDateString()) {
+                             dueClass = 'due-soon';
+                             dueDateText += ` (今日締切)`;
+                         } else {
+                            const diffTime = dueDateObj.getTime() - this.referenceToday.getTime();
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                            if (diffDays <= 3) {
+                                dueClass = 'due-soon';
+                                dueDateText += ` (${diffDays}日後)`;
+                            }
+                         }
+                    }
+
+                    itemDiv.innerHTML = `
+                        <div>
+                            <div class="subject-assignment-title">${a.title} (${a.round})</div>
+                            <div class="subject-assignment-due ${dueClass}">${dueDateText}</div>
+                        </div>
+                    `;
+                    listElement.appendChild(itemDiv);
+                });
+                
+                if (subjectAssignments.length > 0 && totalPages > 0) { 
+                    navElement.style.display = 'flex';
+                    pageInfoSpan.textContent = `${Math.min(start + 1, subjectAssignments.length)}-${Math.min(end, subjectAssignments.length)} / ${subjectAssignments.length}`;
+                    prevButton.disabled = paginationState.currentPage === 0;
+                    nextButton.disabled = paginationState.currentPage >= totalPages - 1 || end >= subjectAssignments.length;
+
+                } else {
+                    navElement.style.display = 'none';
+                }
+            },
+
+            handleSubjectNav: function(subjectName, direction, buttonElement) {
+                const paginationState = this.subjectsPagination[subjectName];
+                const subjectBoxElement = buttonElement.closest('.subject-box');
+                
+                let subjectAssignmentsForCount = this.assignmentsData.filter(a => a.courseName === subjectName);
+                if (this.filterHideOverdueSubjects) {
+                     subjectAssignmentsForCount = subjectAssignmentsForCount.filter(a => {
+                        if (a.completed) return true;
+                        const dueDateObj = new Date(a.dueDate + "T" + a.dueTime);
+                        return dueDateObj >= this.referenceToday;
+                    });
+                }
+                const totalItems = subjectAssignmentsForCount.length;
+                const totalPages = Math.ceil(totalItems / paginationState.itemsPerPage);
+
+                if (direction === 'prev' && paginationState.currentPage > 0) {
+                    paginationState.currentPage--;
+                } else if (direction === 'next' && paginationState.currentPage < totalPages - 1) {
+                    paginationState.currentPage++;
+                }
+                this.renderSubjectPage(subjectName, subjectBoxElement);
+            },
+
+            toggleSubjectExpansion: function(element, subjectName) { 
+                element.classList.toggle('expanded');
+                if (element.classList.contains('expanded')) {
+                    this.renderSubjectPage(subjectName, element);
+                }
+            }
+
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+
+        window.onclick = function(event) {
+            const popup = document.getElementById('assignment-popup');
+            if (event.target == popup) {
+                app.closeAssignmentsPopup();
+            }
+        }
+
+    </script>
+</body>
+</html>
