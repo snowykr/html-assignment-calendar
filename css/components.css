@@ -1,0 +1,491 @@
+/* Calendar Components */
+.calendar-section {
+    margin: 15px 0;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.calendar-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000;
+    text-align: center;
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.calendar-nav button {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #007aff;
+    padding: 5px 10px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 15px;
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: #8e8e93;
+    padding-bottom: 6px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 14px;
+    position: relative;
+    font-size: 15px;
+    font-weight: 500;
+    color: #1c1c1e;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.calendar-day:hover {
+    background-color: #e5e5ea;
+}
+
+.calendar-day.empty {
+    background: transparent;
+    cursor: default;
+    pointer-events: none;
+}
+
+.calendar-day.empty:hover {
+    background-color: transparent;
+}
+
+.calendar-day.other-month .day-number {
+    color: #aeaeb2;
+}
+
+.calendar-day.today {
+    background: #007aff;
+    color: #fff;
+}
+
+.calendar-day.today .day-number {
+    color: #fff;
+}
+
+/* Assignment Dots */
+.assignment-dot-container {
+    display: flex;
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 2px;
+}
+
+.assignment-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+}
+
+.dot-teams {
+    background: #003366;
+}
+
+.dot-openlms {
+    background: #FF6B35;
+}
+
+/* Filter Section */
+.filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+    padding: 15px;
+    background: #fff;
+    border-radius: 16px;
+}
+
+.filter-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: #000;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    width: 44px;
+    height: 26px;
+    background: #007aff;
+    border-radius: 13px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-switch.off {
+    background: #e5e5ea;
+}
+
+.toggle-slider {
+    width: 22px;
+    height: 22px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.toggle-switch.off .toggle-slider {
+    right: 20px;
+}
+
+/* Assignments List */
+.assignments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 100px;
+}
+
+/* Assignment Box */
+.assignment-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-width: 3px;
+    border-style: solid;
+}
+
+.assignment-box.teams {
+    border-color: #003366;
+}
+
+.assignment-box.openlms {
+    border-color: #FF6B35;
+}
+
+.assignment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.course-name {
+    font-size: 17px;
+    font-weight: 600;
+    color: #000;
+}
+
+.assignment-round {
+    font-size: 13px;
+    color: #8e8e93;
+    font-weight: 500;
+}
+
+.assignment-title {
+    font-size: 15px;
+    color: #3c3c43;
+    margin-bottom: 12px;
+}
+
+/* Deadline Styles */
+.deadline {
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.deadline.overdue {
+    background: #ff3b30;
+    color: #fff;
+}
+
+.deadline.due-soon {
+    background: #ff9500;
+    color: #fff;
+}
+
+.deadline.completed {
+    background: #34c759;
+    color: #fff;
+}
+
+.deadline.normal {
+    background: #f2f2f7;
+    color: #3c3c43;
+}
+
+/* Subjects List */
+.subjects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 0 100px;
+}
+
+/* Subject Box */
+.subject-box {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    background-color: #fff;
+    border-width: 3px;
+    border-style: solid;
+    cursor: pointer;
+}
+
+.subject-box.teams {
+    border-color: #003366;
+}
+
+.subject-box.openlms {
+    border-color: #FF6B35;
+}
+
+.subject-header-content {
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subject-header-main {
+    flex-grow: 1;
+}
+
+.subject-name-header {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 8px;
+}
+
+.expand-icon-subject {
+    font-size: 20px;
+    color: #8e8e93;
+    transition: transform 0.3s ease;
+    margin-left: 10px;
+}
+
+.subject-box.expanded .expand-icon-subject {
+    transform: rotate(180deg);
+}
+
+.subject-assignments {
+    background: #fff;
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+}
+
+.subject-box.expanded .subject-assignments {
+    max-height: 500px;
+    padding: 0px 20px 20px 20px;
+    border-top: 1px solid #e5e5ea;
+    margin-top: -1px;
+}
+
+.subject-assignments-inner-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-top: 15px;
+}
+
+.subject-assignment-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e5ea;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subject-assignment-item:last-child {
+    border-bottom: none;
+}
+
+.subject-assignment-title {
+    font-weight: 500;
+    font-size: 15px;
+    color: #1c1c1e;
+}
+
+.subject-assignment-due {
+    font-size: 13px;
+}
+
+.subject-assignment-due.overdue {
+    color: #ff3b30;
+}
+
+.subject-assignment-due.due-soon {
+    color: #ff9500;
+}
+
+.subject-assignment-due.completed {
+    color: #34c759;
+}
+
+.subject-assignment-due.normal {
+    color: #8e8e93;
+}
+
+/* Assignment Navigation */
+.assignment-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0 5px 0;
+    border-top: 1px solid #e5e5ea;
+    margin-top: 15px;
+}
+
+.nav-button {
+    background: #007aff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.nav-button:disabled {
+    background: #e5e5ea;
+    color: #8e8e93;
+    cursor: not-allowed;
+}
+
+/* Popup Modal */
+.popup-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+    transform: scale(1.111);
+    transform-origin: center;
+}
+
+.popup-modal.show {
+    display: flex;
+}
+
+.popup-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 320px;
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    animation: fadeInPopup 0.3s ease-out;
+    max-height: 70vh;
+    overflow-y: auto;
+    transform: scale(0.9);
+}
+
+#popup-assignment-list .assignment-box {
+    margin-bottom: 10px;
+}
+
+#popup-assignment-list .assignment-box:last-child {
+    margin-bottom: 0;
+}
+
+@keyframes fadeInPopup {
+    from {
+        opacity: 0;
+        transform: scale(0.855) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(0.9) translateY(0);
+    }
+}
+
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e5ea;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.popup-header h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #000;
+}
+
+.popup-close {
+    color: #007aff;
+    font-size: 28px;
+    font-weight: normal;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+.popup-close:hover {
+    color: #005ecb;
+}
+
+#popup-assignment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.no-assignments-popup {
+    text-align: center;
+    color: #8e8e93;
+    padding: 10px 0;
+    font-size: 15px;
+} 

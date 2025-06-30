@@ -1,0 +1,189 @@
+/* Global Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f2f2f7;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #1c1c1e;
+    transform: scale(0.9);
+    transform-origin: center;
+}
+
+/* Phone Container and Screen */
+.phone-container {
+    width: 393px;
+    height: 852px;
+    position: relative;
+}
+
+.phone-bezel-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 393px;
+    height: 852px;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.screen {
+    width: calc(100% - 28px);
+    height: calc(100% - 30px);
+    background: #f2f2f7;
+    position: absolute;
+    top: 15px;
+    left: 14px;
+    border-radius: 45px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Status Bar */
+.status-bar {
+    height: 47px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    padding-top: 20px;
+    background: #f2f2f7;
+    font-size: 18px;
+    font-weight: 600;
+    color: #000;
+    flex-shrink: 0;
+}
+
+.status-bar-icons {
+    display: flex;
+    align-items: center;
+}
+
+#current-time {
+    font-size: 17px;
+    position: relative;
+    left: 30px;
+    top: 3px;
+}
+
+.status-bar-icons svg {
+    height: 13px;
+    margin-left: 5px;
+    transform: scale(1);
+    transform-origin: center;
+    vertical-align: middle;
+    position: relative;
+    top: 2px;
+}
+
+.status-bar-icons svg:nth-child(1) {
+    position: relative;
+    left: 5px;
+}
+
+.status-bar-icons svg:nth-child(3) {
+    position: relative;
+    left: -5px;
+}
+
+/* Header */
+.header {
+    background: #f2f2f7;
+    padding: 0 20px 15px;
+    border-bottom: 1px solid #d1d1d6;
+    flex-shrink: 0;
+}
+
+.header h1 {
+    font-size: 34px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 5px;
+}
+
+/* Content Area */
+.content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 20px;
+}
+
+#subjects-tab > .content {
+    padding-top: 15px;
+}
+
+.tab-content {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    flex-direction: column;
+}
+
+.tab-content.active {
+    display: flex;
+}
+
+/* App Container and Main Content */
+.app-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.main-content-area {
+    flex: 1;
+    overflow-y: hidden;
+    display: flex;
+    position: relative;
+}
+
+/* Bottom Tabs */
+.bottom-tabs {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 83px;
+    background: rgba(248, 248, 248, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 0.5px solid rgba(0,0,0,0.2);
+    display: flex;
+    padding-bottom: env(safe-area-inset-bottom, 34px);
+    flex-shrink: 0;
+}
+
+.tab-button {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 8px 0;
+    cursor: pointer;
+    color: #8e8e93;
+    font-size: 10px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.tab-button.active {
+    color: #007aff;
+}
+
+.tab-icon {
+    font-size: 22px;
+    margin-bottom: 3px;
+} 
