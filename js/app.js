@@ -5,19 +5,50 @@ import { renderSubjectsList, renderSubjectPage, handleSubjectNav, toggleSubjectE
 import { assignmentsData } from '../data/assignments.js';
 
 const app = {
-    // State
+    // Configuration
+    config: {
+        referenceToday: new Date(2025, 5, 3),
+        pagination: {
+            itemsPerPage: 3
+        },
+        filters: {
+            unsubmittedOnly: false,
+            hideOverdueCalendar: true,
+            hideOverdueSubjects: true
+        }
+    },
+
+    // State  
     viewStartDate: new Date(),
-    referenceToday: new Date(2025, 5, 3),
     assignmentsData: assignmentsData,
-    filterUnsubmittedOnly: false,
-    filterHideOverdueCalendar: true,
-    filterHideOverdueSubjects: true,
     subjectsPagination: {},
+
+    // Getters for filter state
+    get filterUnsubmittedOnly() {
+        return this._filterUnsubmittedOnly ?? this.config.filters.unsubmittedOnly;
+    },
+    set filterUnsubmittedOnly(value) {
+        this._filterUnsubmittedOnly = value;
+    },
+
+    get filterHideOverdueCalendar() {
+        return this._filterHideOverdueCalendar ?? this.config.filters.hideOverdueCalendar;
+    },
+    set filterHideOverdueCalendar(value) {
+        this._filterHideOverdueCalendar = value;
+    },
+
+    get filterHideOverdueSubjects() {
+        return this._filterHideOverdueSubjects ?? this.config.filters.hideOverdueSubjects;
+    },
+    set filterHideOverdueSubjects(value) {
+        this._filterHideOverdueSubjects = value;
+    },
 
     // Initialize app
     init() {
         // Set initial date
-        const today = new Date(this.referenceToday);
+        const today = new Date(this.config.referenceToday);
         const dayOfWeek = today.getDay();
         const diffToMonday = (dayOfWeek === 0) ? -6 : 1 - dayOfWeek;
         this.viewStartDate = new Date(today.setDate(today.getDate() + diffToMonday));
@@ -28,7 +59,7 @@ const app = {
         setInterval(updateTime, 60000);
 
         // Initialize pagination
-        this.subjectsPagination = initSubjectPagination(this.assignmentsData);
+        this.subjectsPagination = initSubjectPagination(this.assignmentsData, this.config.pagination.itemsPerPage);
 
         // Initial render
         this.render();
@@ -49,7 +80,7 @@ const app = {
 
         renderCalendar(
             this.viewStartDate,
-            this.referenceToday,
+            this.config.referenceToday,
             this.assignmentsData,
             filters,
             (dateStr) => this.openAssignmentsPopup(dateStr)
@@ -58,13 +89,13 @@ const app = {
         renderAssignmentsList(
             this.assignmentsData,
             filters,
-            this.referenceToday
+            this.config.referenceToday
         );
 
         renderSubjectsList(
             this.assignmentsData,
             filters,
-            this.referenceToday,
+            this.config.referenceToday,
             this.subjectsPagination,
             (subjectName, element) => this.renderSubjectPage(subjectName, element)
         );
@@ -86,27 +117,27 @@ const app = {
     },
 
     // Filter toggles
-    toggleFilterUnsubmitted(element) {
+    toggleFilter(element, filterProperty) {
         element.classList.toggle('off');
-        this.filterUnsubmittedOnly = !element.classList.contains('off');
+        this[filterProperty] = !element.classList.contains('off');
         this.render();
+    },
+
+    toggleFilterUnsubmitted(element) {
+        this.toggleFilter(element, 'filterUnsubmittedOnly');
     },
 
     toggleFilterOverdue(element) {
-        element.classList.toggle('off');
-        this.filterHideOverdueCalendar = !element.classList.contains('off');
-        this.render();
+        this.toggleFilter(element, 'filterHideOverdueCalendar');
     },
 
     toggleFilterOverdueInSubjects(element) {
-        element.classList.toggle('off');
-        this.filterHideOverdueSubjects = !element.classList.contains('off');
-        this.render();
+        this.toggleFilter(element, 'filterHideOverdueSubjects');
     },
 
     // Assignment popup
     openAssignmentsPopup(dateStr) {
-        openAssignmentsPopup(dateStr, this.assignmentsData, this.referenceToday);
+        openAssignmentsPopup(dateStr, this.assignmentsData, this.config.referenceToday);
     },
 
     closeAssignmentsPopup() {
@@ -122,7 +153,7 @@ const app = {
             {
                 hideOverdueSubjects: this.filterHideOverdueSubjects
             },
-            this.referenceToday,
+            this.config.referenceToday,
             this.subjectsPagination[subjectName]
         );
     },
@@ -136,7 +167,7 @@ const app = {
             {
                 hideOverdueSubjects: this.filterHideOverdueSubjects
             },
-            this.referenceToday,
+            this.config.referenceToday,
             this.subjectsPagination[subjectName],
             (name, element) => this.renderSubjectPage(name, element)
         );

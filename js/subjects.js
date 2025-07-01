@@ -106,7 +106,7 @@ export function renderSubjectsList(assignmentsData, filters, referenceToday, sub
     });
 }
 
-export function renderSubjectPage(subjectName, subjectBoxElement, assignmentsData, filters, referenceToday, paginationState) {
+function filterSubjectAssignments(assignmentsData, subjectName, filters, referenceToday) {
     let subjectAssignments = assignmentsData.filter(a => a.courseName === subjectName);
     
     if (filters.hideOverdueSubjects) {
@@ -116,6 +116,12 @@ export function renderSubjectPage(subjectName, subjectBoxElement, assignmentsDat
             return dueDateObj >= referenceToday;
         });
     }
+    
+    return subjectAssignments;
+}
+
+export function renderSubjectPage(subjectName, subjectBoxElement, assignmentsData, filters, referenceToday, paginationState) {
+    let subjectAssignments = filterSubjectAssignments(assignmentsData, subjectName, filters, referenceToday);
     
     subjectAssignments.sort((a,b) => new Date(a.dueDate + "T" + a.dueTime) - new Date(b.dueDate + "T" + b.dueTime));
 
@@ -169,14 +175,7 @@ export function renderSubjectPage(subjectName, subjectBoxElement, assignmentsDat
 export function handleSubjectNav(subjectName, direction, buttonElement, assignmentsData, filters, referenceToday, paginationState, renderSubjectPageFunc) {
     const subjectBoxElement = buttonElement.closest('.subject-box');
     
-    let subjectAssignmentsForCount = assignmentsData.filter(a => a.courseName === subjectName);
-    if (filters.hideOverdueSubjects) {
-        subjectAssignmentsForCount = subjectAssignmentsForCount.filter(a => {
-            if (a.completed) return true;
-            const dueDateObj = new Date(a.dueDate + "T" + a.dueTime);
-            return dueDateObj >= referenceToday;
-        });
-    }
+    const subjectAssignmentsForCount = filterSubjectAssignments(assignmentsData, subjectName, filters, referenceToday);
     const totalItems = subjectAssignmentsForCount.length;
     const totalPages = Math.ceil(totalItems / paginationState.itemsPerPage);
 
@@ -195,11 +194,11 @@ export function toggleSubjectExpansion(element, subjectName, renderSubjectPageFu
     }
 }
 
-export function initSubjectPagination(assignmentsData) {
+export function initSubjectPagination(assignmentsData, itemsPerPage = 3) {
     const pagination = {};
     assignmentsData.forEach(a => {
         if (!pagination[a.courseName]) {
-            pagination[a.courseName] = { currentPage: 0, itemsPerPage: 3 };
+            pagination[a.courseName] = { currentPage: 0, itemsPerPage };
         }
     });
     return pagination;

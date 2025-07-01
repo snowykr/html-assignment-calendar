@@ -1,147 +1,196 @@
-# 과제 관리 캘린더 애플리케이션
+# Assignment Calendar Web Application
 
-모바일 친화적인 과제 관리 캘린더 웹 애플리케이션입니다. iPhone 16 Pro 디자인을 모방한 UI로 일본어 과제 데이터를 효율적으로 관리할 수 있습니다.
+A mobile-friendly assignment management calendar web application with iPhone 16 Pro inspired design for efficiently managing Japanese coursework data.
 
-## 주요 기능
+## ✨ Features
 
-- 📅 2주간 캘린더 뷰
-- 📚 과목별 과제 관리
-- 🔍 필터링 기능 (제출완료/기한초과 숨기기)
-- 📱 모바일 최적화 iPhone 디자인
-- ⚡ ES6 모듈 기반 구조
+- 📅 2-week calendar view with weekly navigation
+- 📚 Subject-based assignment management with pagination
+- 🔍 Advanced filtering options (hide completed/overdue assignments)
+- 📱 Mobile-optimized iPhone 16 Pro design
+- ⚡ Modern ES6 modules architecture
+- 🎨 Custom CSS with TailwindCSS integration
+- 📊 Assignment status tracking and due date management
 
-## 기술 스택
+## 🛠️ Tech Stack
 
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES6 Modules)
 - **Styling**: Custom CSS + TailwindCSS CDN
-- **Deployment**: Vercel (Static Site)
+- **Data**: JavaScript modules (no external database)
+- **Deployment**: Vercel (Static Site Hosting)
 
-## 프로젝트 구조
+## 📁 Project Structure
 
 ```
 /
-├── index.html              # 메인 HTML 페이지
+├── index.html              # Main HTML entry point
 ├── css/
-│   ├── styles.css         # 기본 레이아웃 스타일
-│   └── components.css     # 컴포넌트별 스타일
+│   ├── styles.css         # Global layout and base styles
+│   └── components.css     # Component-specific styles
 ├── js/
-│   ├── app.js            # 메인 애플리케이션
-│   ├── calendar.js       # 캘린더 기능
-│   ├── assignments.js    # 과제 관리 기능
-│   ├── subjects.js       # 과목별 표시 기능
-│   └── utils.js          # 유틸리티 함수
+│   ├── app.js            # Main application controller
+│   ├── calendar.js       # Calendar rendering and navigation
+│   ├── assignments.js    # Assignment list management
+│   ├── subjects.js       # Subject-based view with pagination
+│   └── utils.js          # Utility functions
 ├── data/
-│   ├── assignments.json  # 과제 데이터 (JSON)
-│   └── assignments.js    # 과제 데이터 (JS 모듈)
+│   └── assignments.js    # Assignment data (ES6 module export)
 ├── img/
-│   └── iphone-frame.png  # iPhone 베젤 이미지
-├── vercel.json           # Vercel 배포 설정
-└── package.json          # 프로젝트 메타데이터
+│   └── iphone-frame.png  # iPhone bezel frame image
+└── package.json          # Project metadata and scripts
 ```
 
-## 로컬 개발
+## 🚀 Local Development
 
-### 요구사항
-- Python 3.x (로컬 서버용)
-- 모던 웹 브라우저 (ES6 모듈 지원)
+### Prerequisites
+- Python 3.x (for local development server)
+- Modern web browser with ES6 module support
 
-### 실행 방법
+### Getting Started
 
-1. 저장소 클론
+1. Clone the repository
 ```bash
 git clone <repository-url>
 cd html-assignment-calendar
 ```
 
-2. 로컬 서버 실행
+2. Start local development server
 ```bash
-# Python 내장 서버 사용
+# Using Python built-in server
 python3 -m http.server 8001
 
-# 또는 npm scripts 사용
+# Or using npm scripts
 npm run dev
 ```
 
-3. 브라우저에서 접속
+3. Open in browser
 ```
 http://localhost:8001
 ```
 
-## Vercel 배포
+### Development Scripts
 
-### 1. GitHub 저장소 연결
+```bash
+npm run dev      # Start development server on port 8001
+npm run preview  # Start preview server on port 8002
+npm run build    # No build step needed (static site)
+```
 
-1. GitHub에 프로젝트 push
-2. [Vercel](https://vercel.com)에 로그인
-3. "New Project" 클릭
-4. GitHub 저장소 연결
+## 🌐 Vercel Deployment
 
-### 2. 배포 설정
+### Automatic Deployment
 
-Vercel이 자동으로 `vercel.json` 설정을 인식하여 배포합니다.
+1. **Connect GitHub Repository**
+   - Push your project to GitHub
+   - Visit [Vercel](https://vercel.com) and sign in
+   - Click "New Project" and connect your GitHub repository
 
-- **Build Command**: 없음 (정적 사이트)
-- **Output Directory**: `./` (루트 디렉토리)
-- **Install Command**: 없음
+2. **Deployment Configuration**
+   - **Framework Preset**: Other
+   - **Build Command**: Leave empty (static site)
+   - **Output Directory**: `./` (root directory)
+   - **Install Command**: Leave empty
 
-### 3. 환경 설정
+3. **Auto-Deploy Setup**
+   - Pushes to `main` branch trigger production deployments
+   - Pushes to other branches create preview deployments
+   - No additional configuration files needed
 
-추가 환경 변수는 필요하지 않습니다. 모든 설정이 `vercel.json`에 포함되어 있습니다.
+### Manual Deployment with Vercel CLI
 
-### 4. 자동 배포
+```bash
+# Install Vercel CLI
+npm i -g vercel
 
-- `main` 브랜치에 push하면 자동으로 프로덕션 배포
-- 다른 브랜치에 push하면 프리뷰 배포 생성
+# Deploy to production
+vercel --prod
+```
 
-## 커스터마이징
+## 📊 Data Management
 
-### 과제 데이터 수정
+### Assignment Data Structure
 
-`data/assignments.js` 파일을 편집하여 과제 데이터를 수정할 수 있습니다:
+Edit `data/assignments.js` to modify assignment data:
 
 ```javascript
 export const assignmentsData = [
     {
         "id": 1,
-        "courseName": "과목명",
-        "round": "회차",
-        "title": "과제 제목",
+        "courseName": "Mobile Programming",
+        "round": "1st Assignment",
+        "title": "Development Environment Setup",
         "dueDate": "2025-06-01",
         "dueTime": "23:59",
-        "platform": "teams", // 또는 "openlms"
+        "platform": "teams", // or "openlms"
         "completed": false
     }
-    // ... 더 많은 과제
+    // ... more assignments
 ];
 ```
 
-### 스타일 수정
+### Data Migration Note
 
-- `css/styles.css`: 전역 스타일 및 레이아웃
-- `css/components.css`: 개별 컴포넌트 스타일
+- **Previous**: `data/assignments.json` (JSON file)
+- **Current**: `data/assignments.js` (ES6 module)
+- This change enables better integration with the modular architecture
 
-### 기능 추가
+## 🎨 Customization
 
-- `js/` 폴더의 모듈 파일들을 수정하여 새로운 기능 추가
-- ES6 모듈 시스템을 사용하여 코드 분리
+### Styling
 
-## 브라우저 지원
+- **Global Styles**: `css/styles.css` - Layout, typography, and base styles
+- **Components**: `css/components.css` - Individual component styles
+- **TailwindCSS**: Available via CDN for rapid styling
 
-- Chrome 61+
-- Firefox 60+
-- Safari 11+
-- Edge 16+
+### Adding Features
 
-ES6 모듈을 지원하는 모든 모던 브라우저에서 작동합니다.
+- **Modular Architecture**: Each feature is separated into dedicated modules
+- **ES6 Imports**: Use `import`/`export` syntax for code organization
+- **Event Handling**: Centralized in `app.js` with delegation to specific modules
 
-## 라이센스
+### Configuration
 
-MIT License
+Key configuration options in `app.js`:
 
-## 기여
+```javascript
+config: {
+    referenceToday: new Date(2025, 5, 3), // Reference date for testing
+    pagination: {
+        itemsPerPage: 3 // Items per page in subjects view
+    },
+    filters: {
+        unsubmittedOnly: false,
+        hideOverdueCalendar: true,
+        hideOverdueSubjects: true
+    }
+}
+```
 
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request 
+## 🌍 Browser Support
+
+- **Chrome**: 61+
+- **Firefox**: 60+
+- **Safari**: 11+
+- **Edge**: 16+
+
+All modern browsers with ES6 module support.
+
+## 🔧 Development Notes
+
+### Module Architecture
+
+- **Separation of Concerns**: Each JavaScript file handles specific functionality
+- **Import/Export**: Clean module boundaries with explicit dependencies
+- **No Build Step**: Direct ES6 module loading in browsers
+
+### Mobile-First Design
+
+- **iPhone 16 Pro Mockup**: Realistic device frame and dimensions
+- **Touch-Friendly**: Large tap targets and swipe gestures
+- **Responsive**: Adapts to different screen sizes within the phone frame
+
+## 📚 Additional Resources
+
+- [ES6 Modules Documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+- [Vercel Static Site Deployment](https://vercel.com/docs/concepts/get-started)
+- [TailwindCSS CDN Usage](https://tailwindcss.com/docs/installation/play-cdn) 
