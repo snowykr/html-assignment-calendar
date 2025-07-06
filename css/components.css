@@ -617,4 +617,49 @@
     color: #8e8e93;
     padding: 10px 0;
     font-size: 15px;
+}
+
+/* Error State */
+.error-state {
+    text-align: center;
+    padding: 30px 20px;
+    background-color: #fff2f2;
+    border-radius: 12px;
+    margin: 15px;
+    border: 1px solid #ff6b6b;
+}
+
+.error-message {
+    color: #d32f2f;
+    font-size: 16px;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.retry-button {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.retry-button:hover {
+    background-color: #0056b3;
+}
+
+.retry-button:active {
+    background-color: #004494;
+    transform: scale(0.98);
+}
+
+.loading-message {
+    text-align: center;
+    color: #8e8e93;
+    font-size: 14px;
+    padding: 20px;
 } 

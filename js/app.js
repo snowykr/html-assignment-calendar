@@ -2,7 +2,6 @@ import { renderCalendar, navigateWeek } from './calendar.js';
 import { renderAssignmentsList, openAssignmentsPopup, closeAssignmentsPopup } from './assignments.js';
 import { renderSubjectsList, renderSubjectPage, handleSubjectNav, toggleSubjectExpansion, initSubjectPagination } from './subjects.js';
 import { getAllAssignments, initSupabase, updateAssignmentCompletion } from './supabase-service.js';
-import { assignmentsData as fallbackData } from '../data/assignments.js';
 
 const app = {
     // Configuration
@@ -23,8 +22,6 @@ const app = {
     assignmentsData: [],
     subjectsPagination: {},
     isLoading: false,
-    isOnlineMode: false,
-    dataSource: 'none', // 'supabase', 'fallback', 'none'
     loadingMessage: '데이터를 불러오는 중...',
     currentPopupDate: null,
 
@@ -67,8 +64,8 @@ const app = {
             // Show initial loading message
             this.render();
 
-            // Try to load data from Supabase
-            await this.loadDataWithFallback();
+            // Load data from Supabase
+            await this.loadDataFromSupabase();
 
             // Initialize pagination
             this.subjectsPagination = initSubjectPagination(this.assignmentsData, this.config.pagination.itemsPerPage);
@@ -85,61 +82,66 @@ const app = {
             console.error('❌ Critical error during app initialization:', error);
             this.isLoading = false;
             this.assignmentsData = [];
-            this.dataSource = 'none';
-            this.render();
+            this.showErrorState(error.message || '데이터를 불러오는데 실패했습니다.');
         }
     },
 
-    // Load data with fallback system
-    async loadDataWithFallback() {
-        try {
-            // Try Supabase first
-            this.loadingMessage = 'Supabase에 연결하는 중...';
-            this.render();
-            
-            await initSupabase();
-            
-            this.loadingMessage = '데이터를 가져오는 중...';
-            this.render();
-            
-            this.assignmentsData = await getAllAssignments();
-            this.isOnlineMode = true;
-            this.dataSource = 'supabase';
-            
-        } catch (error) {
-            this.loadingMessage = '로컬 데이터로 전환하는 중...';
-            this.render();
-            
-            // Fallback to local data
-            this.assignmentsData = [...fallbackData];
-            this.isOnlineMode = false;
-            this.dataSource = 'fallback';
-            
-            // Show user notification about offline mode
-            this.showOfflineModeNotification();
-        }
+    // Load data from Supabase
+    async loadDataFromSupabase() {
+        this.loadingMessage = 'Supabase에 연결하는 중...';
+        this.render();
+        
+        await initSupabase();
+        
+        this.loadingMessage = '데이터를 가져오는 중...';
+        this.render();
+        
+        this.assignmentsData = await getAllAssignments();
     },
 
-    // Show offline mode notification
-    showOfflineModeNotification() {
-        // Create a temporary notification
-        const notification = document.createElement('div');
-        notification.className = 'offline-notification';
-        notification.innerHTML = `
-            <div class="offline-message">
-                📱 오프라인 모드: 로컬 데이터를 사용합니다
-                <button onclick="this.parentElement.parentElement.remove()">✕</button>
+    // Show error state with retry option
+    showErrorState(errorMessage) {
+        const calendarList = document.getElementById('calendar-assignments-list');
+        const subjectsList = document.getElementById('subjects-list-container');
+        
+        const errorHTML = `
+            <div class="error-state">
+                <div class="error-message">⚠️ ${errorMessage}</div>
+                <button class="retry-button" onclick="app.retryConnection()">다시 시도</button>
             </div>
         `;
-        document.body.appendChild(notification);
         
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            if (notification.parentElement) {
-                notification.remove();
-            }
-        }, 5000);
+        if (calendarList) {
+            calendarList.innerHTML = errorHTML;
+        }
+        
+        if (subjectsList) {
+            subjectsList.innerHTML = errorHTML;
+        }
     },
+
+    // Retry connection
+    async retryConnection() {
+        try {
+            this.isLoading = true;
+            this.loadingMessage = '다시 연결하는 중...';
+            this.render();
+            
+            await this.loadDataFromSupabase();
+            
+            // Re-initialize pagination
+            this.subjectsPagination = initSubjectPagination(this.assignmentsData, this.config.pagination.itemsPerPage);
+            
+            this.isLoading = false;
+            this.render();
+            
+        } catch (error) {
+            console.error('❌ Retry failed:', error);
+            this.isLoading = false;
+            this.showErrorState(error.message || '연결에 다시 실패했습니다.');
+        }
+    },
+
 
     // Main render function
     render() {
@@ -280,40 +282,33 @@ const app = {
     async reloadAssignments() {
         try {
             this.isLoading = true;
+            this.loadingMessage = '데이터를 새로고침하는 중...';
+            this.render();
+            
             this.assignmentsData = await getAllAssignments();
             
             // Re-initialize pagination with new data
             this.subjectsPagination = initSubjectPagination(this.assignmentsData, this.config.pagination.itemsPerPage);
             
-            this.render();
             this.isLoading = false;
+            this.render();
         } catch (error) {
             console.error('Failed to reload assignments:', error);
             this.isLoading = false;
+            this.showErrorState(error.message || '데이터 새로고침에 실패했습니다.');
         }
     },
 
     // Toggle assignment completion status
     async toggleAssignmentCompletion(assignmentId, completed) {
         try {
-            if (this.isOnlineMode && this.dataSource === 'supabase') {
-                // Online mode: Update in Supabase
-                const updatedAssignment = await updateAssignmentCompletion(assignmentId, completed);
-                
-                // Update local data
-                const assignmentIndex = this.assignmentsData.findIndex(a => a.id === assignmentId);
-                if (assignmentIndex !== -1) {
-                    this.assignmentsData[assignmentIndex] = updatedAssignment;
-                }
-            } else {
-                // Offline mode: Update only locally
-                const assignmentIndex = this.assignmentsData.findIndex(a => a.id === assignmentId);
-                if (assignmentIndex !== -1) {
-                    this.assignmentsData[assignmentIndex].completed = completed;
-                }
-                
-                // Show offline mode notification
-                this.showTemporaryMessage('📱 오프라인 모드: 로컬에서만 변경되었습니다', 2000);
+            // Update in Supabase
+            const updatedAssignment = await updateAssignmentCompletion(assignmentId, completed);
+            
+            // Update local data
+            const assignmentIndex = this.assignmentsData.findIndex(a => a.id === assignmentId);
+            if (assignmentIndex !== -1) {
+                this.assignmentsData[assignmentIndex] = updatedAssignment;
             }
             
             // Re-render
