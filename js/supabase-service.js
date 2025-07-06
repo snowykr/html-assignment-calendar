@@ -149,14 +149,23 @@ export async function addAssignment(assignment) {
     }
     
     try {
-        const dbAssignment = transformJsToDb(assignment);
+        // Use insert-specific transform function to ensure no id is included
+        const dbAssignment = transformJsToDbForInsert(assignment);
+        
         const { data, error } = await supabase
             .from('assignments')
             .insert(dbAssignment)
             .select()
             .single();
         
-        if (error) throw error;
+        if (error) {
+            // Handle specific database constraint errors
+            if (error.code === '23505') {
+                console.error('Primary key conflict detected:', error);
+                throw new Error('데이터베이스에서 ID 충돌이 발생했습니다. 관리자에게 문의하세요.');
+            }
+            throw error;
+        }
         
         return transformDbToJs(data);
     } catch (error) {
@@ -172,7 +181,8 @@ export async function updateAssignment(id, assignment) {
     }
     
     try {
-        const dbAssignment = transformJsToDb(assignment);
+        // Use update-specific transform function
+        const dbAssignment = transformJsToDbForUpdate(assignment);
         const { data, error } = await supabase
             .from('assignments')
             .update(dbAssignment)
@@ -210,6 +220,8 @@ export async function deleteAssignment(id) {
     }
 }
 
+
+
 // Transform database row to JavaScript object format
 function transformDbToJs(dbRow) {
     return {
@@ -226,9 +238,9 @@ function transformDbToJs(dbRow) {
     };
 }
 
-// Transform JavaScript object to database row format
-function transformJsToDb(jsObj) {
-    const dbObj = {
+// Transform JavaScript object to database row format for INSERT (no id)
+function transformJsToDbForInsert(jsObj) {
+    return {
         course_name: jsObj.courseName,
         round: jsObj.round,
         title: jsObj.title,
@@ -237,11 +249,19 @@ function transformJsToDb(jsObj) {
         platform: jsObj.platform,
         completed: jsObj.completed || false
     };
-    
-    // Only include id if it exists (for updates)
+}
+
+// Transform JavaScript object to database row format for UPDATE (includes id)
+function transformJsToDbForUpdate(jsObj) {
+    const dbObj = transformJsToDbForInsert(jsObj);
     if (jsObj.id) {
         dbObj.id = jsObj.id;
     }
-    
     return dbObj;
 }
+
+// Legacy function for backward compatibility
+function transformJsToDb(jsObj) {
+    return transformJsToDbForUpdate(jsObj);
+}
+

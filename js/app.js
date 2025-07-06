@@ -241,6 +241,101 @@ const app = {
         closeAssignmentsPopup();
     },
 
+    // Add Assignment Modal
+    openAddAssignmentModal() {
+        const modal = document.getElementById('add-assignment-modal');
+        const form = document.getElementById('add-assignment-form');
+        
+        // Reset form
+        form.reset();
+        
+        // Set default date to today
+        const today = new Date();
+        const dateStr = today.toISOString().split('T')[0];
+        document.getElementById('due-date').value = dateStr;
+        
+        // Show modal
+        modal.classList.add('show');
+        
+        // Focus first input
+        setTimeout(() => {
+            document.getElementById('course-name').focus();
+        }, 100);
+    },
+
+    closeAddAssignmentModal() {
+        const modal = document.getElementById('add-assignment-modal');
+        modal.classList.remove('show');
+    },
+
+
+    async handleAddAssignment(event) {
+        event.preventDefault();
+        
+        const submitButton = event.target.querySelector('.btn-submit');
+        const originalText = submitButton.textContent;
+        
+        try {
+            // Disable submit button
+            submitButton.disabled = true;
+            submitButton.textContent = '追加中...';
+            
+            // Get form data
+            const formData = new FormData(event.target);
+            const assignmentData = {
+                courseName: formData.get('courseName').trim(),
+                round: formData.get('round').trim(),
+                title: formData.get('title').trim(),
+                dueDate: formData.get('dueDate'),
+                dueTime: formData.get('dueTime'),
+                platform: formData.get('platform'),
+                completed: false
+            };
+            
+            // Validate required fields
+            if (!assignmentData.courseName || !assignmentData.round || !assignmentData.title || 
+                !assignmentData.dueDate || !assignmentData.dueTime || !assignmentData.platform) {
+                throw new Error('すべての項目を入力してください');
+            }
+            
+            // Ensure no id field is present
+            delete assignmentData.id;
+            
+            // Add assignment to Supabase
+            const { addAssignment } = await import('./supabase-service.js');
+            await addAssignment(assignmentData);
+            
+            // Close modal
+            this.closeAddAssignmentModal();
+            
+            // Reload assignments
+            await this.reloadAssignments();
+            
+            // Show success message
+            this.showTemporaryMessage('課題を追加しました');
+            
+        } catch (error) {
+            console.error('Failed to add assignment:', error);
+            
+            // Provide user-friendly error messages
+            let userMessage = '課題の追加に失敗しました';
+            
+            if (error.message && error.message.includes('データベースで重複エラー')) {
+                userMessage = 'データベースエラーが発生しました。しばらく待ってから再試行してください。';
+            } else if (error.message && error.message.includes('すべての項目')) {
+                userMessage = error.message;
+            } else if (error.code === '23505') {
+                userMessage = 'データの重複エラーが発生しました。管理者にお問い合わせください。';
+            }
+            
+            alert(userMessage);
+        } finally {
+            // Re-enable submit button
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+        }
+    },
+
     // Subject-related methods
     renderSubjectPage(subjectName, element) {
         renderSubjectPage(
@@ -350,8 +445,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Close popup when clicking outside
 window.onclick = function(event) {
-    const popup = document.getElementById('assignment-popup');
-    if (event.target == popup) {
+    const assignmentPopup = document.getElementById('assignment-popup');
+    const addAssignmentModal = document.getElementById('add-assignment-modal');
+    
+    if (event.target == assignmentPopup) {
         app.closeAssignmentsPopup();
+    } else if (event.target == addAssignmentModal) {
+        app.closeAddAssignmentModal();
     }
 };
