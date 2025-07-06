@@ -1,6 +1,11 @@
 /* Calendar Components */
 .calendar-section {
     margin: 15px 0;
+    position: sticky;
+    top: 0;
+    background: #f2f2f7;
+    z-index: 50;
+    padding-bottom: 5px;
 }
 
 .calendar-header {
