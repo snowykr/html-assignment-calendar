@@ -1,11 +1,11 @@
 {
-  "name": "html-assignment-calendar",
-  "version": "1.0.0",
+  "name": "assignment-calendar",
+  "version": "0.1.0",
   "description": "과제 관리 캘린더 애플리케이션",
   "main": "index.html",
   "type": "module",
   "scripts": {
-    "dev": "python3 -m http.server 8001",
+    "dev": "python3 -m http.server 8000",
     "build": "echo 'No build step needed for static site'",
     "preview": "python3 -m http.server 8002"
   },

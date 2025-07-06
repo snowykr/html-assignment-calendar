@@ -1,4 +1,4 @@
-import { updateTime } from './utils.js';
+// updateTime import removed - no longer needed after status-bar removal
 import { renderCalendar, navigateWeek } from './calendar.js';
 import { renderAssignmentsList, openAssignmentsPopup, closeAssignmentsPopup } from './assignments.js';
 import { renderSubjectsList, renderSubjectPage, handleSubjectNav, toggleSubjectExpansion, initSubjectPagination } from './subjects.js';
@@ -54,9 +54,7 @@ const app = {
         this.viewStartDate = new Date(today.setDate(today.getDate() + diffToMonday));
         this.viewStartDate.setHours(0,0,0,0);
 
-        // Update time
-        updateTime();
-        setInterval(updateTime, 60000);
+        // Time update removed - no longer needed after status-bar removal
 
         // Initialize pagination
         this.subjectsPagination = initSubjectPagination(this.assignmentsData, this.config.pagination.itemsPerPage);
@@ -70,7 +68,7 @@ const app = {
         document.getElementById('filter-overdue-subjects-toggle').classList.toggle('off', !this.filterHideOverdueSubjects);
     },
 
-    // Render all components
+    // Main render function
     render() {
         const filters = {
             unsubmittedOnly: this.filterUnsubmittedOnly,
@@ -185,7 +183,7 @@ const app = {
 // Export app for global access
 window.app = app;
 
-// Initialize when DOM is ready
+// Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     app.init();
 });
@@ -196,4 +194,4 @@ window.onclick = function(event) {
     if (event.target == popup) {
         app.closeAssignmentsPopup();
     }
-}; 
+};

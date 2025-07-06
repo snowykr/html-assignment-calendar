@@ -1,16 +1,19 @@
 # Assignment Calendar Web Application
 
-A mobile-friendly assignment management calendar web application with iPhone 16 Pro inspired design for efficiently managing Japanese coursework data.
+A mobile-friendly assignment management calendar web application for efficiently managing Japanese coursework data.
 
 ## ✨ Features
 
 - 📅 2-week calendar view with weekly navigation
 - 📚 Subject-based assignment management with pagination
 - 🔍 Advanced filtering options (hide completed/overdue assignments)
-- 📱 Mobile-optimized iPhone 16 Pro design
+- 📱 Mobile-optimized responsive design
 - ⚡ Modern ES6 modules architecture
 - 🎨 Custom CSS with TailwindCSS integration
 - 📊 Assignment status tracking and due date management
+- 🚀 Cache busting for optimal performance
+- 🔧 Enhanced browser compatibility
+- 🎯 Optimized UI/UX with clean layout design
 
 ## 🛠️ Tech Stack
 
@@ -23,7 +26,7 @@ A mobile-friendly assignment management calendar web application with iPhone 16 
 
 ```
 /
-├── index.html              # Main HTML entry point
+├── index.html              # Main HTML entry point with cache busting
 ├── css/
 │   ├── styles.css         # Global layout and base styles
 │   └── components.css     # Component-specific styles
@@ -35,9 +38,10 @@ A mobile-friendly assignment management calendar web application with iPhone 16 
 │   └── utils.js          # Utility functions
 ├── data/
 │   └── assignments.js    # Assignment data (ES6 module export)
-├── img/
-│   └── iphone-frame.png  # iPhone bezel frame image
-└── package.json          # Project metadata and scripts
+├── img/                    # Image assets directory
+├── package.json          # Project metadata and scripts
+├── vercel.json           # Vercel deployment configuration
+└── .gitignore            # Git ignore rules
 ```
 
 ## 🚀 Local Development
@@ -57,7 +61,7 @@ cd html-assignment-calendar
 2. Start local development server
 ```bash
 # Using Python built-in server
-python3 -m http.server 8001
+python3 -m http.server 8000
 
 # Or using npm scripts
 npm run dev
@@ -65,13 +69,13 @@ npm run dev
 
 3. Open in browser
 ```
-http://localhost:8001
+http://localhost:8000
 ```
 
 ### Development Scripts
 
 ```bash
-npm run dev      # Start development server on port 8001
+npm run dev      # Start development server on port 8000
 npm run preview  # Start preview server on port 8002
 npm run build    # No build step needed (static site)
 ```
@@ -90,6 +94,7 @@ npm run build    # No build step needed (static site)
    - **Build Command**: Leave empty (static site)
    - **Output Directory**: `./` (root directory)
    - **Install Command**: Leave empty
+   - **Configuration File**: `vercel.json` included for deployment settings
 
 3. **Auto-Deploy Setup**
    - Pushes to `main` branch trigger production deployments
@@ -134,6 +139,13 @@ export const assignmentsData = [
 - **Current**: `data/assignments.js` (ES6 module)
 - This change enables better integration with the modular architecture
 
+### Recent Improvements
+
+- **UI Optimization**: Removed unnecessary header elements for cleaner layout
+- **Performance**: Implemented cache busting for JavaScript modules
+- **Browser Compatibility**: Enhanced cross-browser support and error handling
+- **Code Quality**: Removed deprecated functions and optimized module structure
+
 ## 🎨 Customization
 
 ### Styling
@@ -166,6 +178,12 @@ config: {
 }
 ```
 
+### Performance Features
+
+- **Cache Busting**: JavaScript modules loaded with version parameters
+- **CDN Optimization**: Tailwind CSS loaded via CDN with warning suppression
+- **Module Loading**: Optimized ES6 module imports for faster loading
+
 ## 🌍 Browser Support
 
 - **Chrome**: 61+
@@ -182,15 +200,16 @@ All modern browsers with ES6 module support.
 - **Separation of Concerns**: Each JavaScript file handles specific functionality
 - **Import/Export**: Clean module boundaries with explicit dependencies
 - **No Build Step**: Direct ES6 module loading in browsers
+- **Code Optimization**: Removed deprecated functions and unnecessary components
+- **Error Handling**: Enhanced browser compatibility and graceful degradation
 
 ### Mobile-First Design
 
-- **iPhone 16 Pro Mockup**: Realistic device frame and dimensions
 - **Touch-Friendly**: Large tap targets and swipe gestures
-- **Responsive**: Adapts to different screen sizes within the phone frame
+- **Responsive**: Adapts to different screen sizes and devices
 
 ## 📚 Additional Resources
 
 - [ES6 Modules Documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 - [Vercel Static Site Deployment](https://vercel.com/docs/concepts/get-started)
-- [TailwindCSS CDN Usage](https://tailwindcss.com/docs/installation/play-cdn) 
+- [TailwindCSS CDN Usage](https://tailwindcss.com/docs/installation/play-cdn)

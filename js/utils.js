@@ -1,10 +1,5 @@
 // Date and time utilities
-export function updateTime() {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    document.getElementById('current-time').textContent = `${hours}:${minutes}`;
-}
+// updateTime function removed - no longer needed after status-bar removal
 
 // Assignment status calculation
 export function getAssignmentStatus(assignment, referenceToday) {
@@ -100,4 +95,4 @@ export function adjustCalendarTitleFontSize(titleElement) {
         fontSize -= 1;
         titleElement.style.fontSize = fontSize + 'px';
     }
-} 
+}
