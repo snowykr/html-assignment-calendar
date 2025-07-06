@@ -7,7 +7,11 @@ export function createAssignmentBoxElement(assignment, referenceToday, isPopup =
 
     const header = document.createElement('div');
     header.classList.add('assignment-header');
-    header.innerHTML = `<span class="course-name">${assignment.courseName}</span><span class="assignment-round">${assignment.round}</span>`;
+    header.innerHTML = `<span class="course-name">${assignment.courseName}</span>`;
+    
+    const roundDiv = document.createElement('div');
+    roundDiv.classList.add('assignment-round');
+    roundDiv.textContent = assignment.round;
     
     const titleDiv = document.createElement('div');
     titleDiv.classList.add('assignment-title');
@@ -21,9 +25,29 @@ export function createAssignmentBoxElement(assignment, referenceToday, isPopup =
     deadlineDiv.classList.add('deadline', statusClass);
     deadlineDiv.textContent = deadlineText;
 
+    // Add completion toggle button
+    const completionToggle = document.createElement('div');
+    completionToggle.classList.add('completion-toggle');
+    completionToggle.innerHTML = assignment.completed ? '✅' : '⏳';
+    completionToggle.title = assignment.completed ? '完了済み' : '未完了';
+    completionToggle.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (window.app && window.app.toggleAssignmentCompletion) {
+            await window.app.toggleAssignmentCompletion(assignment.id, !assignment.completed);
+        }
+    });
+
     box.appendChild(header);
+    box.appendChild(roundDiv);
     box.appendChild(titleDiv);
     box.appendChild(deadlineDiv);
+    box.appendChild(completionToggle);
+    
+    // Add completed class if assignment is completed
+    if (assignment.completed) {
+        box.classList.add('completed');
+    }
+    
     return box;
 }
 
