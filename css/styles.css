@@ -46,6 +46,13 @@ body {
     padding-top: 15px;
 }
 
+#settings-tab > .content {
+    padding-top: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
 .tab-content {
     display: none;
     flex: 1;

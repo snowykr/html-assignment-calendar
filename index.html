@@ -73,6 +73,33 @@
                                 </div>
                         </div>
                     </div>
+                    
+                    <div class="tab-content" id="settings-tab">
+                        <div class="content">
+                            <div class="filter-section">
+                                <div class="filter-row">
+                                    <span class="filter-label">알림 설정</span>
+                                    <div class="toggle-switch off">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                                <div class="filter-row">
+                                    <span class="filter-label">다크 모드</span>
+                                    <div class="toggle-switch off">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                                <div class="filter-row">
+                                    <span class="filter-label">언어 설정</span>
+                                    <select class="form-select" style="width: 120px; margin-left: auto;" aria-label="언어 설정">
+                                        <option>한국어</option>
+                                        <option>English</option>
+                                        <option>日本語</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Floating Add Button -->
@@ -82,12 +109,16 @@
 
                 <div class="bottom-tabs">
                     <button class="tab-button active" onclick="app.switchTab('calendar', this)">
-                        <div class="tab-icon">📅</div>
+                        <span class="tab-icon">📅</span>
                         <span>カレンダー</span>
                     </button>
                     <button class="tab-button" onclick="app.switchTab('subjects', this)">
-                        <div class="tab-icon">📚</div>
+                        <span class="tab-icon">📚</span>
                         <span>科目</span>
+                    </button>
+                    <button class="tab-button" onclick="app.switchTab('settings', this)">
+                        <span class="tab-icon">⚙️</span>
+                        <span>設定</span>
                     </button>
                 </div>
     </div>
