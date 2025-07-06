@@ -47,7 +47,7 @@ A mobile-friendly assignment management calendar web application for efficiently
 ## 🚀 Local Development
 
 ### Prerequisites
-- Python 3.x (for local development server)
+- Node.js (for local development server)
 - Modern web browser with ES6 module support
 
 ### Getting Started
@@ -60,11 +60,11 @@ cd html-assignment-calendar
 
 2. Start local development server
 ```bash
-# Using Python built-in server
-python3 -m http.server 8000
-
-# Or using npm scripts
+# Using npm scripts (Node.js http-server)
 npm run dev
+
+# Or directly with npx
+npx http-server -p 8000
 ```
 
 3. Open in browser
@@ -75,8 +75,9 @@ http://localhost:8000
 ### Development Scripts
 
 ```bash
-npm run dev      # Start development server on port 8000
-npm run preview  # Start preview server on port 8002
+npm run dev      # Start Node.js development server on port 8000
+npm run start    # Start Node.js development server on port 8000
+npm run preview  # Start preview server on port 8000
 npm run build    # No build step needed (static site)
 ```
 
