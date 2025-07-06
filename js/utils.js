@@ -63,6 +63,24 @@ export function sortAssignmentsByDueDate(assignments, completedLast = true) {
 export function filterAssignments(assignments, filters, referenceToday) {
     let filtered = [...assignments];
     
+    // Date range filtering (for calendar view consistency)
+    if (filters.dateRange) {
+        const { start, days } = filters.dateRange;
+        const startDate = new Date(start);
+        const endDate = new Date(start);
+        endDate.setDate(startDate.getDate() + days - 1);
+        
+        // Set time to beginning and end of day for accurate comparison
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+        
+        filtered = filtered.filter(a => {
+            const assignmentDate = new Date(a.dueDate);
+            assignmentDate.setHours(0, 0, 0, 0);
+            return assignmentDate >= startDate && assignmentDate <= endDate;
+        });
+    }
+    
     if (filters.unsubmittedOnly) {
         filtered = filtered.filter(a => !a.completed);
     }

@@ -168,7 +168,8 @@ const app = {
         renderAssignmentsList(
             this.assignmentsData,
             filters,
-            this.config.referenceToday
+            this.config.referenceToday,
+            this.viewStartDate
         );
 
         renderSubjectsList(
@@ -253,6 +254,9 @@ const app = {
         const today = new Date();
         const dateStr = today.toISOString().split('T')[0];
         document.getElementById('due-date').value = dateStr;
+        
+        // Set default time to 00:00
+        document.getElementById('due-time').value = '00:00';
         
         // Show modal
         modal.classList.add('show');

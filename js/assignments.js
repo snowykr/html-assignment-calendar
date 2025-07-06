@@ -53,13 +53,14 @@ export function createAssignmentBoxElement(assignment, referenceToday, isPopup =
     return box;
 }
 
-export function renderAssignmentsList(assignmentsData, filters, referenceToday) {
+export function renderAssignmentsList(assignmentsData, filters, referenceToday, viewStartDate) {
     const listContainer = document.getElementById('calendar-assignments-list');
     listContainer.innerHTML = '';
 
     const filteredAssignments = filterAssignments(assignmentsData, {
         unsubmittedOnly: filters.unsubmittedOnly,
-        hideOverdue: filters.hideOverdueCalendar
+        hideOverdue: filters.hideOverdueCalendar,
+        dateRange: viewStartDate ? { start: viewStartDate, days: 14 } : null
     }, referenceToday);
     
     const sortedAssignments = sortAssignmentsByDueDate(filteredAssignments);
