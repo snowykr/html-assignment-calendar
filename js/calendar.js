@@ -7,7 +7,7 @@ export function renderCalendar(viewStartDate, referenceToday, assignmentsData, f
     grid.innerHTML = '';
     headerGrid.innerHTML = '';
 
-    const dayHeaders = ['月', '火', '水', '木', '金', '土', '日'];
+    const dayHeaders = ['日', '月', '火', '水', '木', '金', '土'];
     dayHeaders.forEach(day => {
         const dayEl = document.createElement('div');
         dayEl.classList.add('calendar-day-header');

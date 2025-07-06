@@ -33,7 +33,9 @@ export function createAssignmentBoxElement(assignment, referenceToday, isPopup =
     completionToggle.addEventListener('click', async (e) => {
         e.stopPropagation();
         if (window.app && window.app.toggleAssignmentCompletion) {
-            await window.app.toggleAssignmentCompletion(assignment.id, !assignment.completed);
+            const currentAssignment = window.app.assignmentsData.find(a => a.id === assignment.id);
+            const currentCompleted = currentAssignment ? currentAssignment.completed : assignment.completed;
+            await window.app.toggleAssignmentCompletion(assignment.id, !currentCompleted);
         }
     });
 

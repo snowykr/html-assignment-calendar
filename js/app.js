@@ -7,7 +7,7 @@ import { assignmentsData as fallbackData } from '../data/assignments.js';
 const app = {
     // Configuration
     config: {
-        referenceToday: new Date(2025, 5, 3),
+        referenceToday: new Date(),
         pagination: {
             itemsPerPage: 3
         },
@@ -26,6 +26,7 @@ const app = {
     isOnlineMode: false,
     dataSource: 'none', // 'supabase', 'fallback', 'none'
     loadingMessage: '데이터를 불러오는 중...',
+    currentPopupDate: null,
 
     // Getters for filter state
     get filterUnsubmittedOnly() {
@@ -59,8 +60,8 @@ const app = {
             // Set initial date
             const today = new Date(this.config.referenceToday);
             const dayOfWeek = today.getDay();
-            const diffToMonday = (dayOfWeek === 0) ? -6 : 1 - dayOfWeek;
-            this.viewStartDate = new Date(today.setDate(today.getDate() + diffToMonday));
+            const diffToSunday = -dayOfWeek;
+            this.viewStartDate = new Date(today.setDate(today.getDate() + diffToSunday));
             this.viewStartDate.setHours(0,0,0,0);
 
             // Show initial loading message
@@ -229,10 +230,12 @@ const app = {
 
     // Assignment popup
     openAssignmentsPopup(dateStr) {
+        this.currentPopupDate = dateStr;
         openAssignmentsPopup(dateStr, this.assignmentsData, this.config.referenceToday);
     },
 
     closeAssignmentsPopup() {
+        this.currentPopupDate = null;
         closeAssignmentsPopup();
     },
 
@@ -315,6 +318,11 @@ const app = {
             
             // Re-render
             this.render();
+            
+            // Re-render popup if it's currently open
+            if (this.currentPopupDate) {
+                openAssignmentsPopup(this.currentPopupDate, this.assignmentsData, this.config.referenceToday);
+            }
         } catch (error) {
             console.error('❌ Failed to toggle assignment completion:', error.message || 'Unknown error');
             alert('과제 완료 상태를 변경하는데 실패했습니다.');
