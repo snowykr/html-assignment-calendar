@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 import { getAssignmentStatus, filterAssignments, sortAssignmentsByDueDate } from '@/utils/utils';
-import { useSwipeGestures } from '@/hooks/useSwipeGestures';
+import { useTapToggle } from '@/hooks/useTapToggle';
 import type { Assignment } from '@/utils/utils';
 
 export default function Assignments() {
@@ -41,35 +41,31 @@ export default function Assignments() {
   const sortedAssignments = sortAssignmentsByDueDate(filteredAssignments);
   
   const {
-    swipedItems,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
-    resetSwipe,
-    removeSwipeState
-  } = useSwipeGestures(sortedAssignments);
+    tappedItems,
+    handleTap,
+    closeTapped,
+    removeTappedState
+  } = useTapToggle(sortedAssignments);
 
   const renderAssignmentBox = (assignment: Assignment) => {
     const { statusClass, statusText } = getAssignmentStatus(assignment, referenceToday, t);
     const isCompleted = assignment.completed;
-    const isSwiped = swipedItems[assignment.id] || false;
+    const isTapped = tappedItems[assignment.id] || false;
 
     return (
       <div 
         key={assignment.id} 
-        className={`assignment-container ${isSwiped ? 'swiped' : ''}`}
+        className={`assignment-container ${isTapped ? 'tapped' : ''}`}
       >
         <div 
           className={`assignment-box ${assignment.platform} ${isCompleted ? 'completed' : ''}`}
-          onTouchStart={(e) => handleTouchStart(e, assignment.id)}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={() => handleTouchEnd(assignment.id)}
+          onClick={() => handleTap(assignment.id)}
         >
           <div 
             className="completion-toggle"
             onClick={(e) => {
               e.stopPropagation();
-              resetSwipe(assignment.id);
+              closeTapped(assignment.id);
               toggleAssignmentCompletion(assignment.id, !assignment.completed)
                 .catch(error => console.error('완료 상태 변경 실패:', error));
             }}
@@ -92,8 +88,9 @@ export default function Assignments() {
         <div className="assignment-actions">
           <button 
             className="action-btn edit-btn"
-            onClick={() => {
-              resetSwipe(assignment.id);
+            onClick={(e) => {
+              e.stopPropagation();
+              closeTapped(assignment.id);
               editAssignment(assignment);
             }}
           >
@@ -101,8 +98,9 @@ export default function Assignments() {
           </button>
           <button 
             className="action-btn delete-btn"
-            onClick={() => {
-              removeSwipeState(assignment.id);
+            onClick={(e) => {
+              e.stopPropagation();
+              removeTappedState(assignment.id);
               deleteAssignment(assignment.id)
                 .catch(error => console.error('과제 삭제 실패:', error));
             }}
