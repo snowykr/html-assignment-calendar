@@ -23,6 +23,7 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
   } = useApp();
   const t = useTranslations('assignmentStatus');
   const tNoAssignments = useTranslations('noAssignments');
+  const tCommon = useTranslations('common');
   const locale = useLocale();
   
   const [assignmentsForDate, setAssignmentsForDate] = useState<Assignment[]>([]);
@@ -95,7 +96,7 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
               onClose();
             }}
           >
-            ✏️
+            {tCommon('edit')}
           </button>
           <button 
             className="action-btn delete-btn"
@@ -109,7 +110,7 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
               }
             }}
           >
-            🗑️
+            {tCommon('delete')}
           </button>
         </div>
       </div>

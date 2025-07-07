@@ -18,6 +18,7 @@ export default function Assignments() {
   } = useApp();
   const t = useTranslations('assignmentStatus');
   const tNoAssignments = useTranslations('noAssignments');
+  const tCommon = useTranslations('common');
   
 
 
@@ -94,7 +95,7 @@ export default function Assignments() {
               editAssignment(assignment);
             }}
           >
-            ✏️
+            {tCommon('edit')}
           </button>
           <button 
             className="action-btn delete-btn"
@@ -105,7 +106,7 @@ export default function Assignments() {
                 .catch(error => console.error('과제 삭제 실패:', error));
             }}
           >
-            🗑️
+            {tCommon('delete')}
           </button>
         </div>
       </div>
