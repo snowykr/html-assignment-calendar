@@ -7,9 +7,10 @@ import { adjustCalendarTitleFontSize } from '@/utils/utils';
 
 interface CalendarProps {
   onDayClick: (dateStr: string) => void;
+  weeksToShow?: number;
 }
 
-export default function Calendar({ onDayClick }: CalendarProps) {
+export default function Calendar({ onDayClick, weeksToShow = 2 }: CalendarProps) {
   const { viewStartDate, navigateWeek, referenceToday, assignmentsData, filters } = useApp();
   const titleRef = useRef<HTMLSpanElement>(null);
   const t = useTranslations('calendar');
@@ -32,7 +33,7 @@ export default function Calendar({ onDayClick }: CalendarProps) {
   
   const startDate = new Date(viewStartDate);
   const endDateForTitle = new Date(startDate);
-  endDateForTitle.setDate(startDate.getDate() + 13);
+  endDateForTitle.setDate(startDate.getDate() + (weeksToShow * 7 - 1));
 
   const formatDateRange = (start: Date, end: Date) => {
     const startStr = t('dateFormat', {
@@ -54,7 +55,7 @@ export default function Calendar({ onDayClick }: CalendarProps) {
   todayForHighlight.setHours(0, 0, 0, 0);
 
   const days = [];
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < weeksToShow * 7; i++) {
     const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + i);
     currentDate.setHours(0, 0, 0, 0);
@@ -81,7 +82,7 @@ export default function Calendar({ onDayClick }: CalendarProps) {
   }
 
   return (
-    <div className="calendar-section">
+    <div className="calendar-section lg:min-w-[350px]">
       <div className="calendar-header">
         <button onClick={() => navigateWeek(-1)}>&#9664;</button>
         <span ref={titleRef} className="calendar-title">{titleText}</span>

@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { AppProvider } from '@/contexts/AppContext';
 import BottomTabs from '@/components/BottomTabs';
+import TopNav from '@/components/TopNav';
 import GlobalModals from '@/components/GlobalModals';
 import { routing } from '@/routing';
 import '../globals.css';
@@ -74,9 +75,12 @@ export default async function LocaleLayout({
       <body>
         <NextIntlClientProvider messages={messages} locale={actualLocale}>
           <AppProvider>
-            <div className="app-container">
-              <div className="main-content-area">
-                {children}
+            <div className="app-container min-h-screen flex flex-col">
+              <TopNav />
+              <div className="flex-1 flex flex-col lg:max-w-7xl lg:mx-auto lg:w-full">
+                <div className="main-content-area flex-1 lg:px-8 xl:px-12 2xl:px-16">
+                  {children}
+                </div>
               </div>
               <BottomTabs />
             </div>

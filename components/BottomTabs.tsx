@@ -14,7 +14,7 @@ export default function BottomTabs() {
   ];
 
   return (
-    <div className="bottom-tabs">
+    <div className="bottom-tabs lg:hidden">
       {tabs.map((tab) => (
         <Link
           key={tab.href}

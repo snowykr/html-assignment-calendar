@@ -57,6 +57,7 @@ interface AppContextType {
   isEditModalOpen: boolean;
   setIsEditModalOpen: (isOpen: boolean) => void;
   setCurrentEditingAssignment: (assignment: Assignment | undefined) => void;
+  isDesktop: boolean;
   
   // Filters
   filters: Filters;
@@ -96,8 +97,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [currentEditingAssignment, setCurrentEditingAssignment] = useState<Assignment | undefined>();
   const [subjectsPagination, setSubjectsPagination] = useState<SubjectsPagination>({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+
+  // Check desktop mode
+  useEffect(() => {
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    
+    checkIsDesktop();
+    window.addEventListener('resize', checkIsDesktop);
+    
+    return () => window.removeEventListener('resize', checkIsDesktop);
+  }, []);
 
   // Initialize app
   useEffect(() => {
@@ -144,7 +158,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const navigateWeek = (direction: number) => {
     const newDate = new Date(viewStartDate);
-    newDate.setDate(newDate.getDate() + (7 * direction));
+    const weeksToMove = isDesktop ? 4 : 1;
+    newDate.setDate(newDate.getDate() + (7 * weeksToMove * direction));
     setViewStartDate(newDate);
   };
 
@@ -309,6 +324,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     isEditModalOpen,
     setIsEditModalOpen,
     setCurrentEditingAssignment,
+    isDesktop,
     filters,
     navigateWeek,
     toggleFilter,

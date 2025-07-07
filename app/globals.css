@@ -874,3 +874,78 @@ body {
         width: 100%;
     }
 }
+
+/* Desktop-specific styles */
+@media (min-width: 1024px) {
+    /* Calendar adjustments for desktop */
+    .calendar-day {
+        font-size: 16px;
+    }
+    
+    .day-number {
+        font-size: 16px;
+    }
+    
+    .calendar-title {
+        font-size: 20px;
+    }
+    
+    /* Assignment box adjustments for desktop */
+    .assignment-box {
+        padding: 18px;
+    }
+    
+    .course-name {
+        font-size: 15px;
+    }
+    
+    .assignment-title {
+        font-size: 14px;
+    }
+    
+    /* Filter section adjustments */
+    .filter-section {
+        margin-bottom: 20px;
+    }
+    
+    /* Remove bottom padding since no bottom tabs on desktop */
+    .content {
+        padding-bottom: 40px;
+    }
+    
+    /* Calendar section sticky positioning adjustment */
+    .calendar-section {
+        top: 10px;
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    /* Card-style design for assignments list */
+    .assignments-list {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    /* Responsive padding for main content area */
+    .main-content-area {
+        padding: 0 2rem; /* 32px */
+    }
+}
+
+/* Large desktop screens */
+@media (min-width: 1280px) {
+    .main-content-area {
+        padding: 0 3rem; /* 48px */
+    }
+}
+
+/* Extra large desktop screens */
+@media (min-width: 1536px) {
+    .main-content-area {
+        padding: 0 4rem; /* 64px */
+    }
+}

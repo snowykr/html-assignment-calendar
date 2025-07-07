@@ -14,7 +14,8 @@ export default function Assignments() {
     viewStartDate,
     toggleAssignmentCompletion,
     deleteAssignment,
-    editAssignment
+    editAssignment,
+    isDesktop
   } = useApp();
   const t = useTranslations('assignmentStatus');
   const tNoAssignments = useTranslations('noAssignments');
@@ -28,7 +29,7 @@ export default function Assignments() {
     ...filters,
     dateRange: {
       start: viewStartDate,
-      days: 14
+      days: isDesktop ? 28 : 14
     },
     hideOverdue: filters.hideOverdueCalendar
   };
