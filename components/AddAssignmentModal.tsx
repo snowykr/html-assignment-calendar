@@ -62,7 +62,7 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
         platform: formData.platform as 'teams' | 'openlms'
       });
       onClose();
-    } catch (error) {
+    } catch (_error) {
       // Error is already handled in context
     } finally {
       setIsSubmitting(false);

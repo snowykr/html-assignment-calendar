@@ -1,6 +1,6 @@
 # Assignment Calendar Next.js Application
 
-A mobile-friendly assignment management calendar web application built with Next.js 14, TypeScript, and Supabase for managing coursework data efficiently.
+A mobile-friendly assignment management calendar web application built with Next.js 15, TypeScript, and Supabase for managing coursework data efficiently.
 
 ## ✨ Features
 
@@ -20,7 +20,7 @@ A mobile-friendly assignment management calendar web application built with Next
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
 - **Styling**: TailwindCSS
 - **Database**: Supabase PostgreSQL

@@ -1,13 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { getAssignmentStatus, filterAssignments, sortAssignmentsByDueDate } from '@/utils/utils';
+import { useSwipeGestures } from '@/hooks/useSwipeGestures';
 import type { Assignment } from '@/utils/utils';
-
-interface SwipedState {
-  [key: number]: boolean;
-}
 
 export default function Assignments() {
   const { 
@@ -20,48 +16,8 @@ export default function Assignments() {
     editAssignment
   } = useApp();
   
-  const [swipedItems, setSwipedItems] = useState<SwipedState>({});
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  const minSwipeDistance = 50;
 
-  // Clean up swipedItems for assignments that no longer exist
-  useEffect(() => {
-    const validIds = new Set(assignmentsData.map(a => a.id));
-    setSwipedItems(prev => {
-      const newState = { ...prev };
-      Object.keys(newState).forEach(id => {
-        const numericId = Number(id);
-        if (!validIds.has(numericId)) {
-          delete newState[numericId];
-        }
-      });
-      return Object.keys(newState).length !== Object.keys(prev).length ? newState : prev;
-    });
-  }, [assignmentsData]);
-
-  const handleTouchStart = (e: React.TouchEvent, assignmentId: number) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = (assignmentId: number) => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      setSwipedItems(prev => ({ ...prev, [assignmentId]: true }));
-    } else if (isRightSwipe) {
-      setSwipedItems(prev => ({ ...prev, [assignmentId]: false }));
-    }
-  };
 
   // Date range filter for calendar view
   const dateRangeFilter = {
@@ -80,6 +36,15 @@ export default function Assignments() {
   );
 
   const sortedAssignments = sortAssignmentsByDueDate(filteredAssignments);
+  
+  const {
+    swipedItems,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    resetSwipe,
+    removeSwipeState
+  } = useSwipeGestures(sortedAssignments);
 
   const renderAssignmentBox = (assignment: Assignment) => {
     const { statusClass, statusText } = getAssignmentStatus(assignment, referenceToday);
@@ -101,8 +66,9 @@ export default function Assignments() {
             className="completion-toggle"
             onClick={(e) => {
               e.stopPropagation();
-              setSwipedItems(prev => ({ ...prev, [assignment.id]: false }));
-              toggleAssignmentCompletion(assignment.id, !assignment.completed);
+              resetSwipe(assignment.id);
+              toggleAssignmentCompletion(assignment.id, !assignment.completed)
+                .catch(error => console.error('완료 상태 변경 실패:', error));
             }}
           >
             {isCompleted ? '✓' : '○'}
@@ -124,7 +90,7 @@ export default function Assignments() {
           <button 
             className="action-btn edit-btn"
             onClick={() => {
-              setSwipedItems(prev => ({ ...prev, [assignment.id]: false }));
+              resetSwipe(assignment.id);
               editAssignment(assignment);
             }}
           >
@@ -133,12 +99,9 @@ export default function Assignments() {
           <button 
             className="action-btn delete-btn"
             onClick={() => {
-              setSwipedItems(prev => {
-                const newState = { ...prev };
-                delete newState[assignment.id];
-                return newState;
-              });
-              deleteAssignment(assignment.id);
+              removeSwipeState(assignment.id);
+              deleteAssignment(assignment.id)
+                .catch(error => console.error('과제 삭제 실패:', error));
             }}
           >
             🗑️

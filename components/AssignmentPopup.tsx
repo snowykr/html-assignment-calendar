@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { getAssignmentStatus, formatDateForDisplay, isAssignmentOverdue } from '@/utils/utils';
+import { getAssignmentStatus, formatDateForDisplay } from '@/utils/utils';
+import { useSwipeGestures } from '@/hooks/useSwipeGestures';
 import type { Assignment } from '@/utils/utils';
 
 interface AssignmentPopupProps {
@@ -20,6 +21,14 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
   } = useApp();
   
   const [assignmentsForDate, setAssignmentsForDate] = useState<Assignment[]>([]);
+  const {
+    swipedItems,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    resetSwipe,
+    removeSwipeState
+  } = useSwipeGestures(assignmentsForDate);
 
   useEffect(() => {
     if (date) {
@@ -28,6 +37,8 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
     }
   }, [date, assignmentsData]);
 
+
+
   if (!date) return null;
 
   const dateDisplay = formatDateForDisplay(date);
@@ -35,54 +46,66 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
   const renderAssignmentItem = (assignment: Assignment) => {
     const { statusClass, statusText } = getAssignmentStatus(assignment, referenceToday);
     const isCompleted = assignment.completed;
+    const isSwiped = swipedItems[assignment.id] || false;
 
     return (
       <div 
-        key={assignment.id}
-        className={`assignment-box ${assignment.platform} ${isCompleted ? 'completed' : ''}`}
+        key={assignment.id} 
+        className={`assignment-container ${isSwiped ? 'swiped' : ''}`}
       >
         <div 
-          className="completion-toggle"
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleAssignmentCompletion(assignment.id, !assignment.completed);
-          }}
+          className={`assignment-box ${assignment.platform} ${isCompleted ? 'completed' : ''}`}
+          onTouchStart={(e) => handleTouchStart(e, assignment.id)}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => handleTouchEnd(assignment.id)}
         >
-          {isCompleted ? '✓' : '○'}
+          <div 
+            className="completion-toggle"
+            onClick={(e) => {
+              e.stopPropagation();
+              resetSwipe(assignment.id);
+              toggleAssignmentCompletion(assignment.id, !assignment.completed)
+                .catch(error => console.error('완료 상태 변경 실패:', error));
+            }}
+          >
+            {isCompleted ? '✓' : '○'}
+          </div>
+          
+          <div className="assignment-header">
+            <div className="course-name">{assignment.courseName}</div>
+          </div>
+          
+          <div className="assignment-round">{assignment.round}</div>
+          <div className="assignment-title">{assignment.title}</div>
+          
+          <div className={`deadline ${statusClass}`}>
+            {assignment.dueTime}{statusText}
+          </div>
         </div>
         
-        <div className="assignment-header">
-          <div className="course-name">{assignment.courseName}</div>
-        </div>
-        
-        <div className="assignment-round">{assignment.round}</div>
-        <div className="assignment-title">{assignment.title}</div>
-        
-        <div className={`deadline ${statusClass}`}>
-          {assignment.dueTime}{statusText}
-        </div>
-
-        <div className="assignment-actions" style={{ marginTop: '10px' }}>
+        <div className="assignment-actions">
           <button 
             className="action-btn edit-btn"
             onClick={() => {
+              resetSwipe(assignment.id);
               editAssignment(assignment);
               onClose();
             }}
-            style={{ marginRight: '8px' }}
           >
-            編集
+            ✏️
           </button>
           <button 
             className="action-btn delete-btn"
             onClick={() => {
-              deleteAssignment(assignment.id);
+              removeSwipeState(assignment.id);
+              deleteAssignment(assignment.id)
+                .catch(error => console.error('과제 삭제 실패:', error));
               if (assignmentsForDate.length === 1) {
                 onClose();
               }
             }}
           >
-            削除
+            🗑️
           </button>
         </div>
       </div>

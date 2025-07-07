@@ -5,7 +5,7 @@ import AddAssignmentModal from './AddAssignmentModal';
 import FloatingAddButton from './FloatingAddButton';
 
 export default function GlobalModals() {
-  const { isEditModalOpen, setIsEditModalOpen, currentEditingAssignment, setCurrentEditingAssignment } = useApp();
+  const { isEditModalOpen, setIsEditModalOpen, setCurrentEditingAssignment } = useApp();
 
   const handleModalClose = () => {
     setIsEditModalOpen(false);

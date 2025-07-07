@@ -1,5 +1,6 @@
 // Supabase client initialization and management
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { loadSupabaseConfig, getCachedConfig, setCachedConfig } from '../config/supabase-config';
 
 // Supabase client instance
@@ -61,8 +62,3 @@ export function getSupabaseClient(): SupabaseClient | null {
   return supabase;
 }
 
-// Reset Supabase client (for configuration updates)
-export function resetSupabaseClient() {
-    supabase = null;
-    initPromise = null;
-}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { getAssignmentStatus, formatDateForDisplay } from '@/utils/utils';
 import type { Assignment } from '@/utils/utils';

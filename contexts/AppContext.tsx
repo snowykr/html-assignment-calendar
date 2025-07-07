@@ -9,6 +9,7 @@ import {
   updateAssignment as updateAssignmentService,
   deleteAssignment as deleteAssignmentService
 } from '@/services/assignment-service';
+import { handleError, logError, showUserError, AppError } from '@/utils/error-handler';
 import { initSubjectPagination } from '@/utils/pagination';
 
 interface Assignment {
@@ -115,7 +116,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     };
     
-    init();
+    init()
+      .catch(error => console.error('앱 초기화 실패:', error));
   }, []);
   
   // Update pagination when assignments data changes
@@ -155,7 +157,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setAssignmentsData(data);
       setIsLoading(false);
     } catch (error) {
-      console.error('Failed to reload assignments:', error);
+      const appError = handleError(error, { operation: 'reloadAssignments' });
+      logError(appError);
+      showUserError(appError, showTemporaryMessage);
       setIsLoading(false);
     }
   };
@@ -168,8 +172,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
         prev.map(a => a.id === assignmentId ? updatedAssignment : a)
       );
     } catch (error) {
-      console.error('❌ Failed to toggle assignment completion:', error);
-      alert('과제 완료 상태를 변경하는데 실패했습니다.');
+      if (error instanceof Object && 'userMessage' in error) {
+        showUserError(error as AppError, showTemporaryMessage);
+      } else {
+        const appError = handleError(error, { 
+          operation: 'toggleAssignmentCompletion',
+          assignmentId,
+          additionalInfo: { completed }
+        });
+        logError(appError);
+        showUserError(appError, showTemporaryMessage);
+      }
     }
   };
 
@@ -189,8 +202,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setAssignmentsData(prev => prev.filter(a => a.id !== assignmentId));
         showTemporaryMessage('과제를 삭제했습니다');
       } catch (error) {
-        console.error('Failed to delete assignment:', error);
-        alert('과제 삭제에 실패했습니다: ' + ((error as Error).message || '알 수 없는 오류'));
+        if (error instanceof Object && 'userMessage' in error) {
+          showUserError(error as AppError, showTemporaryMessage);
+        } else {
+          const appError = handleError(error, { 
+            operation: 'deleteAssignment',
+            assignmentId
+          });
+          logError(appError);
+          showUserError(appError, showTemporaryMessage);
+        }
       }
     }
   };
@@ -228,9 +249,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCurrentEditingAssignment(undefined);
       setIsEditModalOpen(false);
     } catch (error) {
-      console.error('Failed to save assignment:', error);
-      const userMessage = isEditing ? '과제 수정에 실패했습니다' : '과제 추가에 실패했습니다';
-      alert(userMessage);
+      if (error instanceof Object && 'userMessage' in error) {
+        showUserError(error as AppError, showTemporaryMessage);
+      } else {
+        const operation = isEditing ? 'updateAssignment' : 'addAssignment';
+        const appError = handleError(error, { 
+          operation,
+          additionalInfo: { isEditing, assignmentData }
+        });
+        logError(appError);
+        showUserError(appError, showTemporaryMessage);
+      }
     }
   };
 

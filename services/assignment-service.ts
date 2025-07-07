@@ -1,8 +1,9 @@
 // Assignment CRUD operations service
-import { initSupabase, getSupabaseClient } from './supabase-client';
 import { transformDbToJs, transformJsToDbForInsert, transformJsToDbForUpdate } from '../utils/data-transformer';
+import { handleError, logError, ErrorContext } from '../utils/error-handler';
 import { retryOperation } from '../utils/retry-utils';
 import type { Assignment } from '../utils/utils';
+import { initSupabase, getSupabaseClient } from './supabase-client';
 
 // Database assignment type
 interface DbAssignment {
@@ -50,34 +51,12 @@ export async function getAllAssignments(): Promise<Assignment[]> {
   try {
     return await retryOperation(fetchOperation, 3, 1000);
   } catch (error) {
-    console.error('❌ Failed to fetch assignments:', (error as Error).message || 'Unknown error');
-    throw error;
+    const appError = handleError(error, { operation: 'getAllAssignments' });
+    logError(appError);
+    throw appError;
   }
 }
 
-// Get assignments by date
-export async function getAssignmentsByDate(date: string): Promise<Assignment[]> {
-  const supabase = await ensureSupabaseClient();
-  
-  if (!supabase) {
-    throw new Error('Supabase client not initialized');
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from('assignments')
-      .select('*')
-      .eq('due_date', date)
-      .order('due_time', { ascending: true });
-
-    if (error) throw error;
-
-    return data.map((item: DbAssignment) => transformDbToJs(item));
-  } catch (error) {
-    console.error('Error fetching assignments by date:', error);
-    throw error;
-  }
-}
 
 // Update assignment completion status
 export async function updateAssignmentCompletion(id: number, completed: boolean): Promise<Assignment> {
@@ -99,8 +78,13 @@ export async function updateAssignmentCompletion(id: number, completed: boolean)
 
     return transformDbToJs(data);
   } catch (error) {
-    console.error('Error updating assignment completion:', error);
-    throw error;
+    const appError = handleError(error, { 
+      operation: 'updateAssignmentCompletion', 
+      assignmentId: id,
+      additionalInfo: { completed }
+    });
+    logError(appError);
+    throw appError;
   }
 }
 
@@ -122,19 +106,16 @@ export async function addAssignment(assignment: Omit<Assignment, 'id'>): Promise
       .select()
       .single();
     
-    if (error) {
-      // Handle specific database constraint errors
-      if (error.code === '23505') {
-        console.error('Primary key conflict detected:', error);
-        throw new Error('ID conflict has occurred in the database. Please contact the administrator.');
-      }
-      throw error;
-    }
+    if (error) throw error;
     
     return transformDbToJs(data);
   } catch (error) {
-    console.error('Error adding assignment:', error);
-    throw error;
+    const appError = handleError(error, { 
+      operation: 'addAssignment',
+      additionalInfo: { courseName: assignment.courseName, title: assignment.title }
+    });
+    logError(appError);
+    throw appError;
   }
 }
 
@@ -160,8 +141,13 @@ export async function updateAssignment(id: number, assignment: Partial<Assignmen
 
     return transformDbToJs(data);
   } catch (error) {
-    console.error('Error updating assignment:', error);
-    throw error;
+    const appError = handleError(error, { 
+      operation: 'updateAssignment',
+      assignmentId: id,
+      additionalInfo: { updatedFields: Object.keys(assignment) }
+    });
+    logError(appError);
+    throw appError;
   }
 }
 
@@ -183,7 +169,11 @@ export async function deleteAssignment(id: number): Promise<boolean> {
 
     return true;
   } catch (error) {
-    console.error('Error deleting assignment:', error);
-    throw error;
+    const appError = handleError(error, { 
+      operation: 'deleteAssignment',
+      assignmentId: id
+    });
+    logError(appError);
+    throw appError;
   }
 }

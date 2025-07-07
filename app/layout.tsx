@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { AppProvider } from '@/contexts/AppContext';
 import BottomTabs from '@/components/BottomTabs';
 import GlobalModals from '@/components/GlobalModals';
@@ -7,8 +7,6 @@ import './globals.css';
 export const metadata: Metadata = {
   title: '課題管理アプリ',
   description: '과제 관리 캘린더 애플리케이션',
-  viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no',
-  themeColor: '#f2f2f7',
   manifest: '/manifest.json',
   icons: {
     icon: [
@@ -21,6 +19,14 @@ export const metadata: Metadata = {
     'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default'
   }
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1.0,
+  maximumScale: 1.0,
+  userScalable: false,
+  themeColor: '#f2f2f7'
 };
 
 export default function RootLayout({

@@ -57,12 +57,6 @@ export function formatDateForDisplay(dateStr: string): string {
   });
 }
 
-// Check if assignment is overdue
-export function isAssignmentOverdue(assignment: Assignment, referenceToday: Date): boolean {
-  if (assignment.completed) return false;
-  const dueDateObj = new Date(assignment.dueDate + "T" + assignment.dueTime);
-  return dueDateObj < referenceToday;
-}
 
 // Sort assignments by due date
 export function sortAssignmentsByDueDate(assignments: Assignment[], completedLast = true): Assignment[] {

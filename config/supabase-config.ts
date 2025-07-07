@@ -39,16 +39,6 @@ function validateConfig(config: SupabaseConfig): void {
   }
 }
 
-// Manual configuration setter (for development/testing)
-export function setSupabaseConfig(url: string, anonKey: string): SupabaseConfig {
-  supabaseConfig = { url, anonKey };
-
-  // Also store in localStorage
-  localStorage.setItem('SUPABASE_URL', url);
-  localStorage.setItem('SUPABASE_ANON_KEY', anonKey);
-
-  return supabaseConfig;
-}
 
 // Get cached config
 export function getCachedConfig(): SupabaseConfig | null {
