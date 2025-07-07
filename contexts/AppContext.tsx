@@ -12,6 +12,7 @@ import {
 } from '@/services/assignment-service';
 import { handleError, logError, showUserError, AppError } from '@/utils/error-handler';
 import { initSubjectPagination } from '@/utils/pagination';
+import { loadFiltersFromStorage, saveFiltersToStorage, DEFAULT_FILTERS } from '@/utils/filter-storage';
 
 interface Assignment {
   id: number;
@@ -96,11 +97,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [subjectsPagination, setSubjectsPagination] = useState<SubjectsPagination>({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   
-  const [filters, setFilters] = useState<Filters>({
-    unsubmittedOnly: false,
-    hideOverdueCalendar: true,
-    hideOverdueSubjects: true
-  });
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
 
   // Initialize app
   useEffect(() => {
@@ -121,12 +118,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     
     init()
       .catch(error => console.error(t('initializationFailed'), error));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   // Update pagination when assignments data changes
   useEffect(() => {
     setSubjectsPagination(initSubjectPagination(assignmentsData, 3));
   }, [assignmentsData]);
+
+  // Load saved filters from localStorage on client side
+  useEffect(() => {
+    const savedFilters = loadFiltersFromStorage();
+    setFilters(savedFilters);
+  }, []);
 
   const loadDataFromSupabase = async () => {
     setLoadingMessage(t('connectingDB'));
@@ -145,10 +149,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const toggleFilter = (filterName: keyof Filters) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterName]: !prev[filterName]
-    }));
+    setFilters(prev => {
+      const newFilters = {
+        ...prev,
+        [filterName]: !prev[filterName]
+      };
+      saveFiltersToStorage(newFilters);
+      return newFilters;
+    });
   };
 
   const reloadAssignments = async () => {
