@@ -19,30 +19,34 @@ export interface AssignmentStatus {
 }
 
 // Assignment status calculation
-export function getAssignmentStatus(assignment: Assignment, referenceToday: Date): AssignmentStatus {
+export function getAssignmentStatus(
+  assignment: Assignment, 
+  referenceToday: Date,
+  t?: (key: string, params?: any) => string
+): AssignmentStatus {
   const dueDateObj = new Date(assignment.dueDate + "T" + assignment.dueTime);
-  let statusClass: AssignmentStatus['statusClass'] = 'normal';
-  let statusText = '';
+  let statusClass: AssignmentStatus['statusClass'];
+  let statusText: string;
   
   if (assignment.completed) {
     statusClass = 'completed';
-    statusText = ' (提出完了)';
+    statusText = t ? t('completed') : ' (提出完了)';
   } else {
     const diffTime = dueDateObj.getTime() - referenceToday.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (dueDateObj < referenceToday) {
       statusClass = 'overdue';
-      statusText = ' (期限切れ)';
+      statusText = t ? t('overdue') : ' (期限切れ)';
     } else if (dueDateObj.toDateString() === referenceToday.toDateString()) {
       statusClass = 'due-soon';
-      statusText = ' (今日締切)';
+      statusText = t ? t('dueToday') : ' (今日締切)';
     } else if (diffDays <= 3) {
       statusClass = 'due-soon';
-      statusText = ` (${diffDays}日後)`;
+      statusText = t ? t('daysLeft', { days: diffDays }) : ` (${diffDays}日後)`;
     } else {
       statusClass = 'normal';
-      statusText = ` (${diffDays}日後)`;
+      statusText = t ? t('daysLeft', { days: diffDays }) : ` (${diffDays}日後)`;
     }
   }
   
@@ -50,8 +54,8 @@ export function getAssignmentStatus(assignment: Assignment, referenceToday: Date
 }
 
 // Format date for display
-export function formatDateForDisplay(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('ja-JP', { 
+export function formatDateForDisplay(dateStr: string, locale: string = 'ja-JP'): string {
+  return new Date(dateStr).toLocaleDateString(locale, { 
     month: 'long', 
     day: 'numeric' 
   });
@@ -139,4 +143,13 @@ export function adjustCalendarTitleFontSize(titleElement: HTMLElement): void {
     fontSize -= 1;
     titleElement.style.fontSize = fontSize + 'px';
   }
+}
+
+// Get cookie value by name
+export function getCookie(name: string): string | null {
+  if (typeof window === 'undefined') return null;
+  
+  const cookies = document.cookie.split(';');
+  const cookie = cookies.find(c => c.trim().startsWith(name + '='));
+  return cookie ? cookie.split('=')[1] : null;
 }

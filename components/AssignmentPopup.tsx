@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations, useFormatter, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
-import { getAssignmentStatus, formatDateForDisplay } from '@/utils/utils';
+import { getAssignmentStatus } from '@/utils/utils';
 import { useSwipeGestures } from '@/hooks/useSwipeGestures';
 import type { Assignment } from '@/utils/utils';
 
@@ -10,6 +11,16 @@ interface AssignmentPopupProps {
   date: string | null;
   onClose: () => void;
 }
+
+// Convert short locale codes to full locale codes for better Intl API support
+const getFullLocale = (locale: string): string => {
+  const localeMap: { [key: string]: string } = {
+    'ko': 'ko-KR',
+    'en': 'en-US', 
+    'ja': 'ja-JP'
+  };
+  return localeMap[locale] || 'en-US';
+};
 
 export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps) {
   const { 
@@ -19,6 +30,10 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
     deleteAssignment,
     editAssignment
   } = useApp();
+  const t = useTranslations('assignmentStatus');
+  const tNoAssignments = useTranslations('noAssignments');
+  const format = useFormatter();
+  const locale = useLocale();
   
   const [assignmentsForDate, setAssignmentsForDate] = useState<Assignment[]>([]);
   const {
@@ -41,10 +56,11 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
 
   if (!date) return null;
 
-  const dateDisplay = formatDateForDisplay(date);
+  const fullLocale = getFullLocale(locale);
+  const dateDisplay = new Intl.DateTimeFormat(fullLocale, { month: 'long', day: 'numeric' }).format(new Date(date));
 
   const renderAssignmentItem = (assignment: Assignment) => {
-    const { statusClass, statusText } = getAssignmentStatus(assignment, referenceToday);
+    const { statusClass, statusText } = getAssignmentStatus(assignment, referenceToday, t);
     const isCompleted = assignment.completed;
     const isSwiped = swipedItems[assignment.id] || false;
 
@@ -124,7 +140,7 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
             assignmentsForDate.map(assignment => renderAssignmentItem(assignment))
           ) : (
             <div className="no-assignments-popup">
-              この日の課題はありません
+              {tNoAssignments('onThisDay')}
             </div>
           )}
         </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import { initSupabase } from '@/services/supabase-client';
 import { 
   getAllAssignments, 
@@ -75,6 +76,8 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const t = useTranslations('messages');
+  const tErrors = useTranslations('errors');
   const [referenceToday] = useState(new Date());
   const [viewStartDate, setViewStartDate] = useState(() => {
     const today = new Date(referenceToday);
@@ -87,7 +90,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   
   const [assignmentsData, setAssignmentsData] = useState<Assignment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState('데이터를 불러오는 중...');
+  const [loadingMessage, setLoadingMessage] = useState(t('loadingData'));
   const [currentPopupDate, setCurrentPopupDate] = useState<string | null>(null);
   const [currentEditingAssignment, setCurrentEditingAssignment] = useState<Assignment | undefined>();
   const [subjectsPagination, setSubjectsPagination] = useState<SubjectsPagination>({});
@@ -104,7 +107,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const init = async () => {
       try {
         setIsLoading(true);
-        setLoadingMessage('앱을 초기화하는 중...');
+        setLoadingMessage(t('initializingApp'));
         
         // Load data from Supabase
         await loadDataFromSupabase();
@@ -117,7 +120,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
     
     init()
-      .catch(error => console.error('앱 초기화 실패:', error));
+      .catch(error => console.error(t('initializationFailed'), error));
   }, []);
   
   // Update pagination when assignments data changes
@@ -126,10 +129,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [assignmentsData]);
 
   const loadDataFromSupabase = async () => {
-    setLoadingMessage('Supabase에 연결하는 중...');
+    setLoadingMessage(t('connectingDB'));
     await initSupabase();
     
-    setLoadingMessage('데이터를 가져오는 중...');
+    setLoadingMessage(t('fetchingData'));
     const data = await getAllAssignments();
     setAssignmentsData(data);
     setIsLoading(false);
@@ -151,13 +154,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const reloadAssignments = async () => {
     try {
       setIsLoading(true);
-      setLoadingMessage('데이터를 새로고침하는 중...');
+      setLoadingMessage(t('refreshingData'));
       
       const data = await getAllAssignments();
       setAssignmentsData(data);
       setIsLoading(false);
     } catch (error) {
-      const appError = handleError(error, { operation: 'reloadAssignments' });
+      const appError = handleError(error, { operation: 'reloadAssignments' }, tErrors);
       logError(appError);
       showUserError(appError, showTemporaryMessage);
       setIsLoading(false);
@@ -179,7 +182,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           operation: 'toggleAssignmentCompletion',
           assignmentId,
           additionalInfo: { completed }
-        });
+        }, tErrors);
         logError(appError);
         showUserError(appError, showTemporaryMessage);
       }
@@ -193,14 +196,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const confirmMessage = `'${assignment.courseName} - ${assignment.title}' 과제를 삭제하시겠습니까?`;
+    const confirmMessage = t('confirmDelete', { title: `${assignment.courseName} - ${assignment.title}` });
     
     if (confirm(confirmMessage)) {
       try {
         await deleteAssignmentService(assignmentId);
         
         setAssignmentsData(prev => prev.filter(a => a.id !== assignmentId));
-        showTemporaryMessage('과제를 삭제했습니다');
+        showTemporaryMessage(t('assignmentDeleted'));
       } catch (error) {
         if (error instanceof Object && 'userMessage' in error) {
           showUserError(error as AppError, showTemporaryMessage);
@@ -208,7 +211,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           const appError = handleError(error, { 
             operation: 'deleteAssignment',
             assignmentId
-          });
+          }, tErrors);
           logError(appError);
           showUserError(appError, showTemporaryMessage);
         }
@@ -235,7 +238,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           prev.map(a => a.id === currentEditingAssignment.id ? updatedAssignment : a)
         );
         
-        showTemporaryMessage('과제를 수정했습니다');
+        showTemporaryMessage(t('assignmentUpdated'));
       } else {
         const newAssignment = await addAssignmentService({
           ...assignmentData,
@@ -243,7 +246,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         } as Assignment);
         
         setAssignmentsData(prev => [...prev, newAssignment]);
-        showTemporaryMessage('과제를 추가했습니다');
+        showTemporaryMessage(t('assignmentAdded'));
       }
       
       setCurrentEditingAssignment(undefined);
@@ -256,7 +259,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const appError = handleError(error, { 
           operation,
           additionalInfo: { isEditing, assignmentData }
-        });
+        }, tErrors);
         logError(appError);
         showUserError(appError, showTemporaryMessage);
       }

@@ -48,7 +48,7 @@ export function logError(error: AppError): void {
   });
 }
 
-export function handleDatabaseError(error: unknown, context: ErrorContext): AppError {
+export function handleDatabaseError(error: unknown, context: ErrorContext, t?: (key: string) => string): AppError {
   const err = error as any;
   
   // Supabase specific error codes
@@ -56,7 +56,7 @@ export function handleDatabaseError(error: unknown, context: ErrorContext): AppE
     return createAppError(
       ErrorType.DATABASE,
       'Primary key conflict detected',
-      'ID 충돌이 발생했습니다. 관리자에게 문의하세요.',
+      t ? t('conflictError') : 'ID 충돌이 발생했습니다. 관리자에게 문의하세요.',
       context,
       err
     );
@@ -66,7 +66,7 @@ export function handleDatabaseError(error: unknown, context: ErrorContext): AppE
     return createAppError(
       ErrorType.DATABASE,
       'Record not found',
-      '요청한 데이터를 찾을 수 없습니다.',
+      t ? t('notFoundError') : '요청한 데이터를 찾을 수 없습니다.',
       context,
       err
     );
@@ -77,7 +77,7 @@ export function handleDatabaseError(error: unknown, context: ErrorContext): AppE
     return createAppError(
       ErrorType.NETWORK,
       'Network connection failed',
-      '네트워크 연결에 실패했습니다. 인터넷 연결을 확인해주세요.',
+      t ? t('networkError') : '네트워크 연결에 실패했습니다. 인터넷 연결을 확인해주세요.',
       context,
       err
     );
@@ -87,21 +87,21 @@ export function handleDatabaseError(error: unknown, context: ErrorContext): AppE
   return createAppError(
     ErrorType.DATABASE,
     err?.message || 'Database operation failed',
-    '데이터베이스 작업에 실패했습니다. 잠시 후 다시 시도해주세요.',
+    t ? t('databaseError') : '데이터베이스 작업에 실패했습니다. 잠시 후 다시 시도해주세요.',
     context,
     err
   );
 }
 
-export function handleError(error: unknown, context: ErrorContext): AppError {
+export function handleError(error: unknown, context: ErrorContext, t?: (key: string) => string): AppError {
   if (error instanceof Error) {
-    return handleDatabaseError(error, context);
+    return handleDatabaseError(error, context, t);
   }
   
   return createAppError(
     ErrorType.UNKNOWN,
     'Unknown error occurred',
-    '알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+    t ? t('unknownError') : '알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
     context
   );
 }

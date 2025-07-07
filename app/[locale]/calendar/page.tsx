@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 import Calendar from '@/components/Calendar';
 import Assignments from '@/components/Assignments';
@@ -9,6 +10,7 @@ import AssignmentPopup from '@/components/AssignmentPopup';
 export default function CalendarPage() {
   const { filters, toggleFilter, isLoading, loadingMessage } = useApp();
   const [popupDate, setPopupDate] = useState<string | null>(null);
+  const t = useTranslations('filters');
 
   const handleDayClick = (dateStr: string) => {
     setPopupDate(dateStr);
@@ -30,7 +32,7 @@ export default function CalendarPage() {
           
           <div className="filter-section">
             <div className="filter-row">
-              <span className="filter-label">提出済み課題を隠す</span>
+              <span className="filter-label">{t('hideCompleted')}</span>
               <div 
                 className={`toggle-switch ${!filters.unsubmittedOnly ? 'off' : ''}`}
                 onClick={() => toggleFilter('unsubmittedOnly')}
@@ -39,7 +41,7 @@ export default function CalendarPage() {
               </div>
             </div>
             <div className="filter-row">
-              <span className="filter-label">期限切れ課題を隠す</span>
+              <span className="filter-label">{t('hideOverdue')}</span>
               <div 
                 className={`toggle-switch ${!filters.hideOverdueCalendar ? 'off' : ''}`}
                 onClick={() => toggleFilter('hideOverdueCalendar')}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 import { adjustCalendarTitleFontSize } from '@/utils/utils';
 
@@ -11,6 +12,7 @@ interface CalendarProps {
 export default function Calendar({ onDayClick }: CalendarProps) {
   const { viewStartDate, navigateWeek, referenceToday, assignmentsData, filters } = useApp();
   const titleRef = useRef<HTMLSpanElement>(null);
+  const t = useTranslations('calendar');
 
   useEffect(() => {
     if (titleRef.current) {
@@ -18,14 +20,35 @@ export default function Calendar({ onDayClick }: CalendarProps) {
     }
   }, [viewStartDate]);
 
-  const dayHeaders = ['日', '月', '火', '水', '木', '金', '土'];
+  const dayHeaders = [
+    t('day0'),
+    t('day1'),
+    t('day2'),
+    t('day3'),
+    t('day4'),
+    t('day5'),
+    t('day6')
+  ];
   
   const startDate = new Date(viewStartDate);
   const endDateForTitle = new Date(startDate);
   endDateForTitle.setDate(startDate.getDate() + 13);
 
-  const titleText = 
-    `${startDate.getFullYear()}年 ${startDate.getMonth() + 1}月 ${startDate.getDate()}日 - ${endDateForTitle.getFullYear()}年 ${endDateForTitle.getMonth() + 1}月 ${endDateForTitle.getDate()}日`;
+  const formatDateRange = (start: Date, end: Date) => {
+    const startStr = t('dateFormat', {
+      year: start.getFullYear(),
+      month: start.getMonth() + 1,
+      day: start.getDate()
+    });
+    const endStr = t('dateFormat', {
+      year: end.getFullYear(),
+      month: end.getMonth() + 1,
+      day: end.getDate()
+    });
+    return `${startStr} - ${endStr}`;
+  };
+  
+  const titleText = formatDateRange(startDate, endDateForTitle);
 
   const todayForHighlight = new Date(referenceToday);
   todayForHighlight.setHours(0, 0, 0, 0);

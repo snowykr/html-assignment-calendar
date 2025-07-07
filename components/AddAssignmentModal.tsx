@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, FormEvent } from 'react';
+import { useTranslations } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 
 interface AddAssignmentModalProps {
@@ -11,6 +12,8 @@ interface AddAssignmentModalProps {
 export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentModalProps) {
   const { currentEditingAssignment, handleAssignmentSubmit } = useApp();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const t = useTranslations('addAssignment');
+  const tCommon = useTranslations('common');
   
   const [formData, setFormData] = useState({
     courseName: '',
@@ -50,7 +53,7 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
     // Validate required fields
     if (!formData.courseName || !formData.round || !formData.title || 
         !formData.dueDate || !formData.dueTime || !formData.platform) {
-      alert('모든 항목을 입력해주세요');
+      alert(t('fillAllFields'));
       return;
     }
 
@@ -77,12 +80,12 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
     <div className="popup-modal show" onClick={onClose}>
       <div className="popup-content" onClick={(e) => e.stopPropagation()}>
         <div className="popup-header">
-          <h3>{isEditing ? '課題を編集' : '課題を追加'}</h3>
+          <h3>{isEditing ? t('editTitle') : t('title')}</h3>
           <button className="popup-close" onClick={onClose}>&times;</button>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label" htmlFor="course-name">科目名</label>
+            <label className="form-label" htmlFor="course-name">{t('courseName')}</label>
             <input 
               type="text" 
               id="course-name" 
@@ -93,7 +96,7 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
             />
           </div>
           <div className="form-group">
-            <label className="form-label" htmlFor="round">回次</label>
+            <label className="form-label" htmlFor="round">{t('round')}</label>
             <input 
               type="text" 
               id="round" 
@@ -104,7 +107,7 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
             />
           </div>
           <div className="form-group">
-            <label className="form-label" htmlFor="title">課題タイトル</label>
+            <label className="form-label" htmlFor="title">{t('assignmentTitle')}</label>
             <input 
               type="text" 
               id="title" 
@@ -115,7 +118,7 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
             />
           </div>
           <div className="form-group">
-            <label className="form-label" htmlFor="due-date">締切日</label>
+            <label className="form-label" htmlFor="due-date">{t('dueDate')}</label>
             <input 
               type="date" 
               id="due-date" 
@@ -126,7 +129,7 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
             />
           </div>
           <div className="form-group">
-            <label className="form-label" htmlFor="due-time">締切時刻</label>
+            <label className="form-label" htmlFor="due-time">{t('dueTime')}</label>
             <input 
               type="time" 
               id="due-time" 
@@ -137,7 +140,7 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
             />
           </div>
           <div className="form-group">
-            <label className="form-label" htmlFor="platform">プラットフォーム</label>
+            <label className="form-label" htmlFor="platform">{t('platform')}</label>
             <select 
               id="platform" 
               className="form-select" 
@@ -145,9 +148,9 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
               onChange={(e) => setFormData({ ...formData, platform: e.target.value as 'teams' | 'openlms' | '' })}
               required
             >
-              <option value="">選択してください</option>
-              <option value="teams">Teams</option>
-              <option value="openlms">OpenLMS</option>
+              <option value="">{t('selectPlatform')}</option>
+              <option value="teams">{t('teams')}</option>
+              <option value="openlms">{t('openlms')}</option>
             </select>
           </div>
           <div className="form-actions">
@@ -156,7 +159,7 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
               className="btn-submit"
               disabled={isSubmitting}
             >
-              {isSubmitting ? (isEditing ? '修正 中...' : '追加 中...') : (isEditing ? '修正' : '追加')}
+              {isSubmitting ? (isEditing ? t('editingInProgress') : t('addingInProgress')) : (isEditing ? tCommon('edit') : tCommon('add'))}
             </button>
             <button 
               type="button" 
@@ -164,7 +167,7 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
               onClick={onClose}
               disabled={isSubmitting}
             >
-              キャンセル
+              {tCommon('cancel')}
             </button>
           </div>
         </form>

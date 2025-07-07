@@ -1,0 +1,99 @@
+{
+  "common": {
+    "add": "Add",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "save": "Save",
+    "confirm": "Confirm",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "app": {
+    "title": "Assignment Manager",
+    "description": "Assignment Management Calendar Application"
+  },
+  "bottomTabs": {
+    "calendar": "Calendar",
+    "subjects": "Subjects",
+    "settings": "Settings"
+  },
+  "addAssignment": {
+    "title": "Add Assignment",
+    "editTitle": "Edit Assignment",
+    "courseName": "Course Name",
+    "round": "Round",
+    "assignmentTitle": "Assignment Title",
+    "dueDate": "Due Date",
+    "dueTime": "Due Time",
+    "platform": "Platform",
+    "selectPlatform": "Please select",
+    "teams": "Teams",
+    "openlms": "OpenLMS",
+    "addingInProgress": "Adding...",
+    "editingInProgress": "Editing...",
+    "fillAllFields": "Please fill all fields"
+  },
+  "settings": {
+    "notifications": "Notifications",
+    "darkMode": "Dark Mode",
+    "language": "Language",
+    "korean": "한국어",
+    "japanese": "日本語",
+    "english": "English"
+  },
+  "messages": {
+    "initializingApp": "Initializing app...",
+    "loadingData": "Loading data...",
+    "connectingDB": "Connecting to DB...",
+    "fetchingData": "Fetching data...",
+    "refreshingData": "Refreshing data...",
+    "assignmentAdded": "Assignment added successfully",
+    "assignmentUpdated": "Assignment updated successfully",
+    "assignmentDeleted": "Assignment deleted successfully",
+    "confirmDelete": "Are you sure you want to delete \"{title}\" assignment?"
+  },
+  "errors": {
+    "networkError": "Network connection failed. Please check your internet connection.",
+    "databaseError": "Database operation failed. Please try again later.",
+    "notFoundError": "Requested data not found.",
+    "conflictError": "ID conflict occurred. Please contact administrator.",
+    "unknownError": "Unknown error occurred. Please try again later.",
+    "initializationFailed": "App initialization failed"
+  },
+  "calendar": {
+    "day0": "Sun",
+    "day1": "Mon",
+    "day2": "Tue",
+    "day3": "Wed",
+    "day4": "Thu",
+    "day5": "Fri",
+    "day6": "Sat",
+    "dateFormat": "{month}/{day}/{year}"
+  },
+  "assignmentStatus": {
+    "completed": " (Completed)",
+    "overdue": " (Overdue)",
+    "dueToday": " (Due Today)",
+    "daysLeft": " ({days} days left)"
+  },
+  "filters": {
+    "hideCompleted": "Hide completed assignments",
+    "hideOverdue": "Hide overdue assignments",
+    "hideOverdueSubjects": "Hide overdue assignments"
+  },
+  "subjects": {
+    "previousPage": "Previous",
+    "nextPage": "Next",
+    "allAssignmentsCompleted": "All assignments completed",
+    "closestDeadline": "Closest deadline:"
+  },
+  "noAssignments": {
+    "onThisDay": "No assignments on this day",
+    "inPeriod": "No assignments in this period"
+  }
+}

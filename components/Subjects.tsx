@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations, useFormatter, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
-import { getAssignmentStatus, formatDateForDisplay } from '@/utils/utils';
+import { getAssignmentStatus } from '@/utils/utils';
 import type { Assignment } from '@/utils/utils';
 
 interface SubjectData {
@@ -14,6 +15,16 @@ interface ExpandedState {
   [key: string]: boolean;
 }
 
+// Convert short locale codes to full locale codes for better Intl API support
+const getFullLocale = (locale: string): string => {
+  const localeMap: { [key: string]: string } = {
+    'ko': 'ko-KR',
+    'en': 'en-US', 
+    'ja': 'ja-JP'
+  };
+  return localeMap[locale] || 'en-US';
+};
+
 export default function Subjects() {
   const { 
     assignmentsData, 
@@ -22,6 +33,10 @@ export default function Subjects() {
     subjectsPagination,
     updateSubjectPagination
   } = useApp();
+  const t = useTranslations('assignmentStatus');
+  const tSubjects = useTranslations('subjects');
+  const format = useFormatter();
+  const locale = useLocale();
   
   const [expandedSubjects, setExpandedSubjects] = useState<ExpandedState>({});
 
@@ -71,8 +86,10 @@ export default function Subjects() {
       <div className="subject-assignments">
         <div className="subject-assignments-inner-list">
           {paginatedAssignments.map(assignment => {
-            const { statusClass, statusText } = getAssignmentStatus(assignment, referenceToday);
-            const dueDateText = `${formatDateForDisplay(assignment.dueDate)} ${assignment.dueTime}${statusText}`;
+            const { statusClass, statusText } = getAssignmentStatus(assignment, referenceToday, t);
+            const fullLocale = getFullLocale(locale);
+            const formattedDate = new Intl.DateTimeFormat(fullLocale, { month: 'long', day: 'numeric' }).format(new Date(assignment.dueDate));
+            const dueDateText = `${formattedDate} ${assignment.dueTime}${statusText}`;
             
             return (
               <div key={assignment.id} className="subject-assignment-item">
@@ -99,7 +116,7 @@ export default function Subjects() {
                 updateSubjectPagination(subjectName, paginationState.currentPage - 1);
               }}
             >
-              ← 前へ
+              ← {tSubjects('previousPage')}
             </button>
             <span className="page-info">
               {Math.min(start + 1, filteredAssignments.length)}-{Math.min(end, filteredAssignments.length)} / {filteredAssignments.length}
@@ -112,7 +129,7 @@ export default function Subjects() {
                 updateSubjectPagination(subjectName, paginationState.currentPage + 1);
               }}
             >
-              次へ →
+              {tSubjects('nextPage')} →
             </button>
           </div>
         )}
@@ -130,7 +147,7 @@ export default function Subjects() {
     }
 
     if (uncompletedAssignments.length === 0) {
-      return { text: 'すべての課題完了', className: 'completed' };
+      return { text: tSubjects('allAssignmentsCompleted'), className: 'completed' };
     }
 
     // Sort by due date
@@ -141,8 +158,10 @@ export default function Subjects() {
     });
 
     const mostUrgent = uncompletedAssignments[0];
-    const { statusClass, statusText } = getAssignmentStatus(mostUrgent, referenceToday);
-    const dueDateText = `最も近い締切: ${formatDateForDisplay(mostUrgent.dueDate)}${statusText}`;
+    const { statusClass, statusText } = getAssignmentStatus(mostUrgent, referenceToday, t);
+    const fullLocale = getFullLocale(locale);
+    const formattedDate = new Intl.DateTimeFormat(fullLocale, { month: 'long', day: 'numeric' }).format(new Date(mostUrgent.dueDate));
+    const dueDateText = `${tSubjects('closestDeadline')} ${formattedDate}${statusText}`;
     
     return { text: dueDateText, className: statusClass };
   };

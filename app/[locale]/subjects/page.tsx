@@ -1,10 +1,12 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 import Subjects from '@/components/Subjects';
 
 export default function SubjectsPage() {
   const { filters, toggleFilter, isLoading, loadingMessage } = useApp();
+  const tFilters = useTranslations('filters');
 
   if (isLoading) {
     return (
@@ -19,7 +21,7 @@ export default function SubjectsPage() {
       <div className="content">
         <div className="filter-section">
           <div className="filter-row">
-            <span className="filter-label">期限切れ課題を隠す</span>
+            <span className="filter-label">{tFilters('hideOverdueSubjects')}</span>
             <div 
               className={`toggle-switch ${!filters.hideOverdueSubjects ? 'off' : ''}`}
               onClick={() => toggleFilter('hideOverdueSubjects')}

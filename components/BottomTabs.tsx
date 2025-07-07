@@ -1,15 +1,16 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname } from '@/navigation';
 
 export default function BottomTabs() {
   const pathname = usePathname();
+  const t = useTranslations('bottomTabs');
   
   const tabs = [
-    { href: '/calendar', label: 'カレンダー', icon: '📅' },
-    { href: '/subjects', label: '科目', icon: '📚' },
-    { href: '/settings', label: '設定', icon: '⚙️' }
+    { href: '/calendar', label: t('calendar'), icon: '📅' },
+    { href: '/subjects', label: t('subjects'), icon: '📚' },
+    { href: '/settings', label: t('settings'), icon: '⚙️' }
   ];
 
   return (

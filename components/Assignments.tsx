@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 import { getAssignmentStatus, filterAssignments, sortAssignmentsByDueDate } from '@/utils/utils';
 import { useSwipeGestures } from '@/hooks/useSwipeGestures';
@@ -15,6 +16,8 @@ export default function Assignments() {
     deleteAssignment,
     editAssignment
   } = useApp();
+  const t = useTranslations('assignmentStatus');
+  const tNoAssignments = useTranslations('noAssignments');
   
 
 
@@ -47,7 +50,7 @@ export default function Assignments() {
   } = useSwipeGestures(sortedAssignments);
 
   const renderAssignmentBox = (assignment: Assignment) => {
-    const { statusClass, statusText } = getAssignmentStatus(assignment, referenceToday);
+    const { statusClass, statusText } = getAssignmentStatus(assignment, referenceToday, t);
     const isCompleted = assignment.completed;
     const isSwiped = swipedItems[assignment.id] || false;
 
@@ -117,7 +120,7 @@ export default function Assignments() {
         sortedAssignments.map(assignment => renderAssignmentBox(assignment))
       ) : (
         <div className="no-assignments-popup">
-          期間内に課題がありません
+          {tNoAssignments('inPeriod')}
         </div>
       )}
     </div>
