@@ -246,17 +246,22 @@ const app = {
     openAddAssignmentModal() {
         const modal = document.getElementById('add-assignment-modal');
         const form = document.getElementById('add-assignment-form');
+        const submitButton = form.querySelector('.btn-submit');
+        
+        // Reset editing state
+        this.currentEditingAssignment = undefined;
         
         // Reset form
         form.reset();
         
         // Set default date to today
-        const today = new Date();
-        const dateStr = today.toISOString().split('T')[0];
-        document.getElementById('due-date').value = dateStr;
+        document.getElementById('due-date').value = new Date().toISOString().split('T')[0];
         
         // Set default time to 00:00
         document.getElementById('due-time').value = '00:00';
+        
+        // Set button text to add mode
+        submitButton.textContent = '추가';
         
         // Show modal
         modal.classList.add('show');
@@ -269,75 +274,27 @@ const app = {
 
     closeAddAssignmentModal() {
         const modal = document.getElementById('add-assignment-modal');
+        const form = document.getElementById('add-assignment-form');
+        const submitButton = form.querySelector('.btn-submit');
+        
         modal.classList.remove('show');
+        
+        // Reset editing state
+        this.currentEditingAssignment = undefined;
+        
+        // Reset form and button text
+        form.reset();
+        submitButton.textContent = '추가';
+        
+        // Set default values for next use
+        document.getElementById('due-date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('due-time').value = '00:00';
     },
 
 
+    // Alias for backward compatibility
     async handleAddAssignment(event) {
-        event.preventDefault();
-        
-        const submitButton = event.target.querySelector('.btn-submit');
-        const originalText = submitButton.textContent;
-        
-        try {
-            // Disable submit button
-            submitButton.disabled = true;
-            submitButton.textContent = '追加中...';
-            
-            // Get form data
-            const formData = new FormData(event.target);
-            const assignmentData = {
-                courseName: formData.get('courseName').trim(),
-                round: formData.get('round').trim(),
-                title: formData.get('title').trim(),
-                dueDate: formData.get('dueDate'),
-                dueTime: formData.get('dueTime'),
-                platform: formData.get('platform'),
-                completed: false
-            };
-            
-            // Validate required fields
-            if (!assignmentData.courseName || !assignmentData.round || !assignmentData.title || 
-                !assignmentData.dueDate || !assignmentData.dueTime || !assignmentData.platform) {
-                throw new Error('すべての項目を入力してください');
-            }
-            
-            // Ensure no id field is present
-            delete assignmentData.id;
-            
-            // Add assignment to Supabase
-            const { addAssignment } = await import('./supabase-service.js');
-            await addAssignment(assignmentData);
-            
-            // Close modal
-            this.closeAddAssignmentModal();
-            
-            // Reload assignments
-            await this.reloadAssignments();
-            
-            // Show success message
-            this.showTemporaryMessage('課題を追加しました');
-            
-        } catch (error) {
-            console.error('Failed to add assignment:', error);
-            
-            // Provide user-friendly error messages
-            let userMessage = '課題の追加に失敗しました';
-            
-            if (error.message && error.message.includes('データベースで重複エラー')) {
-                userMessage = 'データベースエラーが発生しました。しばらく待ってから再試行してください。';
-            } else if (error.message && error.message.includes('すべての項目')) {
-                userMessage = error.message;
-            } else if (error.code === '23505') {
-                userMessage = 'データの重複エラーが発生しました。管理者にお問い合わせください。';
-            }
-            
-            alert(userMessage);
-        } finally {
-            // Re-enable submit button
-            submitButton.disabled = false;
-            submitButton.textContent = originalText;
-        }
+        return this.handleAssignmentSubmit(event);
     },
 
     // Subject-related methods
@@ -436,6 +393,158 @@ const app = {
                 toast.remove();
             }
         }, duration);
+    },
+
+    // Delete assignment with confirmation
+    async deleteAssignment(assignmentId) {
+        const assignment = this.assignmentsData.find(a => a.id === assignmentId);
+        if (!assignment) {
+            console.error('Assignment not found for deletion');
+            return;
+        }
+
+        const confirmMessage = `'${assignment.courseName} - ${assignment.title}' 과제를 삭제하시겠습니까?`;
+        
+        if (confirm(confirmMessage)) {
+            try {
+                // Delete from Supabase
+                const { deleteAssignment } = await import('./supabase-service.js');
+                await deleteAssignment(assignmentId);
+                
+                // Remove from local data
+                const assignmentIndex = this.assignmentsData.findIndex(a => a.id === assignmentId);
+                if (assignmentIndex !== -1) {
+                    this.assignmentsData.splice(assignmentIndex, 1);
+                }
+                
+                // Re-initialize pagination with updated data
+                this.subjectsPagination = initSubjectPagination(this.assignmentsData, this.config.pagination.itemsPerPage);
+                
+                // Re-render
+                this.render();
+                
+                // Re-render popup if it's currently open
+                if (this.currentPopupDate) {
+                    openAssignmentsPopup(this.currentPopupDate, this.assignmentsData, this.config.referenceToday);
+                }
+                
+                this.showTemporaryMessage('과제를 삭제했습니다');
+                
+            } catch (error) {
+                console.error('Failed to delete assignment:', error);
+                alert('과제 삭제에 실패했습니다: ' + (error.message || '알 수 없는 오류'));
+            }
+        }
+    },
+
+    // Edit assignment
+    editAssignment(assignment) {
+        this.currentEditingAssignment = assignment;
+        const modal = document.getElementById('add-assignment-modal');
+        const form = document.getElementById('add-assignment-form');
+        const submitButton = form.querySelector('.btn-submit');
+        
+        // Fill form with existing data
+        form.courseName.value = String(assignment.courseName || '');
+        form.round.value = String(assignment.round || '');
+        form.title.value = String(assignment.title || '');
+        form.dueDate.value = String(assignment.dueDate || '');
+        form.dueTime.value = String(assignment.dueTime || '');
+        form.platform.value = String(assignment.platform || '');
+        
+        // Change submit button text
+        submitButton.textContent = '수정';
+        
+        // Show modal
+        modal.classList.add('show');
+        
+        // Focus first input
+        setTimeout(() => {
+            document.getElementById('course-name').focus();
+        }, 100);
+    },
+
+    // Handle form submission (both add and edit)
+    async handleAssignmentSubmit(event) {
+        event.preventDefault();
+        
+        const submitButton = event.target.querySelector('.btn-submit');
+        const originalText = submitButton.textContent;
+        const isEditing = this.currentEditingAssignment !== undefined;
+        
+        try {
+            // Disable submit button
+            submitButton.disabled = true;
+            submitButton.textContent = isEditing ? '수정 중...' : '추가 중...';
+            
+            // Get form data
+            const formData = new FormData(event.target);
+            const assignmentData = {
+                courseName: formData.get('courseName').trim(),
+                round: formData.get('round').trim(),
+                title: formData.get('title').trim(),
+                dueDate: formData.get('dueDate'),
+                dueTime: formData.get('dueTime'),
+                platform: formData.get('platform'),
+                completed: isEditing ? this.currentEditingAssignment.completed : false
+            };
+            
+            // Validate required fields
+            if (!assignmentData.courseName || !assignmentData.round || !assignmentData.title || 
+                !assignmentData.dueDate || !assignmentData.dueTime || !assignmentData.platform) {
+                alert('모든 항목을 입력해주세요');
+                return;
+            }
+            
+            if (isEditing) {
+                // Update assignment
+                const { updateAssignment } = await import('./supabase-service.js');
+                const updatedAssignment = await updateAssignment(this.currentEditingAssignment.id, assignmentData);
+                
+                // Update local data
+                const assignmentIndex = this.assignmentsData.findIndex(a => a.id === this.currentEditingAssignment.id);
+                if (assignmentIndex !== -1) {
+                    this.assignmentsData[assignmentIndex] = updatedAssignment;
+                }
+                
+                this.showTemporaryMessage('과제를 수정했습니다');
+                
+            } else {
+                // Add new assignment
+                const { addAssignment } = await import('./supabase-service.js');
+                const newAssignment = await addAssignment(assignmentData);
+                
+                // Add to local data
+                this.assignmentsData.push(newAssignment);
+                
+                this.showTemporaryMessage('과제를 추가했습니다');
+            }
+            
+            // Re-initialize pagination with updated data
+            this.subjectsPagination = initSubjectPagination(this.assignmentsData, this.config.pagination.itemsPerPage);
+            
+            // Close modal
+            this.closeAddAssignmentModal();
+            
+            // Re-render
+            this.render();
+            
+            // Re-render popup if it's currently open
+            if (this.currentPopupDate) {
+                openAssignmentsPopup(this.currentPopupDate, this.assignmentsData, this.config.referenceToday);
+            }
+            
+        } catch (error) {
+            console.error('Failed to save assignment:', error);
+            
+            // Provide user-friendly error message
+            const userMessage = isEditing ? '과제 수정에 실패했습니다' : '과제 추가에 실패했습니다';
+            alert(userMessage);
+        } finally {
+            // Re-enable submit button
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+        }
     }
 };
 
@@ -452,9 +561,9 @@ window.onclick = function(event) {
     const assignmentPopup = document.getElementById('assignment-popup');
     const addAssignmentModal = document.getElementById('add-assignment-modal');
     
-    if (event.target == assignmentPopup) {
+    if (event.target === assignmentPopup) {
         app.closeAssignmentsPopup();
-    } else if (event.target == addAssignmentModal) {
+    } else if (event.target === addAssignmentModal) {
         app.closeAddAssignmentModal();
     }
 };

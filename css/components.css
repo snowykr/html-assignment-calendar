@@ -204,11 +204,11 @@
 }
 
 .assignment-box.completed {
-    opacity: 0.7;
-    background: #f8f9fa;
+    background: rgba(248, 249, 250, 0.95) !important;
 }
 
 .assignment-box.completed .assignment-title {
+    opacity: 0.7;
     text-decoration: line-through;
     color: #6c757d;
 }
@@ -229,12 +229,81 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     transition: all 0.2s ease;
     user-select: none;
-    z-index: 0;
+    z-index: 3;
 }
 
 .completion-toggle:hover {
     transform: scale(1.1);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Swipe functionality styles */
+.assignment-container {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.assignment-container .assignment-box {
+    position: relative;
+    width: 100%;
+    margin-bottom: 0;
+    transition: transform 0.3s ease;
+    z-index: 2;
+}
+
+.assignment-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 0;
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+    transition: width 0.3s ease;
+    z-index: 1;
+}
+
+.action-btn {
+    flex: 1;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+}
+
+.edit-btn {
+    background-color: #007aff;
+    color: white;
+    border-radius: 16px 0 0 16px;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.delete-btn {
+    background-color: #ff3b30;
+    color: white;
+    border-radius: 0 16px 16px 0;
+}
+
+.delete-btn:hover {
+    background-color: #d70015;
+}
+
+.assignment-container.swiped .assignment-box {
+    transform: translateX(-120px);
+}
+
+.assignment-container.swiped .assignment-actions {
+    width: 120px;
 }
 
 .loading-message {
@@ -449,7 +518,7 @@
 
 .subject-box.expanded .subject-assignments {
     max-height: 500px;
-    padding: 0px 20px 20px 20px;
+    padding: 0 20px 20px 20px;
     border-top: 1px solid #e5e5ea;
     margin-top: -1px;
 }
@@ -728,7 +797,6 @@
     background: #fff;
     transition: border-color 0.2s ease;
     -webkit-appearance: none;
-    -moz-appearance: none;
     appearance: none;
 }
 
