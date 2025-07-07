@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTranslations, useFormatter, useLocale } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
-import { getAssignmentStatus } from '@/utils/utils';
+import { getAssignmentStatus, getFullLocale } from '@/utils/utils';
 import { useSwipeGestures } from '@/hooks/useSwipeGestures';
 import type { Assignment } from '@/utils/utils';
 
@@ -12,15 +12,6 @@ interface AssignmentPopupProps {
   onClose: () => void;
 }
 
-// Convert short locale codes to full locale codes for better Intl API support
-const getFullLocale = (locale: string): string => {
-  const localeMap: { [key: string]: string } = {
-    'ko': 'ko-KR',
-    'en': 'en-US', 
-    'ja': 'ja-JP'
-  };
-  return localeMap[locale] || 'en-US';
-};
 
 export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps) {
   const { 
@@ -32,7 +23,6 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
   } = useApp();
   const t = useTranslations('assignmentStatus');
   const tNoAssignments = useTranslations('noAssignments');
-  const format = useFormatter();
   const locale = useLocale();
   
   const [assignmentsForDate, setAssignmentsForDate] = useState<Assignment[]>([]);

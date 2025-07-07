@@ -24,8 +24,8 @@ export default function SettingsPage() {
     // 쿠키에 로케일 설정 (SameSite 속성 추가로 브라우저 호환성 개선)
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
     
-    // 페이지 새로고침으로 서버 사이드 locale 업데이트 반영
-    window.location.reload();
+    // next-intl의 router를 사용하여 페이지 새로고침
+    router.refresh();
   };
 
   return (

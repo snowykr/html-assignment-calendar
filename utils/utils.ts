@@ -153,3 +153,13 @@ export function getCookie(name: string): string | null {
   const cookie = cookies.find(c => c.trim().startsWith(name + '='));
   return cookie ? cookie.split('=')[1] : null;
 }
+
+// Convert short locale codes to full locale codes for better Intl API support
+export function getFullLocale(locale: string): string {
+  const localeMap: { [key: string]: string } = {
+    'ko': 'ko-KR',
+    'en': 'en-US', 
+    'ja': 'ja-JP'
+  };
+  return localeMap[locale] || 'en-US';
+}

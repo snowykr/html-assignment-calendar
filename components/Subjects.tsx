@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations, useFormatter, useLocale } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
-import { getAssignmentStatus } from '@/utils/utils';
+import { getAssignmentStatus, getFullLocale } from '@/utils/utils';
 import type { Assignment } from '@/utils/utils';
 
 interface SubjectData {
@@ -15,15 +15,6 @@ interface ExpandedState {
   [key: string]: boolean;
 }
 
-// Convert short locale codes to full locale codes for better Intl API support
-const getFullLocale = (locale: string): string => {
-  const localeMap: { [key: string]: string } = {
-    'ko': 'ko-KR',
-    'en': 'en-US', 
-    'ja': 'ja-JP'
-  };
-  return localeMap[locale] || 'en-US';
-};
 
 export default function Subjects() {
   const { 
@@ -35,7 +26,6 @@ export default function Subjects() {
   } = useApp();
   const t = useTranslations('assignmentStatus');
   const tSubjects = useTranslations('subjects');
-  const format = useFormatter();
   const locale = useLocale();
   
   const [expandedSubjects, setExpandedSubjects] = useState<ExpandedState>({});
