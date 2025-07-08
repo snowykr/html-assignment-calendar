@@ -79,6 +79,8 @@
     "completed": " (Completed)",
     "overdue": " (Overdue)",
     "dueToday": " (Due Today)",
+    "minutesLeft": " ({minutes} minutes left)",
+    "hoursLeft": " ({hours} hours left)",
     "daysLeft": " ({days} days left)"
   },
   "filters": {

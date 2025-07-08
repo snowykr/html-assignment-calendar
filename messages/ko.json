@@ -79,6 +79,8 @@
     "completed": " (제출완료)",
     "overdue": " (기한초과)",
     "dueToday": " (오늘마감)",
+    "minutesLeft": " ({minutes}분 후)",
+    "hoursLeft": " ({hours}시간 후)",
     "daysLeft": " ({days}일 후)"
   },
   "filters": {

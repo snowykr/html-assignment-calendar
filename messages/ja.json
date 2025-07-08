@@ -79,6 +79,8 @@
     "completed": " (提出完了)",
     "overdue": " (期限切れ)",
     "dueToday": " (今日締切)",
+    "minutesLeft": " ({minutes}分後)",
+    "hoursLeft": " ({hours}時間後)",
     "daysLeft": " ({days}日後)"
   },
   "filters": {
