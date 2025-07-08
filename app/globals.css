@@ -949,3 +949,48 @@ body {
         padding: 0 4rem; /* 64px */
     }
 }
+
+/* Mobile-specific flex layout */
+@media (max-width: 1023px) {
+    .mobile-flex-layout {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    
+    .calendar-fixed-mobile {
+        flex-shrink: 0;
+        background: #f2f2f7;
+        padding: 15px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .scrollable-content-mobile {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0 0 90px 0; /* 바텀탭 높이만큼 하단 여백 */
+        background: #f2f2f7;
+        -webkit-overflow-scrolling: touch; /* iOS 스크롤 성능 향상 */
+    }
+    
+    /* 달력 섹션 스타일 조정 */
+    .calendar-fixed-mobile .calendar-section {
+        position: static;
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+    
+    /* 스크롤 영역 내부 패딩 조정 */
+    .scrollable-content-mobile .filter-section {
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+    
+    .scrollable-content-mobile .assignments-list {
+        padding-bottom: 20px;
+    }
+}
