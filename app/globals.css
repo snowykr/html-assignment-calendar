@@ -441,6 +441,57 @@ body {
     }
 }
 
+@keyframes slideUpIn {
+    from {
+        transform: translateX(-50%) translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUpOut {
+    from {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-50%) translateY(100%);
+        opacity: 0;
+    }
+}
+
+/* Toast Message */
+.toast-message {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(28, 28, 30, 0.95);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    z-index: 10000;
+    animation: slideUpIn 0.3s ease-out;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    max-width: 90%;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    margin: 0 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.toast-message.fade-out {
+    animation: slideUpOut 0.3s ease-in forwards;
+}
+
 .assignment-header {
     display: flex;
     justify-content: space-between;
@@ -883,6 +934,14 @@ body {
     /* Fixed TopNav offset */
     .main-content-area {
         padding: 72px 2rem 0 2rem; /* TopNav 높이(64px) + 여백(8px) + 좌우 패딩 */
+    }
+    
+    /* Toast message positioning for desktop */
+    .toast-message {
+        bottom: 40px; /* 데스크탑 하단 위치 */
+        font-size: 14px;
+        padding: 10px 16px;
+        max-width: 400px;
     }
     
     /* Calendar adjustments for desktop */
