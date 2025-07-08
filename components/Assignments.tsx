@@ -1,10 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 import { getAssignmentStatus, filterAssignments, sortAssignmentsByDueDate, formatDateTimeForDisplay } from '@/utils/utils';
 import { formatRound } from '@/utils/round-formatter';
 import { useTapToggle } from '@/hooks/useTapToggle';
+import MemoModal from './MemoModal';
 import type { Assignment } from '@/utils/utils';
 
 export default function Assignments() {
@@ -21,7 +23,22 @@ export default function Assignments() {
   const t = useTranslations('assignmentStatus');
   const tNoAssignments = useTranslations('noAssignments');
   const tCommon = useTranslations('common');
+  const tAddAssignment = useTranslations('addAssignment');
   const locale = useLocale();
+  
+  // Memo modal state
+  const [memoModalOpen, setMemoModalOpen] = useState(false);
+  const [currentMemo, setCurrentMemo] = useState('');
+  
+  const showMemoModal = (memo: string) => {
+    setCurrentMemo(memo);
+    setMemoModalOpen(true);
+  };
+  
+  const closeMemoModal = () => {
+    setMemoModalOpen(false);
+    setCurrentMemo('');
+  };
   
 
 
@@ -55,6 +72,7 @@ export default function Assignments() {
     const { statusClass, statusText } = getAssignmentStatus(assignment, referenceToday, t);
     const isCompleted = assignment.completed;
     const isTapped = tappedItems[assignment.id] || false;
+    const hasLinkOrMemo = assignment.link || assignment.memo;
 
     return (
       <div 
@@ -77,7 +95,13 @@ export default function Assignments() {
           </div>
           
           <div className="assignment-header">
-            <div className="course-name">{assignment.courseName}</div>
+            <div className="course-name-with-indicators">
+              <span className="course-name">{assignment.courseName}</span>
+              <div className="assignment-indicators">
+                {assignment.link && <span className="indicator-icon link-icon" title="링크 있음">🔗</span>}
+                {assignment.memo && <span className="indicator-icon memo-icon" title="메모 있음">📝</span>}
+              </div>
+            </div>
           </div>
           
           <div className="assignment-round">{formatRound(assignment.round, locale)}</div>
@@ -88,41 +112,81 @@ export default function Assignments() {
           </div>
         </div>
         
-        <div className="assignment-actions">
-          <button 
-            className="action-btn edit-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              closeTapped(assignment.id);
-              editAssignment(assignment);
-            }}
-          >
-            {tCommon('edit')}
-          </button>
-          <button 
-            className="action-btn delete-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              removeTappedState(assignment.id);
-              deleteAssignment(assignment.id);
-            }}
-          >
-            {tCommon('delete')}
-          </button>
+        <div className={`assignment-actions${isTapped && hasLinkOrMemo ? ' expanded' : ''}`}>
+          <div className="action-row primary">
+            <a 
+              href={assignment.link || '#'} 
+              target={assignment.link ? '_blank' : undefined}
+              rel={assignment.link ? 'noopener noreferrer' : undefined}
+              className={`action-btn link-btn${!assignment.link ? ' disabled' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!assignment.link) {
+                  e.preventDefault();
+                  return;
+                }
+                closeTapped(assignment.id);
+              }}
+            >
+              {tAddAssignment('link')}
+            </a>
+            <button 
+              className="action-btn memo-btn"
+              disabled={!assignment.memo}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!assignment.memo) return;
+                closeTapped(assignment.id);
+                showMemoModal(assignment.memo);
+              }}
+            >
+              {tAddAssignment('memo')}
+            </button>
+          </div>
+          <div className="action-row secondary">
+            <button 
+              className="action-btn edit-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                closeTapped(assignment.id);
+                editAssignment(assignment);
+              }}
+            >
+              {tCommon('edit')}
+            </button>
+            <button 
+              className="action-btn delete-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                removeTappedState(assignment.id);
+                deleteAssignment(assignment.id);
+              }}
+            >
+              {tCommon('delete')}
+            </button>
+          </div>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="assignments-list">
-      {sortedAssignments.length > 0 ? (
-        sortedAssignments.map(assignment => renderAssignmentBox(assignment))
-      ) : (
-        <div className="no-assignments-popup">
-          {tNoAssignments('inPeriod')}
-        </div>
-      )}
-    </div>
+    <>
+      <div className="assignments-list">
+        {sortedAssignments.length > 0 ? (
+          sortedAssignments.map(assignment => renderAssignmentBox(assignment))
+        ) : (
+          <div className="no-assignments-popup">
+            {tNoAssignments('inPeriod')}
+          </div>
+        )}
+      </div>
+      
+      <MemoModal 
+        memo={currentMemo}
+        isOpen={memoModalOpen}
+        onClose={closeMemoModal}
+      />
+    </>
   );
 }

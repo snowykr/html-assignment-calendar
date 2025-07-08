@@ -13,6 +13,8 @@ interface DbAssignment {
   completed: boolean;
   created_at?: string;
   updated_at?: string;
+  link?: string;
+  memo?: string;
 }
 
 interface DbAssignmentInsert {
@@ -23,6 +25,8 @@ interface DbAssignmentInsert {
   due_time: string;
   platform: 'teams' | 'openlms';
   completed: boolean;
+  link?: string;
+  memo?: string;
 }
 
 interface DbAssignmentUpdate {
@@ -33,6 +37,8 @@ interface DbAssignmentUpdate {
   due_time?: string;
   platform?: 'teams' | 'openlms';
   completed?: boolean;
+  link?: string;
+  memo?: string;
 }
 
 // Transform database row to JavaScript object format
@@ -47,7 +53,9 @@ export function transformDbToJs(dbRow: DbAssignment): Assignment {
     platform: dbRow.platform,
     completed: dbRow.completed,
     createdAt: dbRow.created_at,
-    updatedAt: dbRow.updated_at
+    updatedAt: dbRow.updated_at,
+    link: dbRow.link,
+    memo: dbRow.memo
   };
 }
 
@@ -60,7 +68,9 @@ export function transformJsToDbForInsert(jsObj: Omit<Assignment, 'id'>): DbAssig
     due_date: jsObj.dueDate,
     due_time: jsObj.dueTime,
     platform: jsObj.platform,
-    completed: jsObj.completed || false
+    completed: jsObj.completed || false,
+    link: jsObj.link,
+    memo: jsObj.memo
   };
 }
 
@@ -75,6 +85,8 @@ export function transformJsToDbForUpdate(jsObj: Partial<Assignment>): DbAssignme
   if (jsObj.dueTime !== undefined) dbObj.due_time = jsObj.dueTime;
   if (jsObj.platform !== undefined) dbObj.platform = jsObj.platform;
   if (jsObj.completed !== undefined) dbObj.completed = jsObj.completed;
+  if (jsObj.link !== undefined) dbObj.link = jsObj.link;
+  if (jsObj.memo !== undefined) dbObj.memo = jsObj.memo;
   
   return dbObj;
 }

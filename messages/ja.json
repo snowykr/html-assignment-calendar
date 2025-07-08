@@ -36,7 +36,13 @@
     "openlms": "OpenLMS",
     "addingInProgress": "追加中...",
     "editingInProgress": "修正中...",
-    "fillAllFields": "すべての項目を入力してください"
+    "fillAllFields": "すべての項目を入力してください",
+    "link": "関連リンク",
+    "linkPlaceholder": "https://...",
+    "memo": "メモ",
+    "memoPlaceholder": "課題関連のメモを入力してください",
+    "invalidUrl": "正しいURL形式ではありません",
+    "memoTooLong": "メモは1000文字以下で入力してください"
   },
   "settings": {
     "notifications": "通知設定",
