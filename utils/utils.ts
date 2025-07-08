@@ -61,6 +61,17 @@ export function formatDateForDisplay(dateStr: string, locale: string = 'ja-JP'):
   });
 }
 
+// Format date and time for display (월 일 시간 형식)
+export function formatDateTimeForDisplay(assignment: Assignment, locale: string): string {
+  const fullLocale = getFullLocale(locale);
+  const formattedDate = new Intl.DateTimeFormat(fullLocale, { 
+    month: 'long', 
+    day: 'numeric' 
+  }).format(new Date(assignment.dueDate));
+  
+  return `${formattedDate} ${assignment.dueTime}`;
+}
+
 
 // Sort assignments by due date
 export function sortAssignmentsByDueDate(assignments: Assignment[], completedLast = true): Assignment[] {

@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
-import { getAssignmentStatus, getFullLocale } from '@/utils/utils';
+import { getAssignmentStatus, formatDateTimeForDisplay } from '@/utils/utils';
+import { formatRound } from '@/utils/round-formatter';
 import type { Assignment } from '@/utils/utils';
 
 interface SubjectData {
@@ -77,15 +78,13 @@ export default function Subjects() {
         <div className="subject-assignments-inner-list">
           {paginatedAssignments.map(assignment => {
             const { statusClass, statusText } = getAssignmentStatus(assignment, referenceToday, t);
-            const fullLocale = getFullLocale(locale);
-            const formattedDate = new Intl.DateTimeFormat(fullLocale, { month: 'long', day: 'numeric' }).format(new Date(assignment.dueDate));
-            const dueDateText = `${formattedDate} ${assignment.dueTime}${statusText}`;
+            const dueDateText = `${formatDateTimeForDisplay(assignment, locale)}${statusText}`;
             
             return (
               <div key={assignment.id} className="subject-assignment-item">
                 <div>
                   <div className="subject-assignment-title">
-                    {assignment.title} ({assignment.round})
+                    {assignment.title} ({formatRound(assignment.round, locale)})
                   </div>
                   <div className={`subject-assignment-due ${statusClass}`}>
                     {dueDateText}
@@ -149,9 +148,7 @@ export default function Subjects() {
 
     const mostUrgent = uncompletedAssignments[0];
     const { statusClass, statusText } = getAssignmentStatus(mostUrgent, referenceToday, t);
-    const fullLocale = getFullLocale(locale);
-    const formattedDate = new Intl.DateTimeFormat(fullLocale, { month: 'long', day: 'numeric' }).format(new Date(mostUrgent.dueDate));
-    const dueDateText = `${tSubjects('closestDeadline')} ${formattedDate}${statusText}`;
+    const dueDateText = `${tSubjects('closestDeadline')} ${formatDateTimeForDisplay(mostUrgent, locale)}${statusText}`;
     
     return { text: dueDateText, className: statusClass };
   };

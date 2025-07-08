@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 import { getAssignmentStatus, getFullLocale } from '@/utils/utils';
+import { formatRound } from '@/utils/round-formatter';
 import { useTapToggle } from '@/hooks/useTapToggle';
 import type { Assignment } from '@/utils/utils';
 
@@ -78,7 +79,7 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
             <div className="course-name">{assignment.courseName}</div>
           </div>
           
-          <div className="assignment-round">{assignment.round}</div>
+          <div className="assignment-round">{formatRound(assignment.round, locale)}</div>
           <div className="assignment-title">{assignment.title}</div>
           
           <div className={`deadline ${statusClass}`}>
