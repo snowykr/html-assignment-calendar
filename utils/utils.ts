@@ -10,6 +10,8 @@ export interface Assignment {
   completed: boolean;
   createdAt?: string;
   updatedAt?: string;
+  link?: string;
+  memo?: string;
 }
 
 export interface AssignmentStatus {

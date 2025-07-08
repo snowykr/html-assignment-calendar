@@ -13,19 +13,8 @@ import {
 import { handleError, logError, showUserError, AppError } from '@/utils/error-handler';
 import { initSubjectPagination } from '@/utils/pagination';
 import { loadFiltersFromStorage, saveFiltersToStorage, DEFAULT_FILTERS } from '@/utils/filter-storage';
+import type { Assignment } from '@/utils/utils';
 
-interface Assignment {
-  id: number;
-  courseName: string;
-  round: string;
-  title: string;
-  dueDate: string;
-  dueTime: string;
-  platform: 'teams' | 'openlms';
-  completed: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
 
 interface Filters {
   unsubmittedOnly: boolean;
