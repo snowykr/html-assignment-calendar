@@ -30,34 +30,34 @@ export function getAssignmentStatus(
   
   if (assignment.completed) {
     statusClass = 'completed';
-    statusText = t ? t('completed') : ' (提出完了)';
+    statusText = t ? t('completed') : ' (Completed)';
   } else {
     const diffTime = dueDateObj.getTime() - referenceToday.getTime();
 
     if (dueDateObj < referenceToday) {
       statusClass = 'overdue';
-      statusText = t ? t('overdue') : ' (期限切れ)';
+      statusText = t ? t('overdue') : ' (Overdue)';
     } else if (diffTime < 24 * 60 * 60 * 1000) {
       // 24시간 미만: 시간/분 단위로 표시
       statusClass = 'due-soon';
       if (diffTime < 60 * 60 * 1000) {
         // 1시간 미만: 분 단위
         const minutes = Math.ceil(diffTime / (60 * 1000));
-        statusText = t ? t('minutesLeft', { minutes }) : ` (${minutes}分後)`;
+        statusText = t ? t('minutesLeft', { minutes }) : ` (${minutes} minutes left)`;
       } else {
         // 1시간 이상 24시간 미만: 시간 단위
         const hours = Math.ceil(diffTime / (60 * 60 * 1000));
-        statusText = t ? t('hoursLeft', { hours }) : ` (${hours}時間後)`;
+        statusText = t ? t('hoursLeft', { hours }) : ` (${hours} hours left)`;
       }
     } else {
       // 24시간 이상: 일 단위로 표시
       const diffDays = Math.floor(diffTime / (24 * 60 * 60 * 1000));
       if (diffDays <= 3) {
         statusClass = 'due-soon';
-        statusText = t ? t('daysLeft', { days: diffDays }) : ` (${diffDays}日後)`;
+        statusText = t ? t('daysLeft', { days: diffDays }) : ` (${diffDays} days left)`;
       } else {
         statusClass = 'normal';
-        statusText = t ? t('daysLeft', { days: diffDays }) : ` (${diffDays}日後)`;
+        statusText = t ? t('daysLeft', { days: diffDays }) : ` (${diffDays} days left)`;
       }
     }
   }

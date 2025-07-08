@@ -147,13 +147,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadDataFromSupabase = async () => {
-    setLoadingMessage(t('connectingDB'));
-    await initSupabase();
-    
-    setLoadingMessage(t('fetchingData'));
-    const data = await getAllAssignments();
-    setAssignmentsData(data);
-    setIsLoading(false);
+    try {
+      setLoadingMessage(t('connectingDB'));
+      await initSupabase();
+      
+      setLoadingMessage(t('fetchingData'));
+      const data = await getAllAssignments();
+      setAssignmentsData(data);
+      setIsLoading(false);
+    } catch (error) {
+      const appError = handleError(error, { operation: 'loadDataFromSupabase' }, tErrors);
+      logError(appError);
+      showUserError(appError, showTemporaryMessage);
+      setIsLoading(false);
+    }
   };
 
   const navigateWeek = (direction: number) => {

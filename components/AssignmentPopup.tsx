@@ -68,8 +68,7 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
             onClick={(e) => {
               e.stopPropagation();
               closeTapped(assignment.id);
-              toggleAssignmentCompletion(assignment.id, !assignment.completed)
-                .catch(error => console.error('완료 상태 변경 실패:', error));
+              toggleAssignmentCompletion(assignment.id, !assignment.completed);
             }}
           >
             {isCompleted ? '✓' : '○'}
@@ -104,8 +103,7 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
             onClick={(e) => {
               e.stopPropagation();
               removeTappedState(assignment.id);
-              deleteAssignment(assignment.id)
-                .catch(error => console.error('과제 삭제 실패:', error));
+              deleteAssignment(assignment.id);
               if (assignmentsForDate.length === 1) {
                 onClose();
               }

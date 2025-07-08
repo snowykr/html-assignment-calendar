@@ -40,7 +40,7 @@ export function createAppError(
 }
 
 export function logError(error: AppError): void {
-  const logMessage = `❌ ${error.context.operation} 실패: ${error.message}`;
+  const logMessage = `❌ Operation ${error.context.operation} failed: ${error.message}`;
   console.error(logMessage, {
     type: error.type,
     context: error.context,
@@ -48,7 +48,7 @@ export function logError(error: AppError): void {
   });
 }
 
-export function handleDatabaseError(error: unknown, context: ErrorContext, t?: (key: string) => string): AppError {
+export function handleDatabaseError(error: unknown, context: ErrorContext, t: (key: string) => string): AppError {
   const err = error as any;
   
   // Supabase specific error codes
@@ -56,7 +56,7 @@ export function handleDatabaseError(error: unknown, context: ErrorContext, t?: (
     return createAppError(
       ErrorType.DATABASE,
       'Primary key conflict detected',
-      t ? t('conflictError') : 'ID 충돌이 발생했습니다. 관리자에게 문의하세요.',
+      t('conflictError'),
       context,
       err
     );
@@ -66,7 +66,7 @@ export function handleDatabaseError(error: unknown, context: ErrorContext, t?: (
     return createAppError(
       ErrorType.DATABASE,
       'Record not found',
-      t ? t('notFoundError') : '요청한 데이터를 찾을 수 없습니다.',
+      t('notFoundError'),
       context,
       err
     );
@@ -77,7 +77,7 @@ export function handleDatabaseError(error: unknown, context: ErrorContext, t?: (
     return createAppError(
       ErrorType.NETWORK,
       'Network connection failed',
-      t ? t('networkError') : '네트워크 연결에 실패했습니다. 인터넷 연결을 확인해주세요.',
+      t('networkError'),
       context,
       err
     );
@@ -87,13 +87,13 @@ export function handleDatabaseError(error: unknown, context: ErrorContext, t?: (
   return createAppError(
     ErrorType.DATABASE,
     err?.message || 'Database operation failed',
-    t ? t('databaseError') : '데이터베이스 작업에 실패했습니다. 잠시 후 다시 시도해주세요.',
+    t('databaseError'),
     context,
     err
   );
 }
 
-export function handleError(error: unknown, context: ErrorContext, t?: (key: string) => string): AppError {
+export function handleError(error: unknown, context: ErrorContext, t: (key: string) => string): AppError {
   if (error instanceof Error) {
     return handleDatabaseError(error, context, t);
   }
@@ -101,7 +101,7 @@ export function handleError(error: unknown, context: ErrorContext, t?: (key: str
   return createAppError(
     ErrorType.UNKNOWN,
     'Unknown error occurred',
-    t ? t('unknownError') : '알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+    t('unknownError'),
     context
   );
 }

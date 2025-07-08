@@ -13,6 +13,7 @@ export default function Calendar({ onDayClick }: CalendarProps) {
   const { viewStartDate, navigateWeek, referenceToday, assignmentsData, filters, isDesktop } = useApp();
   const titleRef = useRef<HTMLSpanElement>(null);
   const t = useTranslations('calendar');
+  const tCommon = useTranslations('common');
   
   // Calculate weeksToShow based on isDesktop
   const weeksToShow = isDesktop === true ? 4 : 2;
@@ -28,7 +29,7 @@ export default function Calendar({ onDayClick }: CalendarProps) {
     return (
       <div className="calendar-section lg:min-w-[350px]">
         <div className="flex items-center justify-center h-32">
-          <div className="loading-message">로딩 중...</div>
+          <div className="loading-message">{tCommon('loading')}</div>
         </div>
       </div>
     );
