@@ -1,196 +1,255 @@
-# Assignment Calendar Web Application
+# Assignment Calendar Next.js Application
 
-A mobile-friendly assignment management calendar web application with iPhone 16 Pro inspired design for efficiently managing Japanese coursework data.
+A mobile-friendly assignment management calendar web application built with Next.js 15, TypeScript, and Supabase for managing coursework data efficiently.
 
 ## ✨ Features
 
 - 📅 2-week calendar view with weekly navigation
 - 📚 Subject-based assignment management with pagination
 - 🔍 Advanced filtering options (hide completed/overdue assignments)
-- 📱 Mobile-optimized iPhone 16 Pro design
-- ⚡ Modern ES6 modules architecture
-- 🎨 Custom CSS with TailwindCSS integration
+- ➕ **Manual assignment creation with floating add button**
+- ✅ **Real-time assignment completion tracking**
+- 📱 Mobile-optimized responsive design
+- ⚡ Server-side rendering with Next.js App Router
+- 🎨 TailwindCSS for styling
 - 📊 Assignment status tracking and due date management
+- 🔧 TypeScript for type safety
+- 🎯 Optimized UI/UX with clean layout design
+- ☁️ **Cloud database integration with Supabase**
+- 📱 **PWA support for mobile installation**
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES6 Modules)
-- **Styling**: Custom CSS + TailwindCSS CDN
-- **Data**: JavaScript modules (no external database)
-- **Deployment**: Vercel (Static Site Hosting)
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: TailwindCSS
+- **Database**: Supabase PostgreSQL
+- **State Management**: React Context API
+- **Deployment**: Vercel
+- **PWA**: next-pwa
 
 ## 📁 Project Structure
 
 ```
 /
-├── index.html              # Main HTML entry point
-├── css/
-│   ├── styles.css         # Global layout and base styles
-│   └── components.css     # Component-specific styles
-├── js/
-│   ├── app.js            # Main application controller
-│   ├── calendar.js       # Calendar rendering and navigation
-│   ├── assignments.js    # Assignment list management
-│   ├── subjects.js       # Subject-based view with pagination
-│   └── utils.js          # Utility functions
-├── data/
-│   └── assignments.js    # Assignment data (ES6 module export)
-├── img/
-│   └── iphone-frame.png  # iPhone bezel frame image
-└── package.json          # Project metadata and scripts
+├── app/
+│   ├── layout.tsx          # Root layout with navigation
+│   ├── page.tsx            # Home page (redirects to /calendar)
+│   ├── globals.css         # Global styles
+│   ├── calendar/
+│   │   └── page.tsx        # Calendar view page
+│   ├── subjects/
+│   │   └── page.tsx        # Subjects view page
+│   └── settings/
+│       └── page.tsx        # Settings page
+├── components/
+│   ├── Calendar.tsx        # Calendar component
+│   ├── Assignments.tsx     # Assignments list component
+│   ├── Subjects.tsx        # Subjects view component
+│   ├── BottomTabs.tsx      # Navigation tabs
+│   ├── FloatingAddButton.tsx
+│   ├── AddAssignmentModal.tsx
+│   └── AssignmentPopup.tsx
+├── contexts/
+│   └── AppContext.tsx      # Global state management
+├── services/
+│   ├── supabase-client.ts  # Supabase client setup
+│   └── assignment-service.ts # Assignment CRUD operations
+├── utils/
+│   ├── utils.ts            # Utility functions
+│   ├── pagination.ts       # Pagination utilities
+│   ├── data-transformer.ts # Data transformation
+│   └── retry-utils.ts      # Retry logic
+├── config/
+│   └── supabase-config.ts  # Supabase configuration
+├── public/
+│   ├── manifest.json       # PWA manifest
+│   └── icons/              # App icons
+├── package.json
+├── tsconfig.json
+├── next.config.js
+├── tailwind.config.js
+└── .env.local.example
 ```
 
-## 🚀 Local Development
+## 🚀 Getting Started
 
 ### Prerequisites
-- Python 3.x (for local development server)
-- Modern web browser with ES6 module support
+- Node.js 18+ and npm
+- Supabase account and project
 
-### Getting Started
+### Installation
 
 1. Clone the repository
 ```bash
 git clone <repository-url>
-cd html-assignment-calendar
+cd assignment-calendar
 ```
 
-2. Start local development server
+2. Install dependencies
 ```bash
-# Using Python built-in server
-python3 -m http.server 8001
+npm install
+```
 
-# Or using npm scripts
+3. Set up environment variables
+```bash
+cp .env.local.example .env.local
+```
+
+Edit `.env.local` with your Supabase credentials:
+```
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
+4. Run the development server
+```bash
 npm run dev
 ```
 
-3. Open in browser
-```
-http://localhost:8001
-```
+5. Open [http://localhost:3000](http://localhost:3000)
 
 ### Development Scripts
 
 ```bash
-npm run dev      # Start development server on port 8001
-npm run preview  # Start preview server on port 8002
-npm run build    # No build step needed (static site)
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run start    # Start production server
+npm run lint     # Run ESLint
 ```
 
-## 🌐 Vercel Deployment
+## ☁️ Database Setup (Supabase)
 
-### Automatic Deployment
+### 1. Create Supabase Project
 
-1. **Connect GitHub Repository**
-   - Push your project to GitHub
-   - Visit [Vercel](https://vercel.com) and sign in
-   - Click "New Project" and connect your GitHub repository
+1. Visit [Supabase](https://supabase.com) and create an account
+2. Create a new project
+3. Navigate to SQL Editor and create the assignments table:
 
-2. **Deployment Configuration**
-   - **Framework Preset**: Other
-   - **Build Command**: Leave empty (static site)
-   - **Output Directory**: `./` (root directory)
-   - **Install Command**: Leave empty
+```sql
+CREATE TABLE assignments (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  course_name TEXT NOT NULL,
+  round TEXT NOT NULL,
+  title TEXT NOT NULL,
+  due_date DATE NOT NULL,
+  due_time TIME NOT NULL,
+  platform TEXT NOT NULL CHECK (platform IN ('teams', 'openlms')),
+  completed BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
-3. **Auto-Deploy Setup**
-   - Pushes to `main` branch trigger production deployments
-   - Pushes to other branches create preview deployments
-   - No additional configuration files needed
+-- Enable Row Level Security (RLS)
+ALTER TABLE assignments ENABLE ROW LEVEL SECURITY;
 
-### Manual Deployment with Vercel CLI
+-- Create policy to allow all operations (adjust for production)
+CREATE POLICY "Allow all operations on assignments" ON assignments
+FOR ALL USING (true) WITH CHECK (true);
+```
+
+### 2. Database Schema
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | BIGINT (AUTO) | Primary key, auto-generated |
+| course_name | TEXT | Course/subject name |
+| round | TEXT | Assignment round/number |
+| title | TEXT | Assignment title/description |
+| due_date | DATE | Due date (YYYY-MM-DD) |
+| due_time | TIME | Due time (HH:MM) |
+| platform | TEXT | Platform (teams/openlms) |
+| completed | BOOLEAN | Completion status |
+| created_at | TIMESTAMP | Auto-generated creation time |
+| updated_at | TIMESTAMP | Auto-generated update time |
+
+## 🌐 Deployment
+
+### Vercel Deployment (Recommended)
+
+1. Push your code to GitHub
+2. Import your repository on [Vercel](https://vercel.com)
+3. Configure environment variables:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. Deploy!
+
+### Manual Deployment
 
 ```bash
-# Install Vercel CLI
-npm i -g vercel
+# Build the application
+npm run build
 
-# Deploy to production
-vercel --prod
+# Start production server
+npm run start
 ```
 
-## 📊 Data Management
+## 📱 PWA Support
 
-### Assignment Data Structure
+The application includes PWA support for installation on mobile devices:
 
-Edit `data/assignments.js` to modify assignment data:
-
-```javascript
-export const assignmentsData = [
-    {
-        "id": 1,
-        "courseName": "Mobile Programming",
-        "round": "1st Assignment",
-        "title": "Development Environment Setup",
-        "dueDate": "2025-06-01",
-        "dueTime": "23:59",
-        "platform": "teams", // or "openlms"
-        "completed": false
-    }
-    // ... more assignments
-];
-```
-
-### Data Migration Note
-
-- **Previous**: `data/assignments.json` (JSON file)
-- **Current**: `data/assignments.js` (ES6 module)
-- This change enables better integration with the modular architecture
+- Add to home screen functionality
+- Offline support (service worker)
+- App-like experience
+- Custom app icons
 
 ## 🎨 Customization
 
+### Adding New Features
+
+1. **Components**: Add new components in `/components`
+2. **Pages**: Create new routes in `/app` directory
+3. **State**: Update `AppContext` for global state
+4. **Services**: Add new services in `/services`
+
 ### Styling
 
-- **Global Styles**: `css/styles.css` - Layout, typography, and base styles
-- **Components**: `css/components.css` - Individual component styles
-- **TailwindCSS**: Available via CDN for rapid styling
+- Global styles: `app/globals.css`
+- Tailwind configuration: `tailwind.config.js`
+- Component-specific styles: Use Tailwind classes or CSS modules
 
-### Adding Features
+## 🔧 Configuration
 
-- **Modular Architecture**: Each feature is separated into dedicated modules
-- **ES6 Imports**: Use `import`/`export` syntax for code organization
-- **Event Handling**: Centralized in `app.js` with delegation to specific modules
+### Environment Variables
 
-### Configuration
-
-Key configuration options in `app.js`:
-
-```javascript
-config: {
-    referenceToday: new Date(2025, 5, 3), // Reference date for testing
-    pagination: {
-        itemsPerPage: 3 // Items per page in subjects view
-    },
-    filters: {
-        unsubmittedOnly: false,
-        hideOverdueCalendar: true,
-        hideOverdueSubjects: true
-    }
-}
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-## 🌍 Browser Support
+### Next.js Configuration
 
-- **Chrome**: 61+
-- **Firefox**: 60+
-- **Safari**: 11+
-- **Edge**: 16+
+See `next.config.js` for:
+- PWA configuration
+- Other Next.js settings
 
-All modern browsers with ES6 module support.
+## 🚨 Troubleshooting
 
-## 🔧 Development Notes
+### Common Issues
 
-### Module Architecture
+1. **Database Connection Errors**
+   - Verify environment variables
+   - Check Supabase project status
+   - Verify RLS policies
 
-- **Separation of Concerns**: Each JavaScript file handles specific functionality
-- **Import/Export**: Clean module boundaries with explicit dependencies
-- **No Build Step**: Direct ES6 module loading in browsers
+2. **Build Errors**
+   - Clear `.next` directory
+   - Delete `node_modules` and reinstall
+   - Check TypeScript errors
 
-### Mobile-First Design
+3. **PWA Not Working**
+   - Ensure HTTPS in production
+   - Check manifest.json configuration
+   - Verify service worker registration
 
-- **iPhone 16 Pro Mockup**: Realistic device frame and dimensions
-- **Touch-Friendly**: Large tap targets and swipe gestures
-- **Responsive**: Adapts to different screen sizes within the phone frame
+## 📚 Tech Documentation
 
-## 📚 Additional Resources
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Supabase Documentation](https://supabase.com/docs)
+- [TailwindCSS Documentation](https://tailwindcss.com/docs)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs)
 
-- [ES6 Modules Documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
-- [Vercel Static Site Deployment](https://vercel.com/docs/concepts/get-started)
-- [TailwindCSS CDN Usage](https://tailwindcss.com/docs/installation/play-cdn) 
+## 📄 License
+
+MIT
