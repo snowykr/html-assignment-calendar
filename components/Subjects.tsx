@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 import { getAssignmentStatus, formatDateTimeForDisplay } from '@/utils/utils';
+import { formatRound } from '@/utils/round-formatter';
 import type { Assignment } from '@/utils/utils';
 
 interface SubjectData {
@@ -83,7 +84,7 @@ export default function Subjects() {
               <div key={assignment.id} className="subject-assignment-item">
                 <div>
                   <div className="subject-assignment-title">
-                    {assignment.title} ({assignment.round})
+                    {assignment.title} ({formatRound(assignment.round, locale)})
                   </div>
                   <div className={`subject-assignment-due ${statusClass}`}>
                     {dueDateText}
