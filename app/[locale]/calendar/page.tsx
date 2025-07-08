@@ -24,6 +24,55 @@ export default function CalendarPage() {
     );
   }
 
+  // 모바일용 레이아웃
+  if (!isDesktop) {
+    return (
+      <>
+        <div className="tab-content active mobile-flex-layout">
+          {/* 고정 달력 */}
+          <div className="calendar-fixed-mobile">
+            <Calendar 
+              onDayClick={handleDayClick} 
+              weeksToShow={2}
+            />
+          </div>
+          
+          {/* 스크롤 가능한 영역 */}
+          <div className="scrollable-content-mobile">
+            <div className="filter-section">
+              <div className="filter-row">
+                <span className="filter-label">{t('hideCompleted')}</span>
+                <div 
+                  className={`toggle-switch ${!filters.unsubmittedOnly ? 'off' : ''}`}
+                  onClick={() => toggleFilter('unsubmittedOnly')}
+                >
+                  <div className="toggle-slider"></div>
+                </div>
+              </div>
+              <div className="filter-row">
+                <span className="filter-label">{t('hideOverdue')}</span>
+                <div 
+                  className={`toggle-switch ${!filters.hideOverdueCalendar ? 'off' : ''}`}
+                  onClick={() => toggleFilter('hideOverdueCalendar')}
+                >
+                  <div className="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+            
+            <Assignments />
+          </div>
+        </div>
+        
+        <AssignmentPopup 
+          date={popupDate} 
+          onClose={() => setPopupDate(null)} 
+        />
+      </>
+    );
+  }
+
+  // 데스크톱용 레이아웃 (기존 유지)
   return (
     <>
       <div className="tab-content active">
@@ -31,7 +80,7 @@ export default function CalendarPage() {
           <div className="lg:sticky lg:top-0 lg:h-fit">
             <Calendar 
               onDayClick={handleDayClick} 
-              weeksToShow={isDesktop ? 4 : 2}
+              weeksToShow={4}
             />
             
             <div className="filter-section">

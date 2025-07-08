@@ -877,6 +877,11 @@ body {
 
 /* Desktop-specific styles */
 @media (min-width: 1024px) {
+    /* Fixed TopNav offset */
+    .main-content-area {
+        padding: 72px 2rem 0 2rem; /* TopNav 높이(64px) + 여백(8px) + 좌우 패딩 */
+    }
+    
     /* Calendar adjustments for desktop */
     .calendar-day {
         font-size: 16px;
@@ -929,23 +934,63 @@ body {
         padding: 1.5rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    
-    /* Responsive padding for main content area */
-    .main-content-area {
-        padding: 0 2rem; /* 32px */
-    }
 }
 
 /* Large desktop screens */
 @media (min-width: 1280px) {
     .main-content-area {
-        padding: 0 3rem; /* 48px */
+        padding: 72px 3rem 0 3rem; /* TopNav offset + 좌우 패딩 */
     }
 }
 
 /* Extra large desktop screens */
 @media (min-width: 1536px) {
     .main-content-area {
-        padding: 0 4rem; /* 64px */
+        padding: 72px 4rem 0 4rem; /* TopNav offset + 좌우 패딩 */
+    }
+}
+
+/* Mobile-specific flex layout */
+@media (max-width: 1023px) {
+    .mobile-flex-layout {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    
+    .calendar-fixed-mobile {
+        flex-shrink: 0;
+        background: #f2f2f7;
+        padding: 15px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .scrollable-content-mobile {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0 0 90px 0; /* 바텀탭 높이만큼 하단 여백 */
+        background: #f2f2f7;
+        -webkit-overflow-scrolling: touch; /* iOS 스크롤 성능 향상 */
+    }
+    
+    /* 달력 섹션 스타일 조정 */
+    .calendar-fixed-mobile .calendar-section {
+        position: static;
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+    
+    /* 스크롤 영역 내부 패딩 조정 */
+    .scrollable-content-mobile .filter-section {
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+    
+    .scrollable-content-mobile .assignments-list {
+        padding-bottom: 20px;
     }
 }
