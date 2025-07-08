@@ -877,6 +877,11 @@ body {
 
 /* Desktop-specific styles */
 @media (min-width: 1024px) {
+    /* Fixed TopNav offset */
+    .main-content-area {
+        padding: 72px 2rem 0 2rem; /* TopNav 높이(64px) + 여백(8px) + 좌우 패딩 */
+    }
+    
     /* Calendar adjustments for desktop */
     .calendar-day {
         font-size: 16px;
@@ -929,24 +934,19 @@ body {
         padding: 1.5rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    
-    /* Responsive padding for main content area */
-    .main-content-area {
-        padding: 0 2rem; /* 32px */
-    }
 }
 
 /* Large desktop screens */
 @media (min-width: 1280px) {
     .main-content-area {
-        padding: 0 3rem; /* 48px */
+        padding: 72px 3rem 0 3rem; /* TopNav offset + 좌우 패딩 */
     }
 }
 
 /* Extra large desktop screens */
 @media (min-width: 1536px) {
     .main-content-area {
-        padding: 0 4rem; /* 64px */
+        padding: 72px 4rem 0 4rem; /* TopNav offset + 좌우 패딩 */
     }
 }
 

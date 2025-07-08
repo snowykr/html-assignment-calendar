@@ -14,7 +14,7 @@ export default function TopNav() {
   ];
 
   return (
-    <nav className="hidden lg:flex items-center justify-center py-4 bg-white shadow-sm border-b border-gray-200">
+    <nav className="hidden lg:fixed lg:top-0 lg:left-0 lg:right-0 lg:z-50 lg:flex items-center justify-center py-4 bg-white shadow-sm border-b border-gray-200">
       <div className="flex items-center gap-8">
         {tabs.map((tab) => (
           <Link
