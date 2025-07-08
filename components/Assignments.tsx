@@ -6,6 +6,7 @@ import { getAssignmentStatus, filterAssignments, sortAssignmentsByDueDate, forma
 import { formatRound } from '@/utils/round-formatter';
 import { useTapToggle } from '@/hooks/useTapToggle';
 import type { Assignment } from '@/utils/utils';
+import { AppCheckIcon, AppIncompleteIcon } from '@/utils/icons';
 
 export default function Assignments() {
   const { 
@@ -73,7 +74,10 @@ export default function Assignments() {
               toggleAssignmentCompletion(assignment.id, !assignment.completed);
             }}
           >
-            {isCompleted ? '✓' : '○'}
+            {isCompleted ? 
+              <AppCheckIcon className="h-4 w-4 text-green-600" aria-label="완료됨" /> : 
+              <AppIncompleteIcon className="h-4 w-4 text-black" aria-label="미완료 - 클릭하여 완료 처리" />
+            }
           </div>
           
           <div className="assignment-header">
