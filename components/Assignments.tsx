@@ -1,8 +1,8 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
-import { getAssignmentStatus, filterAssignments, sortAssignmentsByDueDate } from '@/utils/utils';
+import { getAssignmentStatus, filterAssignments, sortAssignmentsByDueDate, formatDateTimeForDisplay } from '@/utils/utils';
 import { useTapToggle } from '@/hooks/useTapToggle';
 import type { Assignment } from '@/utils/utils';
 
@@ -20,6 +20,7 @@ export default function Assignments() {
   const t = useTranslations('assignmentStatus');
   const tNoAssignments = useTranslations('noAssignments');
   const tCommon = useTranslations('common');
+  const locale = useLocale();
   
 
 
@@ -83,7 +84,7 @@ export default function Assignments() {
           <div className="assignment-title">{assignment.title}</div>
           
           <div className={`deadline ${statusClass}`}>
-            {assignment.dueDate} {assignment.dueTime}{statusText}
+            {formatDateTimeForDisplay(assignment, locale)}{statusText}
           </div>
         </div>
         

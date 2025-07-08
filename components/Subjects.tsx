@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
-import { getAssignmentStatus, getFullLocale } from '@/utils/utils';
+import { getAssignmentStatus, formatDateTimeForDisplay } from '@/utils/utils';
 import type { Assignment } from '@/utils/utils';
 
 interface SubjectData {
@@ -77,9 +77,7 @@ export default function Subjects() {
         <div className="subject-assignments-inner-list">
           {paginatedAssignments.map(assignment => {
             const { statusClass, statusText } = getAssignmentStatus(assignment, referenceToday, t);
-            const fullLocale = getFullLocale(locale);
-            const formattedDate = new Intl.DateTimeFormat(fullLocale, { month: 'long', day: 'numeric' }).format(new Date(assignment.dueDate));
-            const dueDateText = `${formattedDate} ${assignment.dueTime}${statusText}`;
+            const dueDateText = `${formatDateTimeForDisplay(assignment, locale)}${statusText}`;
             
             return (
               <div key={assignment.id} className="subject-assignment-item">
@@ -149,9 +147,7 @@ export default function Subjects() {
 
     const mostUrgent = uncompletedAssignments[0];
     const { statusClass, statusText } = getAssignmentStatus(mostUrgent, referenceToday, t);
-    const fullLocale = getFullLocale(locale);
-    const formattedDate = new Intl.DateTimeFormat(fullLocale, { month: 'long', day: 'numeric' }).format(new Date(mostUrgent.dueDate));
-    const dueDateText = `${tSubjects('closestDeadline')} ${formattedDate}${statusText}`;
+    const dueDateText = `${tSubjects('closestDeadline')} ${formatDateTimeForDisplay(mostUrgent, locale)}${statusText}`;
     
     return { text: dueDateText, className: statusClass };
   };
