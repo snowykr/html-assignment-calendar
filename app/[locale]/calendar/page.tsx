@@ -25,16 +25,13 @@ export default function CalendarPage() {
   }
 
   // 모바일용 레이아웃
-  if (!isDesktop) {
+  if (isDesktop === false) {
     return (
       <>
         <div className="tab-content active mobile-flex-layout">
           {/* 고정 달력 */}
           <div className="calendar-fixed-mobile">
-            <Calendar 
-              onDayClick={handleDayClick} 
-              weeksToShow={2}
-            />
+            <Calendar onDayClick={handleDayClick} />
           </div>
           
           {/* 스크롤 가능한 영역 */}
@@ -72,49 +69,55 @@ export default function CalendarPage() {
     );
   }
 
-  // 데스크톱용 레이아웃 (기존 유지)
-  return (
-    <>
-      <div className="tab-content active">
-        <div className="content lg:grid lg:grid-cols-2 lg:gap-6 xl:gap-8 lg:p-6 xl:p-8 2xl:p-12">
-          <div className="lg:sticky lg:top-0 lg:h-fit">
-            <Calendar 
-              onDayClick={handleDayClick} 
-              weeksToShow={4}
-            />
-            
-            <div className="filter-section">
-              <div className="filter-row">
-                <span className="filter-label">{t('hideCompleted')}</span>
-                <div 
-                  className={`toggle-switch ${!filters.unsubmittedOnly ? 'off' : ''}`}
-                  onClick={() => toggleFilter('unsubmittedOnly')}
-                >
-                  <div className="toggle-slider"></div>
+  // 데스크탑용 레이아웃
+  if (isDesktop === true) {
+    return (
+      <>
+        <div className="tab-content active">
+          <div className="content lg:grid lg:grid-cols-2 lg:gap-6 xl:gap-8 lg:p-6 xl:p-8 2xl:p-12">
+            <div className="lg:sticky lg:top-0 lg:h-fit">
+              <Calendar onDayClick={handleDayClick} />
+              
+              <div className="filter-section">
+                <div className="filter-row">
+                  <span className="filter-label">{t('hideCompleted')}</span>
+                  <div 
+                    className={`toggle-switch ${!filters.unsubmittedOnly ? 'off' : ''}`}
+                    onClick={() => toggleFilter('unsubmittedOnly')}
+                  >
+                    <div className="toggle-slider"></div>
+                  </div>
                 </div>
-              </div>
-              <div className="filter-row">
-                <span className="filter-label">{t('hideOverdue')}</span>
-                <div 
-                  className={`toggle-switch ${!filters.hideOverdueCalendar ? 'off' : ''}`}
-                  onClick={() => toggleFilter('hideOverdueCalendar')}
-                >
-                  <div className="toggle-slider"></div>
+                <div className="filter-row">
+                  <span className="filter-label">{t('hideOverdue')}</span>
+                  <div 
+                    className={`toggle-switch ${!filters.hideOverdueCalendar ? 'off' : ''}`}
+                    onClick={() => toggleFilter('hideOverdueCalendar')}
+                  >
+                    <div className="toggle-slider"></div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          
-          <div className="lg:overflow-y-auto">
-            <Assignments />
+            
+            <div className="lg:overflow-y-auto">
+              <Assignments />
+            </div>
           </div>
         </div>
-      </div>
-      
-      <AssignmentPopup 
-        date={popupDate} 
-        onClose={() => setPopupDate(null)} 
-      />
-    </>
+        
+        <AssignmentPopup 
+          date={popupDate} 
+          onClose={() => setPopupDate(null)} 
+        />
+      </>
+    );
+  }
+
+  // isDesktop이 undefined인 경우 (초기 로딩 중)
+  return (
+    <div className="content">
+      <div className="loading-message">로딩 중...</div>
+    </div>
   );
 }
