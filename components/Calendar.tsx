@@ -7,19 +7,32 @@ import { adjustCalendarTitleFontSize } from '@/utils/utils';
 
 interface CalendarProps {
   onDayClick: (dateStr: string) => void;
-  weeksToShow?: number;
 }
 
-export default function Calendar({ onDayClick, weeksToShow = 2 }: CalendarProps) {
-  const { viewStartDate, navigateWeek, referenceToday, assignmentsData, filters } = useApp();
+export default function Calendar({ onDayClick }: CalendarProps) {
+  const { viewStartDate, navigateWeek, referenceToday, assignmentsData, filters, isDesktop } = useApp();
   const titleRef = useRef<HTMLSpanElement>(null);
   const t = useTranslations('calendar');
+  
+  // Calculate weeksToShow based on isDesktop
+  const weeksToShow = isDesktop === true ? 4 : 2;
 
   useEffect(() => {
-    if (titleRef.current) {
+    if (titleRef.current && isDesktop !== undefined) {
       adjustCalendarTitleFontSize(titleRef.current);
     }
-  }, [viewStartDate]);
+  }, [viewStartDate, isDesktop]);
+
+  // Show loading if isDesktop is not yet determined
+  if (isDesktop === undefined) {
+    return (
+      <div className="calendar-section lg:min-w-[350px]">
+        <div className="flex items-center justify-center h-32">
+          <div className="loading-message">로딩 중...</div>
+        </div>
+      </div>
+    );
+  }
 
   const dayHeaders = [
     t('day0'),
