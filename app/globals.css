@@ -702,8 +702,8 @@ body {
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
-    max-width: 320px;
+    width: 90%;
+    max-width: 600px;
     border-radius: 18px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     animation: fadeInPopup 0.3s ease-out;
@@ -914,8 +914,9 @@ body {
     }
     
     .popup-content {
-        width: 90%;
-        margin: 20px;
+        width: calc(100% - 32px);
+        max-width: 380px;
+        margin: 16px;
         padding: 16px;
     }
     
@@ -929,8 +930,30 @@ body {
     }
 }
 
+/* Tablet-specific styles */
+@media (min-width: 481px) and (max-width: 1023px) {
+    .popup-content {
+        width: 85%;
+        max-width: 500px;
+    }
+    
+    .memo-modal {
+        max-width: 450px;
+    }
+}
+
 /* Desktop-specific styles */
 @media (min-width: 1024px) {
+    /* Modal styles for desktop */
+    .popup-content {
+        width: 90%;
+        max-width: 600px;
+    }
+    
+    .memo-modal {
+        max-width: 500px;
+    }
+    
     /* Fixed TopNav offset */
     .main-content-area {
         padding: 72px 2rem 0 2rem; /* TopNav 높이(64px) + 여백(8px) + 좌우 패딩 */
