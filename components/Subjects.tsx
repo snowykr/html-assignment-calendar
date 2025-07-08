@@ -6,6 +6,7 @@ import { useApp } from '@/contexts/AppContext';
 import { getAssignmentStatus, formatDateTimeForDisplay } from '@/utils/utils';
 import { formatRound } from '@/utils/round-formatter';
 import type { Assignment } from '@/utils/utils';
+import { AppChevronDownIcon } from '@/utils/icons';
 
 interface SubjectData {
   assignments: Assignment[];
@@ -172,7 +173,12 @@ export default function Subjects() {
                   {status.text}
                 </div>
               </div>
-              <span className="expand-icon-subject">⌄</span>
+              <span className="expand-icon-subject">
+                <AppChevronDownIcon 
+                  className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+                  aria-label={isExpanded ? '축소' : '확장'}
+                />
+              </span>
             </div>
             
             {isExpanded && renderSubjectAssignments(subjectName, subjectData.assignments)}

@@ -13,19 +13,8 @@ import {
 import { handleError, logError, showUserError, AppError } from '@/utils/error-handler';
 import { initSubjectPagination } from '@/utils/pagination';
 import { loadFiltersFromStorage, saveFiltersToStorage, DEFAULT_FILTERS } from '@/utils/filter-storage';
+import type { Assignment } from '@/utils/utils';
 
-interface Assignment {
-  id: number;
-  courseName: string;
-  round: string;
-  title: string;
-  dueDate: string;
-  dueTime: string;
-  platform: 'teams' | 'openlms';
-  completed: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
 
 interface Filters {
   unsubmittedOnly: boolean;
@@ -147,13 +136,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadDataFromSupabase = async () => {
-    setLoadingMessage(t('connectingDB'));
-    await initSupabase();
-    
-    setLoadingMessage(t('fetchingData'));
-    const data = await getAllAssignments();
-    setAssignmentsData(data);
-    setIsLoading(false);
+    try {
+      setLoadingMessage(t('connectingDB'));
+      await initSupabase();
+      
+      setLoadingMessage(t('fetchingData'));
+      const data = await getAllAssignments();
+      setAssignmentsData(data);
+      setIsLoading(false);
+    } catch (error) {
+      const appError = handleError(error, { operation: 'loadDataFromSupabase' }, tErrors);
+      logError(appError);
+      showUserError(appError, showTemporaryMessage);
+      setIsLoading(false);
+    }
   };
 
   const navigateWeek = (direction: number) => {

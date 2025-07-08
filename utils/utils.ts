@@ -10,6 +10,8 @@ export interface Assignment {
   completed: boolean;
   createdAt?: string;
   updatedAt?: string;
+  link?: string;
+  memo?: string;
 }
 
 export interface AssignmentStatus {
@@ -30,23 +32,35 @@ export function getAssignmentStatus(
   
   if (assignment.completed) {
     statusClass = 'completed';
-    statusText = t ? t('completed') : ' (提出完了)';
+    statusText = t ? t('completed') : ' (Completed)';
   } else {
     const diffTime = dueDateObj.getTime() - referenceToday.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (dueDateObj < referenceToday) {
       statusClass = 'overdue';
-      statusText = t ? t('overdue') : ' (期限切れ)';
-    } else if (dueDateObj.toDateString() === referenceToday.toDateString()) {
+      statusText = t ? t('overdue') : ' (Overdue)';
+    } else if (diffTime < 24 * 60 * 60 * 1000) {
+      // 24시간 미만: 시간/분 단위로 표시
       statusClass = 'due-soon';
-      statusText = t ? t('dueToday') : ' (今日締切)';
-    } else if (diffDays <= 3) {
-      statusClass = 'due-soon';
-      statusText = t ? t('daysLeft', { days: diffDays }) : ` (${diffDays}日後)`;
+      if (diffTime < 60 * 60 * 1000) {
+        // 1시간 미만: 분 단위
+        const minutes = Math.ceil(diffTime / (60 * 1000));
+        statusText = t ? t('minutesLeft', { minutes }) : ` (${minutes} minutes left)`;
+      } else {
+        // 1시간 이상 24시간 미만: 시간 단위
+        const hours = Math.ceil(diffTime / (60 * 60 * 1000));
+        statusText = t ? t('hoursLeft', { hours }) : ` (${hours} hours left)`;
+      }
     } else {
-      statusClass = 'normal';
-      statusText = t ? t('daysLeft', { days: diffDays }) : ` (${diffDays}日後)`;
+      // 24시간 이상: 일 단위로 표시
+      const diffDays = Math.floor(diffTime / (24 * 60 * 60 * 1000));
+      if (diffDays <= 3) {
+        statusClass = 'due-soon';
+        statusText = t ? t('daysLeft', { days: diffDays }) : ` (${diffDays} days left)`;
+      } else {
+        statusClass = 'normal';
+        statusText = t ? t('daysLeft', { days: diffDays }) : ` (${diffDays} days left)`;
+      }
     }
   }
   

@@ -36,7 +36,13 @@
     "openlms": "OpenLMS",
     "addingInProgress": "Adding...",
     "editingInProgress": "Editing...",
-    "fillAllFields": "Please fill all fields"
+    "fillAllFields": "Please fill all fields",
+    "link": "Related Link",
+    "linkPlaceholder": "https://...",
+    "memo": "Memo",
+    "memoPlaceholder": "Enter assignment-related memo",
+    "invalidUrl": "Invalid URL format",
+    "memoTooLong": "Memo must be 1000 characters or less"
   },
   "settings": {
     "notifications": "Notifications",
@@ -79,6 +85,8 @@
     "completed": " (Completed)",
     "overdue": " (Overdue)",
     "dueToday": " (Due Today)",
+    "minutesLeft": " ({minutes} minutes left)",
+    "hoursLeft": " ({hours} hours left)",
     "daysLeft": " ({days} days left)"
   },
   "filters": {

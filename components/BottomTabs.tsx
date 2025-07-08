@@ -2,15 +2,16 @@
 
 import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/navigation';
+import { AppCalendarIcon, AppBookIcon, AppCogIcon } from '@/utils/icons';
 
 export default function BottomTabs() {
   const pathname = usePathname();
   const t = useTranslations('bottomTabs');
   
   const tabs = [
-    { href: '/calendar', label: t('calendar'), icon: '📅' },
-    { href: '/subjects', label: t('subjects'), icon: '📚' },
-    { href: '/settings', label: t('settings'), icon: '⚙️' }
+    { href: '/calendar', label: t('calendar'), icon: <AppCalendarIcon className="h-5 w-5" aria-label={t('calendar')} /> },
+    { href: '/subjects', label: t('subjects'), icon: <AppBookIcon className="h-5 w-5" aria-label={t('subjects')} /> },
+    { href: '/settings', label: t('settings'), icon: <AppCogIcon className="h-5 w-5" aria-label={t('settings')} /> }
   ];
 
   return (

@@ -11,6 +11,7 @@ export default function CalendarPage() {
   const { filters, toggleFilter, isLoading, loadingMessage, isDesktop } = useApp();
   const [popupDate, setPopupDate] = useState<string | null>(null);
   const t = useTranslations('filters');
+  const tCommon = useTranslations('common');
 
   const handleDayClick = (dateStr: string) => {
     setPopupDate(dateStr);
@@ -117,7 +118,7 @@ export default function CalendarPage() {
   // isDesktop이 undefined인 경우 (초기 로딩 중)
   return (
     <div className="content">
-      <div className="loading-message">로딩 중...</div>
+      <div className="loading-message">{tCommon('loading')}</div>
     </div>
   );
 }

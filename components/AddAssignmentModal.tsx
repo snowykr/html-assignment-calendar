@@ -21,7 +21,9 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
     title: '',
     dueDate: new Date().toISOString().split('T')[0],
     dueTime: '00:00',
-    platform: '' as 'teams' | 'openlms' | ''
+    platform: '' as 'teams' | 'openlms' | '',
+    link: '',
+    memo: ''
   });
 
   useEffect(() => {
@@ -32,7 +34,9 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
         title: currentEditingAssignment.title || '',
         dueDate: currentEditingAssignment.dueDate || '',
         dueTime: currentEditingAssignment.dueTime || '',
-        platform: currentEditingAssignment.platform || ''
+        platform: currentEditingAssignment.platform || '',
+        link: currentEditingAssignment.link || '',
+        memo: currentEditingAssignment.memo || ''
       });
     } else {
       // Reset form for new assignment
@@ -42,10 +46,23 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
         title: '',
         dueDate: new Date().toISOString().split('T')[0],
         dueTime: '00:00',
-        platform: ''
+        platform: '',
+        link: '',
+        memo: ''
       });
     }
   }, [currentEditingAssignment, isOpen]);
+
+  // URL validation function
+  const isValidUrl = (url: string): boolean => {
+    if (!url.trim()) return true; // Empty URL is valid (optional field)
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -54,6 +71,18 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
     if (!formData.courseName || !formData.round || !formData.title || 
         !formData.dueDate || !formData.dueTime || !formData.platform) {
       alert(t('fillAllFields'));
+      return;
+    }
+
+    // Validate link URL format
+    if (formData.link && !isValidUrl(formData.link)) {
+      alert(t('invalidUrl'));
+      return;
+    }
+
+    // Validate memo length
+    if (formData.memo && formData.memo.length > 1000) {
+      alert(t('memoTooLong'));
       return;
     }
 
@@ -152,6 +181,33 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
               <option value="teams">{t('teams')}</option>
               <option value="openlms">{t('openlms')}</option>
             </select>
+          </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="link">{t('link')}</label>
+            <input 
+              type="url" 
+              id="link" 
+              className="form-input" 
+              value={formData.link}
+              onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+              placeholder={t('linkPlaceholder')}
+              maxLength={2048}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="memo">{t('memo')}</label>
+            <textarea 
+              id="memo" 
+              className="form-input memo-textarea" 
+              value={formData.memo}
+              onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
+              placeholder={t('memoPlaceholder')}
+              maxLength={1000}
+              rows={3}
+            />
+            <div className="char-counter">
+              {formData.memo.length}/1000
+            </div>
           </div>
           <div className="form-actions">
             <button 
