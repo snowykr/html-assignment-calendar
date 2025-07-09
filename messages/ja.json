@@ -83,11 +83,17 @@
   },
   "assignmentStatus": {
     "completed": " (提出完了)",
-    "overdue": " (期限切れ)",
+    "overdue": " (期限超過)",
     "dueToday": " (今日締切)",
-    "minutesLeft": " ({minutes}分後)",
-    "hoursLeft": " ({hours}時間後)",
-    "daysLeft": " ({days}日後)"
+    "minutesLeft": " (残り{minutes}分)",
+    "hoursLeft": " (残り{hours}時間)",
+    "daysLeft": " (残り{days}日)",
+    "completedLabel": "完了",
+    "incompleteLabel": "未完了 - クリックして完了にする",
+    "linkAvailable": "リンクあり",
+    "memoAvailable": "メモあり",
+    "expandLabel": "展開",
+    "collapseLabel": "折りたたみ"
   },
   "filters": {
     "hideCompleted": "提出済み課題を隠す",
@@ -103,5 +109,33 @@
   "noAssignments": {
     "onThisDay": "この日の課題はありません",
     "inPeriod": "期間内に課題がありません"
+  },
+  "auth": {
+    "signIn": "ログイン",
+    "signOut": "ログアウト",
+    "signInWithGoogle": "Googleでログイン",
+    "loading": "読み込み中..."
+  },
+  "landing": {
+    "title": "課題管理が簡単になります",
+    "subtitle": "体系的な課題管理で学習成果を向上させましょう",
+    "feature1": "直感的なインターフェースで課題スケジュール管理",
+    "feature2": "科目別課題分類と進捗状況追跡",
+    "feature3": "締切リマインダーとクロスプラットフォーム対応",
+    "startWithGoogle": "Googleアカウントで始める"
+  },
+  "navigation": {
+    "homeMenu": "ホームメニュー",
+    "backToHome": "ホームに移動"
+  },
+  "demo": {
+    "tryDemo": "デモを試す",
+    "demoMode": "デモモード",
+    "demoModeRestriction": "デモモードではデータを変更できません。",
+    "demoModeAddRestriction": "デモモードではデータを追加できません。",
+    "demoModeUpdateRestriction": "デモモードではデータを更新できません。",
+    "demoModeDeleteRestriction": "デモモードではデータを削除できません。",
+    "authTokenMissing": "認証トークンがありません。再度ログインしてください。",
+    "loginRequired": "ログインが必要です。"
   }
 }

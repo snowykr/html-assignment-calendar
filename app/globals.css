@@ -936,7 +936,7 @@ body {
         width: 85%;
         max-width: 500px;
     }
-    
+
     .memo-modal {
         max-width: 450px;
     }
@@ -949,11 +949,11 @@ body {
         width: 90%;
         max-width: 600px;
     }
-    
+
     .memo-modal {
         max-width: 500px;
     }
-    
+
     /* Fixed TopNav offset */
     .main-content-area {
         padding: 72px 2rem 0 2rem; /* TopNav 높이(64px) + 여백(8px) + 좌우 패딩 */
@@ -966,7 +966,12 @@ body {
         padding: 10px 16px;
         max-width: 400px;
     }
-    
+
+    /* Calendar page grid layout adjustment */
+    .content.lg\\:grid {
+        align-items: start;
+    }
+
     /* Calendar adjustments for desktop */
     .calendar-day {
         font-size: 16px;
@@ -1010,6 +1015,7 @@ body {
         border-radius: 12px;
         padding: 1.5rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin: 0;
     }
     
     /* Card-style design for assignments list */
@@ -1018,6 +1024,7 @@ body {
         border-radius: 12px;
         padding: 1.5rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin-top: 0;
     }
 }
 

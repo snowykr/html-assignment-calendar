@@ -90,8 +90,8 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
             }}
           >
             {isCompleted ? 
-              <AppCheckIcon className="h-4 w-4 text-green-600" aria-label="완료됨" /> : 
-              <AppIncompleteIcon className="h-4 w-4 text-black" aria-label="미완료 - 클릭하여 완료 처리" />
+              <AppCheckIcon className="h-4 w-4 text-green-600" aria-label={t('completedLabel')} /> : 
+              <AppIncompleteIcon className="h-4 w-4 text-black" aria-label={t('incompleteLabel')} />
             }
           </div>
           
@@ -99,8 +99,8 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
             <div className="course-name-with-indicators">
               <span className="course-name">{assignment.courseName}</span>
               <div className="assignment-indicators">
-                {assignment.link && <span className="indicator-icon link-icon" title="링크 있음">🔗</span>}
-                {assignment.memo && <span className="indicator-icon memo-icon" title="메모 있음">📝</span>}
+                {assignment.link && <span className="indicator-icon link-icon" title={t('linkAvailable')}>🔗</span>}
+                {assignment.memo && <span className="indicator-icon memo-icon" title={t('memoAvailable')}>📝</span>}
               </div>
             </div>
           </div>

@@ -176,7 +176,7 @@ export default function Subjects() {
               <span className="expand-icon-subject">
                 <AppChevronDownIcon 
                   className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
-                  aria-label={isExpanded ? '축소' : '확장'}
+                  aria-label={isExpanded ? t('collapseLabel') : t('expandLabel')}
                 />
               </span>
             </div>
