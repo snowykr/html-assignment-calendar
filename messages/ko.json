@@ -87,7 +87,13 @@
     "dueToday": " (오늘마감)",
     "minutesLeft": " ({minutes}분 후)",
     "hoursLeft": " ({hours}시간 후)",
-    "daysLeft": " ({days}일 후)"
+    "daysLeft": " ({days}일 후)",
+    "completedLabel": "완료됨",
+    "incompleteLabel": "미완료 - 클릭하여 완료 처리",
+    "linkAvailable": "링크 있음",
+    "memoAvailable": "메모 있음",
+    "expandLabel": "확장",
+    "collapseLabel": "축소"
   },
   "filters": {
     "hideCompleted": "제출완료 과제 숨기기",
@@ -105,7 +111,7 @@
     "inPeriod": "기간 내 과제가 없습니다"
   },
   "auth": {
-    "signIn": "로그인",
+    "signIn": "로그인하기",
     "signOut": "로그아웃", 
     "signInWithGoogle": "Google로 로그인",
     "loading": "로딩 중..."
@@ -124,6 +130,7 @@
   },
   "demo": {
     "tryDemo": "데모 확인하기",
+    "demoMode": "데모 모드",
     "demoModeRestriction": "데모 모드에서는 데이터를 수정할 수 없습니다.",
     "demoModeAddRestriction": "데모 모드에서는 데이터를 추가할 수 없습니다.",
     "demoModeUpdateRestriction": "데모 모드에서는 데이터를 수정할 수 없습니다.",

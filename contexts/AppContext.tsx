@@ -250,7 +250,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     if (!session?.supabaseAccessToken) {
-      const errorMessage = '인증 토큰이 없습니다. 다시 로그인해주세요.';
+      const errorMessage = tDemo('authTokenMissing');
       showTemporaryMessage(errorMessage);
       return;
     }

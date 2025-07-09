@@ -87,7 +87,13 @@
     "dueToday": " (Due Today)",
     "minutesLeft": " ({minutes} minutes left)",
     "hoursLeft": " ({hours} hours left)",
-    "daysLeft": " ({days} days left)"
+    "daysLeft": " ({days} days left)",
+    "completedLabel": "Completed",
+    "incompleteLabel": "Incomplete - Click to mark as completed",
+    "linkAvailable": "Link available",
+    "memoAvailable": "Memo available",
+    "expandLabel": "Expand",
+    "collapseLabel": "Collapse"
   },
   "filters": {
     "hideCompleted": "Hide completed assignments",
@@ -124,6 +130,7 @@
   },
   "demo": {
     "tryDemo": "Try Demo",
+    "demoMode": "Demo Mode",
     "demoModeRestriction": "Data cannot be modified in demo mode.",
     "demoModeAddRestriction": "Data cannot be added in demo mode.",
     "demoModeUpdateRestriction": "Data cannot be updated in demo mode.",

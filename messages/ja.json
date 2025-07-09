@@ -83,11 +83,17 @@
   },
   "assignmentStatus": {
     "completed": " (提出完了)",
-    "overdue": " (期限切れ)",
+    "overdue": " (期限超過)",
     "dueToday": " (今日締切)",
-    "minutesLeft": " ({minutes}分後)",
-    "hoursLeft": " ({hours}時間後)",
-    "daysLeft": " ({days}日後)"
+    "minutesLeft": " (残り{minutes}分)",
+    "hoursLeft": " (残り{hours}時間)",
+    "daysLeft": " (残り{days}日)",
+    "completedLabel": "完了",
+    "incompleteLabel": "未完了 - クリックして完了にする",
+    "linkAvailable": "リンクあり",
+    "memoAvailable": "メモあり",
+    "expandLabel": "展開",
+    "collapseLabel": "折りたたみ"
   },
   "filters": {
     "hideCompleted": "提出済み課題を隠す",
@@ -124,6 +130,7 @@
   },
   "demo": {
     "tryDemo": "デモを試す",
+    "demoMode": "デモモード",
     "demoModeRestriction": "デモモードではデータを変更できません。",
     "demoModeAddRestriction": "デモモードではデータを追加できません。",
     "demoModeUpdateRestriction": "デモモードではデータを更新できません。",
