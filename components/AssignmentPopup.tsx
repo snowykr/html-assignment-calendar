@@ -23,7 +23,8 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
     referenceToday, 
     toggleAssignmentCompletion,
     deleteAssignment,
-    editAssignment
+    editAssignment,
+    openAddAssignmentModalWithDate
   } = useApp();
   const t = useTranslations('assignmentStatus');
   const tNoAssignments = useTranslations('noAssignments');
@@ -177,22 +178,36 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
     );
   };
 
+  const handleAddAssignment = () => {
+    openAddAssignmentModalWithDate(date);
+    onClose();
+  };
+
   return (
     <>
       <div className={`popup-modal ${date ? 'show' : ''}`}>
-        <div className="popup-content" ref={modalRef}>
+        <div className="popup-content-fixed" ref={modalRef}>
           <div className="popup-header">
             <h3>{dateDisplay}</h3>
             <button className="popup-close" onClick={onClose}>&times;</button>
           </div>
-          <div id="popup-assignment-list">
-            {assignmentsForDate.length > 0 ? (
-              assignmentsForDate.map(assignment => renderAssignmentItem(assignment))
-            ) : (
-              <div className="no-assignments-popup">
-                {tNoAssignments('onThisDay')}
-              </div>
-            )}
+          
+          <div className="popup-scrollable-content">
+            <div id="popup-assignment-list">
+              {assignmentsForDate.length > 0 ? (
+                assignmentsForDate.map(assignment => renderAssignmentItem(assignment))
+              ) : (
+                <div className="no-assignments-popup">
+                  {tNoAssignments('onThisDay')}
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="popup-footer">
+            <button className="add-assignment-btn" onClick={handleAddAssignment}>
+              {tCommon('add')}
+            </button>
           </div>
         </div>
       </div>

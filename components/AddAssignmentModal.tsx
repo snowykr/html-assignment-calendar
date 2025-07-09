@@ -8,9 +8,10 @@ import { useOutsideClick } from '@/hooks/useOutsideClick';
 interface AddAssignmentModalProps {
   isOpen: boolean;
   onClose: () => void;
+  presetDate?: string;
 }
 
-export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentModalProps) {
+export default function AddAssignmentModal({ isOpen, onClose, presetDate }: AddAssignmentModalProps) {
   const { currentEditingAssignment, handleAssignmentSubmit } = useApp();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const t = useTranslations('addAssignment');
@@ -46,14 +47,14 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
         courseName: '',
         round: '',
         title: '',
-        dueDate: new Date().toISOString().split('T')[0],
+        dueDate: presetDate || new Date().toISOString().split('T')[0],
         dueTime: '23:59',
         platform: '',
         link: '',
         memo: ''
       });
     }
-  }, [currentEditingAssignment, isOpen]);
+  }, [currentEditingAssignment, isOpen, presetDate]);
 
   // URL validation function
   const isValidUrl = (url: string): boolean => {

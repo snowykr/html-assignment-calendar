@@ -712,6 +712,53 @@ body {
     transform: scale(0.9);
 }
 
+.popup-content-fixed {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 70vh;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+.popup-scrollable-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 20px;
+    min-height: 0;
+}
+
+.popup-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: center;
+}
+
+.add-assignment-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-assignment-btn:hover {
+    background: #2563eb;
+}
+
+.popup-content-fixed .popup-header {
+    padding: 20px 20px 15px 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
 #popup-assignment-list .assignment-box {
     margin-bottom: 10px;
 }
