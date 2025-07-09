@@ -36,7 +36,7 @@ export async function getAllAssignments(): Promise<Assignment[]> {
     }
 
     const { data, error } = await supabase
-      .from('assignments')
+      .from('assignments_demo')
       .select('*')
       .order('due_date', { ascending: true });
 
@@ -65,7 +65,7 @@ export async function updateAssignmentCompletion(id: number, completed: boolean)
   }
 
   const { data, error } = await supabase
-    .from('assignments')
+    .from('assignments_demo')
     .update({ completed })
     .eq('id', id)
     .select()
@@ -88,7 +88,7 @@ export async function addAssignment(assignment: Omit<Assignment, 'id'>): Promise
   const dbAssignment = transformJsToDbForInsert(assignment);
   
   const { data, error } = await supabase
-    .from('assignments')
+    .from('assignments_demo')
     .insert(dbAssignment)
     .select()
     .single();
@@ -109,7 +109,7 @@ export async function updateAssignment(id: number, assignment: Partial<Assignmen
   // Use update-specific transform function
   const dbAssignment = transformJsToDbForUpdate(assignment);
   const { data, error } = await supabase
-    .from('assignments')
+    .from('assignments_demo')
     .update(dbAssignment)
     .eq('id', id)
     .select()
@@ -129,7 +129,7 @@ export async function deleteAssignment(id: number): Promise<boolean> {
   }
 
   const { error } = await supabase
-    .from('assignments')
+    .from('assignments_demo')
     .delete()
     .eq('id', id);
 
