@@ -3,6 +3,7 @@
 import { usePathname } from '@/navigation';
 import TopNav from '@/components/TopNav';
 import BottomTabs from '@/components/BottomTabs';
+import FloatingLoginButton from '@/components/FloatingLoginButton';
 
 interface NavigationWrapperProps {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ export default function NavigationWrapper({ children }: NavigationWrapperProps) 
   
   const shouldShowTopNav = !['/login', '/'].includes(pathname);
   const shouldShowBottomTabs = !['/login', '/'].includes(pathname);
+  const isDemoMode = pathname.includes('/demo/');
 
   // 랜딩페이지와 로그인 페이지는 래퍼 없이 전체 화면 사용
   if (pathname === '/' || pathname === '/login') {
@@ -28,6 +30,7 @@ export default function NavigationWrapper({ children }: NavigationWrapperProps) 
         </div>
       </div>
       {shouldShowBottomTabs && <BottomTabs />}
+      <FloatingLoginButton />
     </div>
   );
 }

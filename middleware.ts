@@ -15,6 +15,11 @@ export default auth((req) => {
     return;
   }
   
+  // Skip authentication for demo routes
+  if (pathname.includes('/demo/')) {
+    return intlMiddleware(req);
+  }
+  
   // Require authentication for protected routes
   const protectedRoutes = ['/calendar', '/subjects', '/settings'];
   const isProtectedRoute = protectedRoutes.some(route => 

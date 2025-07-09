@@ -121,5 +121,14 @@
   "navigation": {
     "homeMenu": "Home Menu",
     "backToHome": "Go to Home"
+  },
+  "demo": {
+    "tryDemo": "Try Demo",
+    "demoModeRestriction": "Data cannot be modified in demo mode.",
+    "demoModeAddRestriction": "Data cannot be added in demo mode.",
+    "demoModeUpdateRestriction": "Data cannot be updated in demo mode.",
+    "demoModeDeleteRestriction": "Data cannot be deleted in demo mode.",
+    "authTokenMissing": "Authentication token is missing. Please log in again.",
+    "loginRequired": "Login is required."
   }
 }

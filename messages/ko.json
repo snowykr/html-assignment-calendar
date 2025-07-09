@@ -121,5 +121,14 @@
   "navigation": {
     "homeMenu": "홈 메뉴",
     "backToHome": "홈으로 이동"
+  },
+  "demo": {
+    "tryDemo": "데모 확인하기",
+    "demoModeRestriction": "데모 모드에서는 데이터를 수정할 수 없습니다.",
+    "demoModeAddRestriction": "데모 모드에서는 데이터를 추가할 수 없습니다.",
+    "demoModeUpdateRestriction": "데모 모드에서는 데이터를 수정할 수 없습니다.",
+    "demoModeDeleteRestriction": "데모 모드에서는 데이터를 삭제할 수 없습니다.",
+    "authTokenMissing": "인증 토큰이 없습니다. 다시 로그인해주세요.",
+    "loginRequired": "로그인이 필요합니다."
   }
 }

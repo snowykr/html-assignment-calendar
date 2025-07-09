@@ -121,5 +121,14 @@
   "navigation": {
     "homeMenu": "ホームメニュー",
     "backToHome": "ホームに移動"
+  },
+  "demo": {
+    "tryDemo": "デモを試す",
+    "demoModeRestriction": "デモモードではデータを変更できません。",
+    "demoModeAddRestriction": "デモモードではデータを追加できません。",
+    "demoModeUpdateRestriction": "デモモードではデータを更新できません。",
+    "demoModeDeleteRestriction": "デモモードではデータを削除できません。",
+    "authTokenMissing": "認証トークンがありません。再度ログインしてください。",
+    "loginRequired": "ログインが必要です。"
   }
 }

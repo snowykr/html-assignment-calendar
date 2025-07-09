@@ -11,6 +11,13 @@ import {
   updateAssignment as updateAssignmentService,
   deleteAssignment as deleteAssignmentService
 } from '@/services/assignment-service';
+import {
+  getAllDemoAssignments,
+  updateDemoAssignmentCompletion,
+  addDemoAssignment,
+  updateDemoAssignment,
+  deleteDemoAssignment
+} from '@/services/demo-assignment-service';
 import { handleError, logError, showUserError, AppError } from '@/utils/error-handler';
 import { initSubjectPagination } from '@/utils/pagination';
 import { loadFiltersFromStorage, saveFiltersToStorage, DEFAULT_FILTERS } from '@/utils/filter-storage';
@@ -48,6 +55,7 @@ interface AppContextType {
   setIsEditModalOpen: (isOpen: boolean) => void;
   setCurrentEditingAssignment: (assignment: Assignment | undefined) => void;
   isDesktop: boolean | undefined;
+  isDemoMode: boolean;
   
   // Filters
   filters: Filters;
@@ -70,6 +78,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const t = useTranslations('messages');
   const tErrors = useTranslations('errors');
+  const tDemo = useTranslations('demo');
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
@@ -91,8 +100,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [subjectsPagination, setSubjectsPagination] = useState<SubjectsPagination>({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState<boolean | undefined>(undefined);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+
+  // Check if current path is demo mode
+  useEffect(() => {
+    setIsDemoMode(pathname.includes('/demo/'));
+  }, [pathname]);
 
   // Check desktop mode
   useEffect(() => {
@@ -106,7 +121,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('resize', checkIsDesktop);
   }, []);
 
-  // Initialize app when authenticated
+  // Initialize app when authenticated or in demo mode
   useEffect(() => {
     const init = async () => {
       try {
@@ -114,7 +129,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setLoadingMessage(t('initializingApp'));
         
         // Load data from Supabase
-        await loadDataFromSupabase();
+        if (isDemoMode) {
+          await loadDemoDataFromSupabase();
+        } else {
+          await loadDataFromSupabase();
+        }
         
       } catch (error) {
         console.error('❌ Critical error during app initialization:', error);
@@ -123,7 +142,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     };
     
-    if (status === 'authenticated' && session?.supabaseAccessToken) {
+    if (isDemoMode) {
+      init()
+        .catch(error => console.error(t('initializationFailed'), error));
+    } else if (status === 'authenticated' && session?.supabaseAccessToken) {
       init()
         .catch(error => console.error(t('initializationFailed'), error));
     } else if (status === 'unauthenticated') {
@@ -131,7 +153,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setAssignmentsData([]);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, session?.supabaseAccessToken]);
+  }, [status, session?.supabaseAccessToken, isDemoMode]);
   
   // Update pagination when assignments data changes
   useEffect(() => {
@@ -144,10 +166,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setFilters(savedFilters);
   }, []);
 
-  // Handle authentication state - only redirect on protected pages
+  // Handle authentication state - only redirect on protected pages (exclude demo routes)
   useEffect(() => {
     const protectedRoutes = ['/calendar', '/subjects', '/settings'];
-    const isProtectedRoute = protectedRoutes.some(route => pathname.includes(route));
+    const isProtectedRoute = protectedRoutes.some(route => 
+      pathname.includes(route) && !pathname.includes('/demo/')
+    );
     
     if (status === 'unauthenticated' && isProtectedRoute) {
       router.push('/');
@@ -156,7 +180,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const loadDataFromSupabase = async () => {
     if (!session?.supabaseAccessToken) {
-      const errorMessage = '인증 토큰이 없습니다. 다시 로그인해주세요.';
+      const errorMessage = tDemo('authTokenMissing');
       showTemporaryMessage(errorMessage);
       setIsLoading(false);
       return;
@@ -169,6 +193,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     } catch (error) {
       const appError = handleError(error, { operation: 'loadDataFromSupabase' }, tErrors);
+      logError(appError);
+      showUserError(appError, showTemporaryMessage);
+      setIsLoading(false);
+    }
+  };
+
+  const loadDemoDataFromSupabase = async () => {
+    try {
+      setLoadingMessage(t('fetchingData'));
+      const data = await getAllDemoAssignments();
+      setAssignmentsData(data);
+      setIsLoading(false);
+    } catch (error) {
+      const appError = handleError(error, { operation: 'loadDemoDataFromSupabase' }, tErrors);
       logError(appError);
       showUserError(appError, showTemporaryMessage);
       setIsLoading(false);
@@ -194,6 +232,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const reloadAssignments = async () => {
+    if (isDemoMode) {
+      try {
+        setIsLoading(true);
+        setLoadingMessage(t('refreshingData'));
+        
+        const data = await getAllDemoAssignments();
+        setAssignmentsData(data);
+        setIsLoading(false);
+      } catch (error) {
+        const appError = handleError(error, { operation: 'reloadDemoAssignments' }, tErrors);
+        logError(appError);
+        showUserError(appError, showTemporaryMessage);
+        setIsLoading(false);
+      }
+      return;
+    }
+
     if (!session?.supabaseAccessToken) {
       const errorMessage = '인증 토큰이 없습니다. 다시 로그인해주세요.';
       showTemporaryMessage(errorMessage);
@@ -216,8 +271,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const toggleAssignmentCompletion = async (assignmentId: number, completed: boolean) => {
+    if (isDemoMode) {
+      try {
+        await updateDemoAssignmentCompletion();
+      } catch (error) {
+        showTemporaryMessage(tDemo('demoModeUpdateRestriction'));
+      }
+      return;
+    }
+
     if (!session?.supabaseAccessToken) {
-      const errorMessage = '인증 토큰이 없습니다. 다시 로그인해주세요.';
+      const errorMessage = tDemo('authTokenMissing');
       showTemporaryMessage(errorMessage);
       return;
     }
@@ -248,8 +312,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteAssignment = async (assignmentId: number) => {
+    if (isDemoMode) {
+      try {
+        await deleteDemoAssignment();
+      } catch (error) {
+        showTemporaryMessage(tDemo('demoModeDeleteRestriction'));
+      }
+      return;
+    }
+
     if (!session?.supabaseAccessToken) {
-      const errorMessage = '인증 토큰이 없습니다. 다시 로그인해주세요.';
+      const errorMessage = tDemo('authTokenMissing');
       showTemporaryMessage(errorMessage);
       return;
     }
@@ -291,13 +364,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const handleAssignmentSubmit = async (assignmentData: Partial<Assignment>) => {
     const isEditing = currentEditingAssignment !== undefined;
     
+    if (isDemoMode) {
+      try {
+        if (isEditing) {
+          await updateDemoAssignment();
+        } else {
+          await addDemoAssignment();
+        }
+      } catch (error) {
+        showTemporaryMessage(tDemo('demoModeUpdateRestriction'));
+      }
+      return;
+    }
+    
     if (!session?.user?.id) {
-      showTemporaryMessage('로그인이 필요합니다.');
+      showTemporaryMessage(tDemo('loginRequired'));
       return;
     }
 
     if (!session?.supabaseAccessToken) {
-      const errorMessage = '인증 토큰이 없습니다. 다시 로그인해주세요.';
+      const errorMessage = tDemo('authTokenMissing');
       showTemporaryMessage(errorMessage);
       return;
     }
@@ -384,6 +470,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setIsEditModalOpen,
     setCurrentEditingAssignment,
     isDesktop,
+    isDemoMode,
     filters,
     navigateWeek,
     toggleFilter,
