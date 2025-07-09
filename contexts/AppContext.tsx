@@ -290,26 +290,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const handleAssignmentSubmit = async (assignmentData: Partial<Assignment>) => {
     const isEditing = currentEditingAssignment !== undefined;
-    console.log('🚀 handleAssignmentSubmit 시작:', { isEditing, assignmentData });
     
     if (!session?.user?.id) {
-      console.error('❌ 사용자 ID가 없음:', session);
       showTemporaryMessage('로그인이 필요합니다.');
       return;
     }
-    console.log('✅ 사용자 ID 존재:', session.user.id);
 
     if (!session?.supabaseAccessToken) {
-      console.error('❌ Supabase 액세스 토큰이 없음:', session);
       const errorMessage = '인증 토큰이 없습니다. 다시 로그인해주세요.';
       showTemporaryMessage(errorMessage);
       return;
     }
-    console.log('✅ Supabase 액세스 토큰 존재');
     
     try {
       if (isEditing && currentEditingAssignment) {
-        console.log('📝 과제 수정 모드');
         const updatedAssignment = await updateAssignmentService(
           currentEditingAssignment.id, 
           { ...assignmentData, completed: currentEditingAssignment.completed },
@@ -322,36 +316,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
         
         showTemporaryMessage(t('assignmentUpdated'));
       } else {
-        console.log('➕ 새 과제 추가 모드');
-        const newAssignmentData = {
+        const newAssignment = await addAssignmentService({
           ...assignmentData,
           userId: session.user.id,
           completed: false
-        } as Assignment;
-        console.log('📤 addAssignmentService 호출 데이터:', newAssignmentData);
+        } as Assignment, session.supabaseAccessToken);
         
-        const newAssignment = await addAssignmentService(
-          newAssignmentData,
-          session.supabaseAccessToken
-        );
-        
-        console.log('✅ 새 과제 추가 성공:', newAssignment);
         setAssignmentsData(prev => [...prev, newAssignment]);
         showTemporaryMessage(t('assignmentAdded'));
       }
       
       setCurrentEditingAssignment(undefined);
       setIsEditModalOpen(false);
-      console.log('✅ handleAssignmentSubmit 완료');
     } catch (error) {
-      console.error('❌ handleAssignmentSubmit 에러:', error);
-      console.error('❌ 에러 타입:', typeof error);
-      console.error('❌ 에러 상세:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-        error: error
-      });
-      
       if (error instanceof Object && 'userMessage' in error) {
         showUserError(error as AppError, showTemporaryMessage);
       } else {
