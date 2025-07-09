@@ -4,9 +4,9 @@ import { getMessages } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { SessionProvider } from 'next-auth/react';
 import { AppProvider } from '@/contexts/AppContext';
-import BottomTabs from '@/components/BottomTabs';
-import TopNav from '@/components/TopNav';
+import NavigationWrapper from '@/components/NavigationWrapper';
 import GlobalModals from '@/components/GlobalModals';
 import { routing } from '@/routing';
 import '../globals.css';
@@ -73,20 +73,16 @@ export default async function LocaleLayout({
   return (
     <html lang={actualLocale}>
       <body>
-        <NextIntlClientProvider messages={messages} locale={actualLocale}>
-          <AppProvider>
-            <div className="app-container min-h-screen flex flex-col">
-              <TopNav />
-              <div className="flex-1 flex flex-col lg:max-w-7xl lg:mx-auto lg:w-full">
-                <div className="main-content-area flex-1 lg:px-8 xl:px-12 2xl:px-16">
-                  {children}
-                </div>
-              </div>
-              <BottomTabs />
-            </div>
-            <GlobalModals />
-          </AppProvider>
-        </NextIntlClientProvider>
+        <SessionProvider>
+          <NextIntlClientProvider messages={messages} locale={actualLocale}>
+            <AppProvider>
+              <NavigationWrapper>
+                {children}
+              </NavigationWrapper>
+              <GlobalModals />
+            </AppProvider>
+          </NextIntlClientProvider>
+        </SessionProvider>
       </body>
     </html>
   );

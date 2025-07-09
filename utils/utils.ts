@@ -8,6 +8,7 @@ export interface Assignment {
   dueTime: string;
   platform: 'teams' | 'openlms';
   completed: boolean;
+  userId?: string;
   createdAt?: string;
   updatedAt?: string;
   link?: string;

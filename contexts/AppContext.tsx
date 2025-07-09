@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
-import { initSupabase } from '@/services/supabase-client';
+import { useSession } from 'next-auth/react';
+import { useRouter, usePathname } from '@/navigation';
 import { 
   getAllAssignments, 
   updateAssignmentCompletion,
@@ -69,6 +70,9 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const t = useTranslations('messages');
   const tErrors = useTranslations('errors');
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
   const [referenceToday] = useState(new Date());
   const [viewStartDate, setViewStartDate] = useState(() => {
     const today = new Date(referenceToday);
@@ -102,7 +106,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('resize', checkIsDesktop);
   }, []);
 
-  // Initialize app
+  // Initialize app when authenticated
   useEffect(() => {
     const init = async () => {
       try {
@@ -119,10 +123,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     };
     
-    init()
-      .catch(error => console.error(t('initializationFailed'), error));
+    if (status === 'authenticated' && session?.supabaseAccessToken) {
+      init()
+        .catch(error => console.error(t('initializationFailed'), error));
+    } else if (status === 'unauthenticated') {
+      setIsLoading(false);
+      setAssignmentsData([]);
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [status, session?.supabaseAccessToken]);
   
   // Update pagination when assignments data changes
   useEffect(() => {
@@ -135,13 +144,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setFilters(savedFilters);
   }, []);
 
+  // Handle authentication state - only redirect on protected pages
+  useEffect(() => {
+    const protectedRoutes = ['/calendar', '/subjects', '/settings'];
+    const isProtectedRoute = protectedRoutes.some(route => pathname.includes(route));
+    
+    if (status === 'unauthenticated' && isProtectedRoute) {
+      router.push('/');
+    }
+  }, [status, router, pathname]);
+
   const loadDataFromSupabase = async () => {
+    if (!session?.supabaseAccessToken) {
+      const errorMessage = '인증 토큰이 없습니다. 다시 로그인해주세요.';
+      showTemporaryMessage(errorMessage);
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      setLoadingMessage(t('connectingDB'));
-      await initSupabase();
-      
       setLoadingMessage(t('fetchingData'));
-      const data = await getAllAssignments();
+      const data = await getAllAssignments(session.supabaseAccessToken);
       setAssignmentsData(data);
       setIsLoading(false);
     } catch (error) {
@@ -171,11 +194,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const reloadAssignments = async () => {
+    if (!session?.supabaseAccessToken) {
+      const errorMessage = '인증 토큰이 없습니다. 다시 로그인해주세요.';
+      showTemporaryMessage(errorMessage);
+      return;
+    }
+
     try {
       setIsLoading(true);
       setLoadingMessage(t('refreshingData'));
       
-      const data = await getAllAssignments();
+      const data = await getAllAssignments(session.supabaseAccessToken);
       setAssignmentsData(data);
       setIsLoading(false);
     } catch (error) {
@@ -187,8 +216,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const toggleAssignmentCompletion = async (assignmentId: number, completed: boolean) => {
+    if (!session?.supabaseAccessToken) {
+      const errorMessage = '인증 토큰이 없습니다. 다시 로그인해주세요.';
+      showTemporaryMessage(errorMessage);
+      return;
+    }
+
     try {
-      const updatedAssignment = await updateAssignmentCompletion(assignmentId, completed);
+      const updatedAssignment = await updateAssignmentCompletion(
+        assignmentId, 
+        completed, 
+        session.supabaseAccessToken
+      );
       
       setAssignmentsData(prev => 
         prev.map(a => a.id === assignmentId ? updatedAssignment : a)
@@ -209,6 +248,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteAssignment = async (assignmentId: number) => {
+    if (!session?.supabaseAccessToken) {
+      const errorMessage = '인증 토큰이 없습니다. 다시 로그인해주세요.';
+      showTemporaryMessage(errorMessage);
+      return;
+    }
+
     const assignment = assignmentsData.find(a => a.id === assignmentId);
     if (!assignment) {
       console.error('Assignment not found for deletion');
@@ -219,7 +264,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     
     if (confirm(confirmMessage)) {
       try {
-        await deleteAssignmentService(assignmentId);
+        await deleteAssignmentService(assignmentId, session.supabaseAccessToken);
         
         setAssignmentsData(prev => prev.filter(a => a.id !== assignmentId));
         showTemporaryMessage(t('assignmentDeleted'));
@@ -245,12 +290,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const handleAssignmentSubmit = async (assignmentData: Partial<Assignment>) => {
     const isEditing = currentEditingAssignment !== undefined;
+    console.log('🚀 handleAssignmentSubmit 시작:', { isEditing, assignmentData });
+    
+    if (!session?.user?.id) {
+      console.error('❌ 사용자 ID가 없음:', session);
+      showTemporaryMessage('로그인이 필요합니다.');
+      return;
+    }
+    console.log('✅ 사용자 ID 존재:', session.user.id);
+
+    if (!session?.supabaseAccessToken) {
+      console.error('❌ Supabase 액세스 토큰이 없음:', session);
+      const errorMessage = '인증 토큰이 없습니다. 다시 로그인해주세요.';
+      showTemporaryMessage(errorMessage);
+      return;
+    }
+    console.log('✅ Supabase 액세스 토큰 존재');
     
     try {
       if (isEditing && currentEditingAssignment) {
+        console.log('📝 과제 수정 모드');
         const updatedAssignment = await updateAssignmentService(
           currentEditingAssignment.id, 
-          { ...assignmentData, completed: currentEditingAssignment.completed }
+          { ...assignmentData, completed: currentEditingAssignment.completed },
+          session.supabaseAccessToken
         );
         
         setAssignmentsData(prev => 
@@ -259,18 +322,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
         
         showTemporaryMessage(t('assignmentUpdated'));
       } else {
-        const newAssignment = await addAssignmentService({
+        console.log('➕ 새 과제 추가 모드');
+        const newAssignmentData = {
           ...assignmentData,
+          userId: session.user.id,
           completed: false
-        } as Assignment);
+        } as Assignment;
+        console.log('📤 addAssignmentService 호출 데이터:', newAssignmentData);
         
+        const newAssignment = await addAssignmentService(
+          newAssignmentData,
+          session.supabaseAccessToken
+        );
+        
+        console.log('✅ 새 과제 추가 성공:', newAssignment);
         setAssignmentsData(prev => [...prev, newAssignment]);
         showTemporaryMessage(t('assignmentAdded'));
       }
       
       setCurrentEditingAssignment(undefined);
       setIsEditModalOpen(false);
+      console.log('✅ handleAssignmentSubmit 완료');
     } catch (error) {
+      console.error('❌ handleAssignmentSubmit 에러:', error);
+      console.error('❌ 에러 타입:', typeof error);
+      console.error('❌ 에러 상세:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        error: error
+      });
+      
       if (error instanceof Object && 'userMessage' in error) {
         showUserError(error as AppError, showTemporaryMessage);
       } else {

@@ -11,6 +11,7 @@ interface DbAssignment {
   due_time: string;
   platform: 'teams' | 'openlms';
   completed: boolean;
+  user_id: string;
   created_at?: string;
   updated_at?: string;
   link?: string;
@@ -25,6 +26,7 @@ interface DbAssignmentInsert {
   due_time: string;
   platform: 'teams' | 'openlms';
   completed: boolean;
+  user_id: string;
   link?: string;
   memo?: string;
 }
@@ -37,6 +39,7 @@ interface DbAssignmentUpdate {
   due_time?: string;
   platform?: 'teams' | 'openlms';
   completed?: boolean;
+  user_id?: string;
   link?: string;
   memo?: string;
 }
@@ -52,6 +55,7 @@ export function transformDbToJs(dbRow: DbAssignment): Assignment {
     dueTime: dbRow.due_time.substring(0, 5), // Remove seconds from time string
     platform: dbRow.platform,
     completed: dbRow.completed,
+    userId: dbRow.user_id,
     createdAt: dbRow.created_at,
     updatedAt: dbRow.updated_at,
     link: dbRow.link,
@@ -61,6 +65,10 @@ export function transformDbToJs(dbRow: DbAssignment): Assignment {
 
 // Transform JavaScript object to database row format for INSERT (no id)
 export function transformJsToDbForInsert(jsObj: Omit<Assignment, 'id'>): DbAssignmentInsert {
+  if (!jsObj.userId) {
+    throw new Error('userId is required for creating assignments');
+  }
+  
   return {
     course_name: jsObj.courseName,
     round: jsObj.round,
@@ -69,6 +77,7 @@ export function transformJsToDbForInsert(jsObj: Omit<Assignment, 'id'>): DbAssig
     due_time: jsObj.dueTime,
     platform: jsObj.platform,
     completed: jsObj.completed || false,
+    user_id: jsObj.userId,
     link: jsObj.link,
     memo: jsObj.memo
   };
@@ -85,6 +94,7 @@ export function transformJsToDbForUpdate(jsObj: Partial<Assignment>): DbAssignme
   if (jsObj.dueTime !== undefined) dbObj.due_time = jsObj.dueTime;
   if (jsObj.platform !== undefined) dbObj.platform = jsObj.platform;
   if (jsObj.completed !== undefined) dbObj.completed = jsObj.completed;
+  if (jsObj.userId !== undefined) dbObj.user_id = jsObj.userId;
   if (jsObj.link !== undefined) dbObj.link = jsObj.link;
   if (jsObj.memo !== undefined) dbObj.memo = jsObj.memo;
   

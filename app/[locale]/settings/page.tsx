@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/navigation';
 import { getCookie } from '@/utils/utils';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function SettingsPage() {
   const [notifications, setNotifications] = useState(false);
@@ -14,7 +15,9 @@ export default function SettingsPage() {
     return cookieLocale || locale;
   });
   const t = useTranslations('settings');
+  const tAuth = useTranslations('auth');
   const router = useRouter();
+  const { data: session } = useSession();
   
   
   const handleLanguageChange = (newLocale: string) => {
@@ -64,6 +67,18 @@ export default function SettingsPage() {
               <option value="ja">{t('japanese')}</option>
             </select>
           </div>
+          
+          {/* Mobile only logout button */}
+          {session && (
+            <div className="lg:hidden border-t border-gray-200 mt-6 pt-6">
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="w-full py-3 px-4 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+              >
+                {tAuth('signOut')}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
