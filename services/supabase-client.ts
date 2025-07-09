@@ -1,7 +1,11 @@
 // Supabase client initialization and management
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { loadSupabaseConfig, getCachedConfig, setCachedConfig } from '../config/supabase-config';
+import { 
+  loadSupabaseConfig, 
+  getCachedConfig, 
+  setCachedConfig 
+} from '../config/supabase-config';
 
 // Supabase client instance
 let supabase: SupabaseClient | null = null;
@@ -38,7 +42,7 @@ export async function initSupabase(): Promise<SupabaseClient> {
       supabase = createClient(config.url, config.anonKey);
 
       // Test connection
-      const { error } = await supabase.from('assignments').select('count', { count: 'exact', head: true });
+      const { error } = await supabase.from('assignments_demo').select('count', { count: 'exact', head: true });
 
       if (error) {
         throw error;
