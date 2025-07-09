@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
-import { initSupabase } from '@/services/supabase-client';
+import { useSession } from 'next-auth/react';
+import { useRouter, usePathname } from '@/navigation';
 import { 
   getAllAssignments, 
   updateAssignmentCompletion,
@@ -10,6 +11,13 @@ import {
   updateAssignment as updateAssignmentService,
   deleteAssignment as deleteAssignmentService
 } from '@/services/assignment-service';
+import {
+  getAllDemoAssignments,
+  updateDemoAssignmentCompletion,
+  addDemoAssignment,
+  updateDemoAssignment,
+  deleteDemoAssignment
+} from '@/services/demo-assignment-service';
 import { handleError, logError, showUserError, AppError } from '@/utils/error-handler';
 import { initSubjectPagination } from '@/utils/pagination';
 import { loadFiltersFromStorage, saveFiltersToStorage, DEFAULT_FILTERS } from '@/utils/filter-storage';
@@ -47,6 +55,7 @@ interface AppContextType {
   setIsEditModalOpen: (isOpen: boolean) => void;
   setCurrentEditingAssignment: (assignment: Assignment | undefined) => void;
   isDesktop: boolean | undefined;
+  isDemoMode: boolean;
   
   // Filters
   filters: Filters;
@@ -69,6 +78,10 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const t = useTranslations('messages');
   const tErrors = useTranslations('errors');
+  const tDemo = useTranslations('demo');
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
   const [referenceToday] = useState(new Date());
   const [viewStartDate, setViewStartDate] = useState(() => {
     const today = new Date(referenceToday);
@@ -87,8 +100,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [subjectsPagination, setSubjectsPagination] = useState<SubjectsPagination>({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState<boolean | undefined>(undefined);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+
+  // Check if current path is demo mode
+  useEffect(() => {
+    setIsDemoMode(pathname.includes('/demo/'));
+  }, [pathname]);
 
   // Check desktop mode
   useEffect(() => {
@@ -102,7 +121,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('resize', checkIsDesktop);
   }, []);
 
-  // Initialize app
+  // Initialize app when authenticated or in demo mode
   useEffect(() => {
     const init = async () => {
       try {
@@ -110,7 +129,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setLoadingMessage(t('initializingApp'));
         
         // Load data from Supabase
-        await loadDataFromSupabase();
+        if (isDemoMode) {
+          await loadDemoDataFromSupabase();
+        } else {
+          await loadDataFromSupabase();
+        }
         
       } catch (error) {
         console.error('❌ Critical error during app initialization:', error);
@@ -119,10 +142,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     };
     
-    init()
-      .catch(error => console.error(t('initializationFailed'), error));
+    if (isDemoMode) {
+      init()
+        .catch(error => console.error(t('initializationFailed'), error));
+    } else if (status === 'authenticated' && session?.supabaseAccessToken) {
+      init()
+        .catch(error => console.error(t('initializationFailed'), error));
+    } else if (status === 'unauthenticated') {
+      setIsLoading(false);
+      setAssignmentsData([]);
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [status, session?.supabaseAccessToken, isDemoMode]);
   
   // Update pagination when assignments data changes
   useEffect(() => {
@@ -135,17 +166,47 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setFilters(savedFilters);
   }, []);
 
+  // Handle authentication state - only redirect on protected pages (exclude demo routes)
+  useEffect(() => {
+    const protectedRoutes = ['/calendar', '/subjects', '/settings'];
+    const isProtectedRoute = protectedRoutes.some(route => 
+      pathname.includes(route) && !pathname.includes('/demo/')
+    );
+    
+    if (status === 'unauthenticated' && isProtectedRoute) {
+      router.push('/');
+    }
+  }, [status, router, pathname]);
+
   const loadDataFromSupabase = async () => {
+    if (!session?.supabaseAccessToken) {
+      const errorMessage = tDemo('authTokenMissing');
+      showTemporaryMessage(errorMessage);
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      setLoadingMessage(t('connectingDB'));
-      await initSupabase();
-      
       setLoadingMessage(t('fetchingData'));
-      const data = await getAllAssignments();
+      const data = await getAllAssignments(session.supabaseAccessToken);
       setAssignmentsData(data);
       setIsLoading(false);
     } catch (error) {
       const appError = handleError(error, { operation: 'loadDataFromSupabase' }, tErrors);
+      logError(appError);
+      showUserError(appError, showTemporaryMessage);
+      setIsLoading(false);
+    }
+  };
+
+  const loadDemoDataFromSupabase = async () => {
+    try {
+      setLoadingMessage(t('fetchingData'));
+      const data = await getAllDemoAssignments();
+      setAssignmentsData(data);
+      setIsLoading(false);
+    } catch (error) {
+      const appError = handleError(error, { operation: 'loadDemoDataFromSupabase' }, tErrors);
       logError(appError);
       showUserError(appError, showTemporaryMessage);
       setIsLoading(false);
@@ -171,11 +232,34 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const reloadAssignments = async () => {
+    if (isDemoMode) {
+      try {
+        setIsLoading(true);
+        setLoadingMessage(t('refreshingData'));
+        
+        const data = await getAllDemoAssignments();
+        setAssignmentsData(data);
+        setIsLoading(false);
+      } catch (error) {
+        const appError = handleError(error, { operation: 'reloadDemoAssignments' }, tErrors);
+        logError(appError);
+        showUserError(appError, showTemporaryMessage);
+        setIsLoading(false);
+      }
+      return;
+    }
+
+    if (!session?.supabaseAccessToken) {
+      const errorMessage = '인증 토큰이 없습니다. 다시 로그인해주세요.';
+      showTemporaryMessage(errorMessage);
+      return;
+    }
+
     try {
       setIsLoading(true);
       setLoadingMessage(t('refreshingData'));
       
-      const data = await getAllAssignments();
+      const data = await getAllAssignments(session.supabaseAccessToken);
       setAssignmentsData(data);
       setIsLoading(false);
     } catch (error) {
@@ -187,8 +271,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const toggleAssignmentCompletion = async (assignmentId: number, completed: boolean) => {
+    if (isDemoMode) {
+      try {
+        await updateDemoAssignmentCompletion();
+      } catch (error) {
+        showTemporaryMessage(tDemo('demoModeUpdateRestriction'));
+      }
+      return;
+    }
+
+    if (!session?.supabaseAccessToken) {
+      const errorMessage = tDemo('authTokenMissing');
+      showTemporaryMessage(errorMessage);
+      return;
+    }
+
     try {
-      const updatedAssignment = await updateAssignmentCompletion(assignmentId, completed);
+      const updatedAssignment = await updateAssignmentCompletion(
+        assignmentId, 
+        completed, 
+        session.supabaseAccessToken
+      );
       
       setAssignmentsData(prev => 
         prev.map(a => a.id === assignmentId ? updatedAssignment : a)
@@ -209,6 +312,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteAssignment = async (assignmentId: number) => {
+    if (isDemoMode) {
+      try {
+        await deleteDemoAssignment();
+      } catch (error) {
+        showTemporaryMessage(tDemo('demoModeDeleteRestriction'));
+      }
+      return;
+    }
+
+    if (!session?.supabaseAccessToken) {
+      const errorMessage = tDemo('authTokenMissing');
+      showTemporaryMessage(errorMessage);
+      return;
+    }
+
     const assignment = assignmentsData.find(a => a.id === assignmentId);
     if (!assignment) {
       console.error('Assignment not found for deletion');
@@ -219,7 +337,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     
     if (confirm(confirmMessage)) {
       try {
-        await deleteAssignmentService(assignmentId);
+        await deleteAssignmentService(assignmentId, session.supabaseAccessToken);
         
         setAssignmentsData(prev => prev.filter(a => a.id !== assignmentId));
         showTemporaryMessage(t('assignmentDeleted'));
@@ -246,11 +364,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const handleAssignmentSubmit = async (assignmentData: Partial<Assignment>) => {
     const isEditing = currentEditingAssignment !== undefined;
     
+    if (isDemoMode) {
+      try {
+        if (isEditing) {
+          await updateDemoAssignment();
+        } else {
+          await addDemoAssignment();
+        }
+      } catch (error) {
+        showTemporaryMessage(tDemo('demoModeUpdateRestriction'));
+      }
+      return;
+    }
+    
+    if (!session?.user?.id) {
+      showTemporaryMessage(tDemo('loginRequired'));
+      return;
+    }
+
+    if (!session?.supabaseAccessToken) {
+      const errorMessage = tDemo('authTokenMissing');
+      showTemporaryMessage(errorMessage);
+      return;
+    }
+    
     try {
       if (isEditing && currentEditingAssignment) {
         const updatedAssignment = await updateAssignmentService(
           currentEditingAssignment.id, 
-          { ...assignmentData, completed: currentEditingAssignment.completed }
+          { ...assignmentData, completed: currentEditingAssignment.completed },
+          session.supabaseAccessToken
         );
         
         setAssignmentsData(prev => 
@@ -261,8 +404,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       } else {
         const newAssignment = await addAssignmentService({
           ...assignmentData,
+          userId: session.user.id,
           completed: false
-        } as Assignment);
+        } as Assignment, session.supabaseAccessToken);
         
         setAssignmentsData(prev => [...prev, newAssignment]);
         showTemporaryMessage(t('assignmentAdded'));
@@ -326,6 +470,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setIsEditModalOpen,
     setCurrentEditingAssignment,
     isDesktop,
+    isDemoMode,
     filters,
     navigateWeek,
     toggleFilter,

@@ -1,16 +1,50 @@
-import createMiddleware from 'next-intl/middleware';
+import NextAuth from "next-auth"
+import authConfig from "./auth.config"
+import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from './routing';
 
-export default createMiddleware({
-  ...routing,
-  localeDetection: true,
-  // 쿠키에서 locale 감지하여 서버 사이드와 클라이언트 사이드 동기화
-  defaultLocale: routing.defaultLocale,
-  locales: routing.locales,
-  localePrefix: routing.localePrefix
+const intlMiddleware = createIntlMiddleware(routing);
+
+const { auth } = NextAuth(authConfig)
+
+export default auth((req) => {
+  const { pathname } = req.nextUrl;
+  
+  // Skip intl middleware for API routes
+  if (pathname.startsWith('/api/')) {
+    return;
+  }
+  
+  // Skip authentication for demo routes
+  if (pathname.includes('/demo/')) {
+    return intlMiddleware(req);
+  }
+  
+  // Require authentication for protected routes
+  const protectedRoutes = ['/calendar', '/subjects', '/settings'];
+  const isProtectedRoute = protectedRoutes.some(route => 
+    pathname.includes(route)
+  );
+  
+  if (isProtectedRoute && !req.auth) {
+    const landingUrl = new URL('/', req.nextUrl.origin);
+    return Response.redirect(landingUrl);
+  }
+  
+  // Redirect authenticated users from root to calendar
+  if (pathname === '/' && req.auth) {
+    const calendarUrl = new URL('/calendar', req.nextUrl.origin);
+    return Response.redirect(calendarUrl);
+  }
+  
+  return intlMiddleware(req);
 });
 
 export const config = {
-  // 정적 파일과 API 라우트는 제외
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|icons|manifest.json|sw.js|workbox-.*).*)']
+  matcher: [
+    // Skip all internal paths (_next)
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
 };

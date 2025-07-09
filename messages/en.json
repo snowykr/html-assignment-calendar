@@ -103,5 +103,32 @@
   "noAssignments": {
     "onThisDay": "No assignments on this day",
     "inPeriod": "No assignments in this period"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signInWithGoogle": "Sign in with Google",
+    "loading": "Loading..."
+  },
+  "landing": {
+    "title": "Assignment Management Made Easy",
+    "subtitle": "Improve your academic performance with systematic assignment management",
+    "feature1": "Intuitive interface for assignment scheduling",
+    "feature2": "Subject-based assignment categorization and progress tracking",
+    "feature3": "Deadline reminders and cross-platform support",
+    "startWithGoogle": "Get Started with Google"
+  },
+  "navigation": {
+    "homeMenu": "Home Menu",
+    "backToHome": "Go to Home"
+  },
+  "demo": {
+    "tryDemo": "Try Demo",
+    "demoModeRestriction": "Data cannot be modified in demo mode.",
+    "demoModeAddRestriction": "Data cannot be added in demo mode.",
+    "demoModeUpdateRestriction": "Data cannot be updated in demo mode.",
+    "demoModeDeleteRestriction": "Data cannot be deleted in demo mode.",
+    "authTokenMissing": "Authentication token is missing. Please log in again.",
+    "loginRequired": "Login is required."
   }
 }
