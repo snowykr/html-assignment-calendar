@@ -293,7 +293,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     
     setTimeout(() => {
       if (toast.parentElement) {
-        toast.remove();
+        toast.classList.add('fade-out');
+        setTimeout(() => {
+          if (toast.parentElement) {
+            toast.remove();
+          }
+        }, 300);
       }
     }, duration);
   };
