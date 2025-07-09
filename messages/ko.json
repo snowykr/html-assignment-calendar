@@ -103,5 +103,23 @@
   "noAssignments": {
     "onThisDay": "이 날 과제가 없습니다",
     "inPeriod": "기간 내 과제가 없습니다"
+  },
+  "auth": {
+    "signIn": "로그인",
+    "signOut": "로그아웃", 
+    "signInWithGoogle": "Google로 로그인",
+    "loading": "로딩 중..."
+  },
+  "landing": {
+    "title": "과제 관리가 쉬워집니다",
+    "subtitle": "체계적인 과제 관리로 학업 성과를 향상시키세요",
+    "feature1": "직관적인 인터페이스로 과제 일정 관리",
+    "feature2": "과목별 과제 분류 및 진행 상황 추적",
+    "feature3": "마감일 알림과 크로스 플랫폼 지원",
+    "startWithGoogle": "Google 계정으로 시작하기"
+  },
+  "navigation": {
+    "homeMenu": "홈 메뉴",
+    "backToHome": "홈으로 이동"
   }
 }
