@@ -6,6 +6,7 @@ import { useApp } from '@/contexts/AppContext';
 import { getAssignmentStatus, getFullLocale } from '@/utils/utils';
 import { formatRound } from '@/utils/round-formatter';
 import { useTapToggle } from '@/hooks/useTapToggle';
+import { useOutsideClick } from '@/hooks/useOutsideClick';
 import MemoModal from './MemoModal';
 import type { Assignment } from '@/utils/utils';
 import { AppCheckIcon, AppIncompleteIcon } from '@/utils/icons';
@@ -29,6 +30,7 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
   const tCommon = useTranslations('common');
   const tAddAssignment = useTranslations('addAssignment');
   const locale = useLocale();
+  const modalRef = useOutsideClick({ onOutsideClick: onClose, enabled: !!date });
   
   const [assignmentsForDate, setAssignmentsForDate] = useState<Assignment[]>([]);
   const {
@@ -177,8 +179,8 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
 
   return (
     <>
-      <div className={`popup-modal ${date ? 'show' : ''}`} onClick={onClose}>
-        <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+      <div className={`popup-modal ${date ? 'show' : ''}`}>
+        <div className="popup-content" ref={modalRef}>
           <div className="popup-header">
             <h3>{dateDisplay}</h3>
             <button className="popup-close" onClick={onClose}>&times;</button>

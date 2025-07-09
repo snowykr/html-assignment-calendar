@@ -3,6 +3,7 @@
 import { useEffect, useState, FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
+import { useOutsideClick } from '@/hooks/useOutsideClick';
 
 interface AddAssignmentModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
   const [isSubmitting, setIsSubmitting] = useState(false);
   const t = useTranslations('addAssignment');
   const tCommon = useTranslations('common');
+  const modalRef = useOutsideClick({ onOutsideClick: onClose, enabled: isOpen });
   
   const [formData, setFormData] = useState({
     courseName: '',
@@ -106,8 +108,8 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
   const isEditing = currentEditingAssignment !== undefined;
 
   return (
-    <div className="popup-modal show" onClick={onClose}>
-      <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+    <div className="popup-modal show">
+      <div className="popup-content" ref={modalRef}>
         <div className="popup-header">
           <h3>{isEditing ? t('editTitle') : t('title')}</h3>
           <button className="popup-close" onClick={onClose}>&times;</button>
