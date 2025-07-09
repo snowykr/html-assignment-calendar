@@ -57,18 +57,18 @@ export default function TopNav() {
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="flex items-center gap-2 p-1 hover:bg-gray-50 rounded-lg transition-colors"
                 >
-                  {session.user?.image && (
+                  {session?.user?.image && (
                     <Image 
-                      src={session.user.image} 
-                      alt={session.user.name || ''} 
+                      src={session?.user?.image || ''} 
+                      alt={session?.user?.name || ''} 
                       width={32}
                       height={32}
                       className="w-8 h-8 rounded-full"
                     />
                   )}
                   <div className="text-left">
-                    <p className="text-sm font-medium text-gray-900">{session.user?.name}</p>
-                    <p className="text-xs text-gray-500">{session.user?.email}</p>
+                    <p className="text-sm font-medium text-gray-900">{session?.user?.name}</p>
+                    <p className="text-xs text-gray-500">{session?.user?.email}</p>
                   </div>
                 </button>
                 
