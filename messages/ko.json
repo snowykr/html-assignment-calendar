@@ -42,7 +42,7 @@
     "memo": "메모",
     "memoPlaceholder": "과제 관련 메모를 입력하세요",
     "invalidUrl": "올바른 URL 형식이 아닙니다",
-    "memoTooLong": "메모는 1000자 이하로 입력해주세요"
+    "memoTooLong": "메모는 500자 이하로 입력해주세요"
   },
   "settings": {
     "notifications": "알림 설정",

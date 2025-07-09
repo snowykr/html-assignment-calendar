@@ -45,7 +45,7 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
         round: '',
         title: '',
         dueDate: new Date().toISOString().split('T')[0],
-        dueTime: '00:00',
+        dueTime: '23:59',
         platform: '',
         link: '',
         memo: ''
@@ -81,7 +81,7 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
     }
 
     // Validate memo length
-    if (formData.memo && formData.memo.length > 1000) {
+    if (formData.memo && formData.memo.length > 500) {
       alert(t('memoTooLong'));
       return;
     }
@@ -185,7 +185,7 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
           <div className="form-group">
             <label className="form-label" htmlFor="link">{t('link')}</label>
             <input 
-              type="url" 
+              type="url"
               id="link" 
               className="form-input" 
               value={formData.link}
@@ -202,11 +202,11 @@ export default function AddAssignmentModal({ isOpen, onClose }: AddAssignmentMod
               value={formData.memo}
               onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
               placeholder={t('memoPlaceholder')}
-              maxLength={1000}
+              maxLength={500}
               rows={3}
             />
             <div className="char-counter">
-              {formData.memo.length}/1000
+              {formData.memo.length}/500
             </div>
           </div>
           <div className="form-actions">

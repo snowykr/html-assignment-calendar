@@ -42,7 +42,7 @@
     "memo": "Memo",
     "memoPlaceholder": "Enter assignment-related memo",
     "invalidUrl": "Invalid URL format",
-    "memoTooLong": "Memo must be 1000 characters or less"
+    "memoTooLong": "Memo must be 500 characters or less"
   },
   "settings": {
     "notifications": "Notifications",

@@ -42,7 +42,7 @@
     "memo": "メモ",
     "memoPlaceholder": "課題関連のメモを入力してください",
     "invalidUrl": "正しいURL形式ではありません",
-    "memoTooLong": "メモは1000文字以下で入力してください"
+    "memoTooLong": "メモは500文字以下で入力してください"
   },
   "settings": {
     "notifications": "通知設定",
