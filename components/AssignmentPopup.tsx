@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 import { getAssignmentStatus, getFullLocale } from '@/utils/utils';
-import { formatRound } from '@/utils/round-formatter';
+import { formatLesson } from '@/utils/lesson-formatter';
 import { useTapToggle } from '@/hooks/useTapToggle';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import MemoModal from './MemoModal';
@@ -108,7 +108,7 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
             </div>
           </div>
           
-          <div className="assignment-round">{formatRound(assignment.round, locale)}</div>
+          <div className="assignment-lesson">{formatLesson(assignment.lesson, locale)}</div>
           <div className="assignment-title">{assignment.title}</div>
           
           <div className={`deadline ${statusClass}`}>

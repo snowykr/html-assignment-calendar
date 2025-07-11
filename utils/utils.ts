@@ -2,7 +2,7 @@
 export interface Assignment {
   id: number;
   courseName: string;
-  round: string;
+  lesson: string;
   title: string;
   dueDate: string;
   dueTime: string;
@@ -187,5 +187,5 @@ export function getFullLocale(locale: string): string {
     'en': 'en-US', 
     'ja': 'ja-JP'
   };
-  return localeMap[locale] || 'en-US';
+  return localeMap[locale] || 'ja-JP';
 }

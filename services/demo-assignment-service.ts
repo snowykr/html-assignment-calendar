@@ -15,7 +15,7 @@ const DEMO_ERROR_MESSAGES = {
 interface DbAssignment {
   id: number;
   course_name: string;
-  round: string;
+  lesson: string;
   title: string;
   due_date: string;
   due_time: string;

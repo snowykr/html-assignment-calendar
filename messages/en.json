@@ -2,6 +2,7 @@
   "common": {
     "add": "Add",
     "edit": "Edit",
+    "update": "Update",
     "cancel": "Cancel",
     "delete": "Delete",
     "save": "Save",
@@ -11,10 +12,12 @@
     "error": "Error",
     "success": "Success",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "apply": "Apply",
+    "submitting": "Submitting..."
   },
   "app": {
-    "title": "Assignment Manager",
+    "title": "Assignment Calendar",
     "description": "Assignment Management Calendar Application"
   },
   "bottomTabs": {
@@ -26,7 +29,8 @@
     "title": "Add Assignment",
     "editTitle": "Edit Assignment",
     "courseName": "Course Name",
-    "round": "Round",
+    "lesson": "Lesson",
+    "lessonSuffix": "",
     "assignmentTitle": "Assignment Title",
     "dueDate": "Due Date",
     "dueTime": "Due Time",
@@ -42,7 +46,14 @@
     "memo": "Memo",
     "memoPlaceholder": "Enter assignment-related memo",
     "invalidUrl": "Invalid URL format",
-    "memoTooLong": "Memo must be 500 characters or less"
+    "memoTooLong": "Memo must be 500 characters or less",
+    "usePreviousInfo": "Use Previous Info",
+    "selectPreviousAssignment": "Select Previous Assignment",
+    "noPreviousAssignments": "No previous assignments",
+    "confirmationRequired": "Confirmation required",
+    "selectCourse": "Select Course",
+    "selectAssignment": "Select Assignment",
+    "previewTitle": "Preview"
   },
   "settings": {
     "notifications": "Notifications",
@@ -93,7 +104,11 @@
     "linkAvailable": "Link available",
     "memoAvailable": "Memo available",
     "expandLabel": "Expand",
-    "collapseLabel": "Collapse"
+    "collapseLabel": "Collapse",
+    "completedAriaLabel": "Completed",
+    "incompleteAriaLabel": "Incomplete - Click to mark as completed",
+    "linkAvailableTitle": "Link available",
+    "memoAvailableTitle": "Memo available"
   },
   "filters": {
     "hideCompleted": "Hide completed assignments",

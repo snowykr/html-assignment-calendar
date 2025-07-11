@@ -8,7 +8,7 @@ import { createClient } from '@supabase/supabase-js';
 interface DbAssignment {
   id: number;
   course_name: string;
-  round: string;
+  lesson: string;
   title: string;
   due_date: string;
   due_time: string;
@@ -133,9 +133,7 @@ export async function addAssignment(
     throw error;
   }
   
-  const result = transformDbToJs(data);
-  
-  return result;
+  return transformDbToJs(data);
 }
 
 // Update assignment

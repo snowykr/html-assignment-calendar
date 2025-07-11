@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 import { getAssignmentStatus, filterAssignments, sortAssignmentsByDueDate, formatDateTimeForDisplay } from '@/utils/utils';
-import { formatRound } from '@/utils/round-formatter';
+import { formatLesson } from '@/utils/lesson-formatter';
 import { useTapToggle } from '@/hooks/useTapToggle';
 import MemoModal from './MemoModal';
 import type { Assignment } from '@/utils/utils';
@@ -93,8 +93,8 @@ export default function Assignments() {
             }}
           >
             {isCompleted ? 
-              <AppCheckIcon className="h-4 w-4 text-green-600" aria-label="완료됨" /> : 
-              <AppIncompleteIcon className="h-4 w-4 text-black" aria-label="미완료 - 클릭하여 완료 처리" />
+              <AppCheckIcon className="h-4 w-4 text-green-600" aria-label={t('completedAriaLabel')} /> : 
+              <AppIncompleteIcon className="h-4 w-4 text-black" aria-label={t('incompleteAriaLabel')} />
             }
           </div>
           
@@ -102,13 +102,13 @@ export default function Assignments() {
             <div className="course-name-with-indicators">
               <span className="course-name">{assignment.courseName}</span>
               <div className="assignment-indicators">
-                {assignment.link && <span className="indicator-icon link-icon" title="링크 있음">🔗</span>}
-                {assignment.memo && <span className="indicator-icon memo-icon" title="메모 있음">📝</span>}
+                {assignment.link && <span className="indicator-icon link-icon" title={t('linkAvailableTitle')}>🔗</span>}
+                {assignment.memo && <span className="indicator-icon memo-icon" title={t('memoAvailableTitle')}>📝</span>}
               </div>
             </div>
           </div>
           
-          <div className="assignment-round">{formatRound(assignment.round, locale)}</div>
+          <div className="assignment-lesson">{formatLesson(assignment.lesson, locale)}</div>
           <div className="assignment-title">{assignment.title}</div>
           
           <div className={`deadline ${statusClass}`}>

@@ -5,7 +5,7 @@ import type { Assignment } from './utils';
 interface DbAssignment {
   id: number;
   course_name: string;
-  round: string;
+  lesson: string;
   title: string;
   due_date: string;
   due_time: string;
@@ -20,7 +20,7 @@ interface DbAssignment {
 
 interface DbAssignmentInsert {
   course_name: string;
-  round: string;
+  lesson: string;
   title: string;
   due_date: string;
   due_time: string;
@@ -33,7 +33,7 @@ interface DbAssignmentInsert {
 
 interface DbAssignmentUpdate {
   course_name?: string;
-  round?: string;
+  lesson?: string;
   title?: string;
   due_date?: string;
   due_time?: string;
@@ -49,7 +49,7 @@ export function transformDbToJs(dbRow: DbAssignment): Assignment {
   return {
     id: dbRow.id,
     courseName: dbRow.course_name,
-    round: dbRow.round,
+    lesson: dbRow.lesson,
     title: dbRow.title,
     dueDate: dbRow.due_date,
     dueTime: dbRow.due_time.substring(0, 5), // Remove seconds from time string
@@ -71,7 +71,7 @@ export function transformJsToDbForInsert(jsObj: Omit<Assignment, 'id'>): DbAssig
   
   return {
     course_name: jsObj.courseName,
-    round: jsObj.round,
+    lesson: jsObj.lesson,
     title: jsObj.title,
     due_date: jsObj.dueDate,
     due_time: jsObj.dueTime,
@@ -88,7 +88,7 @@ export function transformJsToDbForUpdate(jsObj: Partial<Assignment>): DbAssignme
   const dbObj: DbAssignmentUpdate = {};
   
   if (jsObj.courseName !== undefined) dbObj.course_name = jsObj.courseName;
-  if (jsObj.round !== undefined) dbObj.round = jsObj.round;
+  if (jsObj.lesson !== undefined) dbObj.lesson = jsObj.lesson;
   if (jsObj.title !== undefined) dbObj.title = jsObj.title;
   if (jsObj.dueDate !== undefined) dbObj.due_date = jsObj.dueDate;
   if (jsObj.dueTime !== undefined) dbObj.due_time = jsObj.dueTime;
