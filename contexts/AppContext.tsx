@@ -55,6 +55,8 @@ interface AppContextType {
   setIsEditModalOpen: (isOpen: boolean) => void;
   setCurrentEditingAssignment: (assignment: Assignment | undefined) => void;
   isDesktop: boolean | undefined;
+  presetDate: string | undefined;
+  setPresetDate: (date: string | undefined) => void;
   isDemoMode: boolean;
   
   // Filters
@@ -68,6 +70,7 @@ interface AppContextType {
   deleteAssignment: (assignmentId: number) => Promise<void>;
   editAssignment: (assignment: Assignment) => void;
   handleAssignmentSubmit: (assignmentData: Partial<Assignment>) => Promise<void>;
+  openAddAssignmentModalWithDate: (date: string) => void;
   setCurrentPopupDate: (date: string | null) => void;
   showTemporaryMessage: (message: string, duration?: number) => void;
   updateSubjectPagination: (subjectName: string, newPage: number) => void;
@@ -99,6 +102,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [currentEditingAssignment, setCurrentEditingAssignment] = useState<Assignment | undefined>();
   const [subjectsPagination, setSubjectsPagination] = useState<SubjectsPagination>({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [presetDate, setPresetDate] = useState<string | undefined>(undefined);
   const [isDesktop, setIsDesktop] = useState<boolean | undefined>(undefined);
   const [isDemoMode, setIsDemoMode] = useState(false);
   
@@ -361,6 +365,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setIsEditModalOpen(true);
   };
 
+  const openAddAssignmentModalWithDate = (date: string) => {
+    setCurrentEditingAssignment(undefined);
+    setPresetDate(date);
+    setIsEditModalOpen(true);
+  };
+
   const handleAssignmentSubmit = async (assignmentData: Partial<Assignment>) => {
     const isEditing = currentEditingAssignment !== undefined;
     
@@ -479,9 +489,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     deleteAssignment,
     editAssignment,
     handleAssignmentSubmit,
+    openAddAssignmentModalWithDate,
     setCurrentPopupDate,
     showTemporaryMessage,
-    updateSubjectPagination
+    updateSubjectPagination,
+    presetDate,
+    setPresetDate
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

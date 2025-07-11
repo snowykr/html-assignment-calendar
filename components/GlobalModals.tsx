@@ -5,12 +5,14 @@ import AddAssignmentModal from './AddAssignmentModal';
 import FloatingAddButton from './FloatingAddButton';
 
 export default function GlobalModals() {
-  const { isEditModalOpen, setIsEditModalOpen, setCurrentEditingAssignment } = useApp();
+  const { isEditModalOpen, setIsEditModalOpen, setCurrentEditingAssignment, presetDate, setPresetDate } = useApp();
 
   const handleModalClose = () => {
     setIsEditModalOpen(false);
     // Clear editing assignment when modal closes
     setCurrentEditingAssignment(undefined);
+    // Clear preset date when modal closes
+    setPresetDate(undefined);
   };
 
   const handleAddButtonClick = () => {
@@ -23,6 +25,7 @@ export default function GlobalModals() {
       <AddAssignmentModal 
         isOpen={isEditModalOpen} 
         onClose={handleModalClose} 
+        presetDate={presetDate}
       />
     </>
   );

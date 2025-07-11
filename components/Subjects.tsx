@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 import { getAssignmentStatus, formatDateTimeForDisplay } from '@/utils/utils';
-import { formatRound } from '@/utils/round-formatter';
+import { formatLesson } from '@/utils/lesson-formatter';
 import type { Assignment } from '@/utils/utils';
 import { AppChevronDownIcon } from '@/utils/icons';
 
@@ -85,7 +85,7 @@ export default function Subjects() {
               <div key={assignment.id} className="subject-assignment-item">
                 <div>
                   <div className="subject-assignment-title">
-                    {assignment.title} ({formatRound(assignment.round, locale)})
+                    {assignment.title} ({formatLesson(assignment.lesson, locale)})
                   </div>
                   <div className={`subject-assignment-due ${statusClass}`}>
                     {dueDateText}

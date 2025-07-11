@@ -2,6 +2,7 @@
   "common": {
     "add": "追加",
     "edit": "編集",
+    "update": "更新",
     "cancel": "キャンセル",
     "delete": "削除",
     "save": "保存",
@@ -11,10 +12,12 @@
     "error": "エラー",
     "success": "成功",
     "yes": "はい",
-    "no": "いいえ"
+    "no": "いいえ",
+    "apply": "適用",
+    "submitting": "送信中..."
   },
   "app": {
-    "title": "課題管理アプリ",
+    "title": "課題カレンダー",
     "description": "課題管理カレンダーアプリケーション"
   },
   "bottomTabs": {
@@ -26,7 +29,8 @@
     "title": "課題を追加",
     "editTitle": "課題を編集",
     "courseName": "科目名",
-    "round": "回次",
+    "lesson": "回次",
+    "lessonSuffix": "回",
     "assignmentTitle": "課題タイトル",
     "dueDate": "締切日",
     "dueTime": "締切時刻",
@@ -42,7 +46,14 @@
     "memo": "メモ",
     "memoPlaceholder": "課題関連のメモを入力してください",
     "invalidUrl": "正しいURL形式ではありません",
-    "memoTooLong": "メモは500文字以下で入力してください"
+    "memoTooLong": "メモは500文字以下で入力してください",
+    "usePreviousInfo": "以前の情報を使用",
+    "selectPreviousAssignment": "以前の課題を選択",
+    "noPreviousAssignments": "以前の課題がありません",
+    "confirmationRequired": "確認が必要です",
+    "selectCourse": "科目を選択",
+    "selectAssignment": "課題を選択",
+    "previewTitle": "プレビュー"
   },
   "settings": {
     "notifications": "通知設定",
@@ -93,7 +104,11 @@
     "linkAvailable": "リンクあり",
     "memoAvailable": "メモあり",
     "expandLabel": "展開",
-    "collapseLabel": "折りたたみ"
+    "collapseLabel": "折りたたみ",
+    "completedAriaLabel": "完了",
+    "incompleteAriaLabel": "未完了 - クリックして完了にする",
+    "linkAvailableTitle": "リンクあり",
+    "memoAvailableTitle": "メモあり"
   },
   "filters": {
     "hideCompleted": "提出済み課題を隠す",

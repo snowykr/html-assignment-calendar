@@ -2,6 +2,7 @@
   "common": {
     "add": "추가",
     "edit": "수정",
+    "update": "수정",
     "cancel": "취소",
     "delete": "삭제",
     "save": "저장",
@@ -11,10 +12,12 @@
     "error": "오류",
     "success": "성공",
     "yes": "예",
-    "no": "아니오"
+    "no": "아니오",
+    "apply": "적용",
+    "submitting": "처리 중..."
   },
   "app": {
-    "title": "과제 관리 앱",
+    "title": "과제 캘린더",
     "description": "과제 관리 캘린더 애플리케이션"
   },
   "bottomTabs": {
@@ -26,7 +29,8 @@
     "title": "과제 추가",
     "editTitle": "과제 수정",
     "courseName": "과목명",
-    "round": "회차",
+    "lesson": "회차",
+    "lessonSuffix": "회차",
     "assignmentTitle": "과제 제목",
     "dueDate": "마감일",
     "dueTime": "마감 시간",
@@ -42,7 +46,14 @@
     "memo": "메모",
     "memoPlaceholder": "과제 관련 메모를 입력하세요",
     "invalidUrl": "올바른 URL 형식이 아닙니다",
-    "memoTooLong": "메모는 500자 이하로 입력해주세요"
+    "memoTooLong": "메모는 500자 이하로 입력해주세요",
+    "usePreviousInfo": "이전 정보 사용하기",
+    "selectPreviousAssignment": "이전 과제 선택",
+    "noPreviousAssignments": "이전 과제가 없습니다",
+    "confirmationRequired": "확인이 필요한 항목입니다",
+    "selectCourse": "과목 선택",
+    "selectAssignment": "과제 선택",
+    "previewTitle": "미리보기"
   },
   "settings": {
     "notifications": "알림 설정",
@@ -93,7 +104,11 @@
     "linkAvailable": "링크 있음",
     "memoAvailable": "메모 있음",
     "expandLabel": "확장",
-    "collapseLabel": "축소"
+    "collapseLabel": "축소",
+    "completedAriaLabel": "완료됨",
+    "incompleteAriaLabel": "미완료 - 클릭하여 완료 처리",
+    "linkAvailableTitle": "링크 있음",
+    "memoAvailableTitle": "메모 있음"
   },
   "filters": {
     "hideCompleted": "제출완료 과제 숨기기",

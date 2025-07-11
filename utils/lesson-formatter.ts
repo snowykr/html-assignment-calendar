@@ -11,21 +11,21 @@ function getOrdinalSuffix(num: number): string {
 }
 
 /**
- * 수업 정보를 언어별로 포맷팅하는 함수
- * @param round 수업 회차 문자열 (예: "1", "2", "10")
- * @param locale 언어 코드 (ko, en, ja)
- * @returns 포맷팅된 수업 회차 문자열
+ * 수업 정보를 언어에 맞게 포맷팅합니다.
+ * @param lesson 수업 회차 문자열 (예: "1", "2", "10")
+ * @param locale 언어 코드 (예: "en", "ko", "ja")
+ * @returns 포맷팅된 회차 문자열
  */
-export function formatRound(round: string, locale: string): string {
+export function formatLesson(lesson: string, locale: string): string {
   // 공백 문자 제거
-  const trimmedRound = round.trim();
+  const trimmedLesson = lesson.trim();
   
-  // 숫자 검증 - 안전한 파싱
-  const num = parseInt(trimmedRound);
+  // 빈 문자열이거나 숫자가 아닌 경우 원본 반환
+  const num = parseInt(trimmedLesson);
   
-  // 숫자가 아니거나 음수인 경우 원래 값 반환
+  // 숫자가 아니거나 음수인 경우 원본 반환
   if (isNaN(num) || num < 0) {
-    return round;
+    return lesson;
   }
   
   // 언어별 포맷팅
@@ -37,6 +37,7 @@ export function formatRound(round: string, locale: string): string {
     case 'ja':
       return `${num}回`;
     default:
-      return round;
+      // 기본값으로 원본 반환
+      return lesson;
   }
 }

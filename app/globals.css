@@ -398,6 +398,42 @@ body {
     background-color: #d70015;
 }
 
+/* Previous Assignment Modal */
+.assignment-preview {
+    margin-top: 20px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+}
+
+.preview-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 8px;
+}
+
+.preview-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.preview-content p {
+    margin: 0;
+    font-size: 14px;
+    color: #6c757d;
+    line-height: 1.4;
+}
+
+.preview-content strong {
+    color: #495057;
+    font-weight: 500;
+}
+
 .assignment-container.tapped {
     margin-bottom: 25px;
 }
@@ -505,7 +541,7 @@ body {
     color: #000;
 }
 
-.assignment-round {
+.assignment-lesson {
     font-size: 13px;
     color: #8e8e93;
     font-weight: 500;
@@ -712,6 +748,62 @@ body {
     transform: scale(0.9);
 }
 
+.popup-content-fixed {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 70vh;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+.popup-scrollable-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 20px;
+    min-height: 0;
+}
+
+.popup-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: center;
+}
+
+.popup-footer .flex {
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.popup-footer .flex.gap-2 {
+    gap: 8px;
+}
+
+.add-assignment-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-assignment-btn:hover {
+    background: #2563eb;
+}
+
+.popup-content-fixed .popup-header {
+    padding: 20px 20px 15px 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
 #popup-assignment-list .assignment-box {
     margin-bottom: 10px;
 }
@@ -866,10 +958,10 @@ body {
 
 .btn-cancel,
 .btn-submit {
-    padding: 12px 24px;
+    padding: 10px 24px;
     border: none;
     border-radius: 10px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -897,6 +989,35 @@ body {
 .btn-submit:disabled {
     background: #e5e5ea;
     color: #8e8e93;
+    cursor: not-allowed;
+}
+
+.btn-outline {
+    background: transparent;
+    color: #007aff;
+    border: 1px solid #007aff;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+.btn-outline:hover {
+    background: #007aff;
+    color: white;
+}
+
+.btn-outline:disabled {
+    background: transparent;
+    color: #8e8e93;
+    border-color: #e5e5ea;
     cursor: not-allowed;
 }
 
@@ -928,6 +1049,25 @@ body {
     .btn-submit {
         width: 100%;
     }
+    
+    /* Modal footer button adjustments for small screens */
+    .popup-footer .flex {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+    }
+    
+    .popup-footer .flex .flex {
+        flex-direction: row;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .btn-outline {
+        font-size: 12px;
+        padding: 8px 12px;
+        max-width: 180px;
+    }
 }
 
 /* Tablet-specific styles */
@@ -939,6 +1079,13 @@ body {
 
     .memo-modal {
         max-width: 450px;
+    }
+    
+    /* Modal footer button adjustments for tablets */
+    .btn-outline {
+        font-size: 13px;
+        padding: 10px 14px;
+        max-width: 220px;
     }
 }
 
@@ -968,7 +1115,7 @@ body {
     }
 
     /* Calendar page grid layout adjustment */
-    .content.lg\\:grid {
+    .content.lg\:grid {
         align-items: start;
     }
 

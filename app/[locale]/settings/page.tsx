@@ -62,9 +62,9 @@ export default function SettingsPage() {
               onChange={(e) => handleLanguageChange(e.target.value)}
               aria-label={t('language')}
             >
+              <option value="ja">{t('japanese')}</option>
               <option value="ko">{t('korean')}</option>
               <option value="en">{t('english')}</option>
-              <option value="ja">{t('japanese')}</option>
             </select>
           </div>
           

@@ -22,7 +22,7 @@ export async function generateMetadata({
   return {
     title: t('title'),
     description: t('description'),
-    manifest: '/manifest.json',
+    manifest: '/manifest',
     icons: {
       icon: [
         { url: '/icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },

@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 import { getAssignmentStatus, getFullLocale } from '@/utils/utils';
-import { formatRound } from '@/utils/round-formatter';
+import { formatLesson } from '@/utils/lesson-formatter';
 import { useTapToggle } from '@/hooks/useTapToggle';
+import { useOutsideClick } from '@/hooks/useOutsideClick';
 import MemoModal from './MemoModal';
 import type { Assignment } from '@/utils/utils';
 import { AppCheckIcon, AppIncompleteIcon } from '@/utils/icons';
@@ -22,13 +23,15 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
     referenceToday, 
     toggleAssignmentCompletion,
     deleteAssignment,
-    editAssignment
+    editAssignment,
+    openAddAssignmentModalWithDate
   } = useApp();
   const t = useTranslations('assignmentStatus');
   const tNoAssignments = useTranslations('noAssignments');
   const tCommon = useTranslations('common');
   const tAddAssignment = useTranslations('addAssignment');
   const locale = useLocale();
+  const modalRef = useOutsideClick({ onOutsideClick: onClose, enabled: !!date });
   
   const [assignmentsForDate, setAssignmentsForDate] = useState<Assignment[]>([]);
   const {
@@ -105,7 +108,7 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
             </div>
           </div>
           
-          <div className="assignment-round">{formatRound(assignment.round, locale)}</div>
+          <div className="assignment-lesson">{formatLesson(assignment.lesson, locale)}</div>
           <div className="assignment-title">{assignment.title}</div>
           
           <div className={`deadline ${statusClass}`}>
@@ -175,22 +178,36 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
     );
   };
 
+  const handleAddAssignment = () => {
+    openAddAssignmentModalWithDate(date);
+    onClose();
+  };
+
   return (
     <>
-      <div className={`popup-modal ${date ? 'show' : ''}`} onClick={onClose}>
-        <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+      <div className={`popup-modal ${date ? 'show' : ''}`}>
+        <div className="popup-content-fixed" ref={modalRef}>
           <div className="popup-header">
             <h3>{dateDisplay}</h3>
             <button className="popup-close" onClick={onClose}>&times;</button>
           </div>
-          <div id="popup-assignment-list">
-            {assignmentsForDate.length > 0 ? (
-              assignmentsForDate.map(assignment => renderAssignmentItem(assignment))
-            ) : (
-              <div className="no-assignments-popup">
-                {tNoAssignments('onThisDay')}
-              </div>
-            )}
+          
+          <div className="popup-scrollable-content">
+            <div id="popup-assignment-list">
+              {assignmentsForDate.length > 0 ? (
+                assignmentsForDate.map(assignment => renderAssignmentItem(assignment))
+              ) : (
+                <div className="no-assignments-popup">
+                  {tNoAssignments('onThisDay')}
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="popup-footer">
+            <button className="add-assignment-btn" onClick={handleAddAssignment}>
+              {tCommon('add')}
+            </button>
           </div>
         </div>
       </div>
