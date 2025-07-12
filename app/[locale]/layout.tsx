@@ -73,7 +73,10 @@ export default async function LocaleLayout({
   return (
     <html lang={actualLocale}>
       <body>
-        <SessionProvider>
+        <SessionProvider 
+          refetchOnWindowFocus={false}
+          refetchInterval={0}
+        >
           <NextIntlClientProvider messages={messages} locale={actualLocale}>
             <AppProvider>
               <NavigationWrapper>
