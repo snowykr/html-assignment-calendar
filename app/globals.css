@@ -350,6 +350,7 @@ body {
 
 .assignment-container .assignment-box:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
 }
 
 .assignment-actions {
@@ -601,6 +602,11 @@ body {
     background-color: #fff;
     border: 3px solid;
     cursor: pointer;
+}
+
+.subject-box:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
 }
 
 
