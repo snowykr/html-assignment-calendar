@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from '@/navigation';
@@ -85,6 +85,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const prevTokenRef = useRef<string | undefined>(undefined);
   const [referenceToday] = useState(new Date());
   const [viewStartDate, setViewStartDate] = useState(() => {
     const today = new Date(referenceToday);
@@ -127,6 +128,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Initialize app when authenticated or in demo mode
   useEffect(() => {
+    // 토큰이 변경되지 않았으면 재로드하지 않음
+    if (prevTokenRef.current === session?.supabaseAccessToken && !isDemoMode) {
+      return;
+    }
+    prevTokenRef.current = session?.supabaseAccessToken;
+    
     const init = async () => {
       try {
         setIsLoading(true);
