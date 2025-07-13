@@ -5,6 +5,7 @@ import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from '@/navigation';
 import { useEffect, useState } from 'react';
 import { getCookie } from '@/utils/utils';
+import { MoonIcon, SunIcon } from '@heroicons/react/24/outline';
 
 export default function HomePage() {
   const t = useTranslations('landing');
@@ -18,12 +19,58 @@ export default function HomePage() {
     const cookieLocale = getCookie('NEXT_LOCALE');
     return cookieLocale || locale;
   });
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const handleLanguageChange = (newLocale: string) => {
     setSelectedLocale(newLocale);
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
     router.refresh();
   };
+
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    
+    if (newMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#000000');
+      }
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#f2f2f7');
+      }
+    }
+  };
+
+  useEffect(() => {
+    const initializeDarkMode = () => {
+      const savedTheme = localStorage.getItem('theme');
+      
+      if (savedTheme) {
+        const isDark = savedTheme === 'dark';
+        setIsDarkMode(isDark);
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } else {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setIsDarkMode(prefersDark);
+        if (prefersDark) {
+          document.documentElement.classList.add('dark');
+        }
+      }
+    };
+    
+    initializeDarkMode();
+  }, []);
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -33,10 +80,10 @@ export default function HomePage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[var(--color-bg-primary)]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">{tAuth('loading')}</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">{tAuth('loading')}</p>
         </div>
       </div>
     );
@@ -47,11 +94,22 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 relative">
-      {/* 언어 선택 버튼 */}
-      <div className="absolute top-4 right-4 z-10">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-black dark:to-[var(--color-bg-secondary)] flex items-center justify-center px-4 relative transition-colors">
+      {/* 언어 선택 및 다크모드 버튼 */}
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+        <button
+          onClick={toggleDarkMode}
+          className="p-2 text-sm border border-gray-300 dark:border-[var(--color-border-secondary)] rounded-lg bg-white dark:bg-[var(--color-bg-secondary)] shadow-sm hover:bg-gray-50 dark:hover:bg-[var(--color-bg-tertiary)] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          aria-label="Toggle dark mode"
+        >
+          {isDarkMode ? (
+            <SunIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+          ) : (
+            <MoonIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+          )}
+        </button>
         <select 
-          className="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="px-3 py-2 text-sm border border-gray-300 dark:border-[var(--color-border-secondary)] rounded-lg bg-white dark:bg-[var(--color-bg-secondary)] text-gray-900 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           value={selectedLocale}
           onChange={(e) => handleLanguageChange(e.target.value)}
           aria-label={tSettings('language')}
@@ -65,33 +123,33 @@ export default function HomePage() {
       <div className="max-w-6xl w-full mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left">
-            <h1 className="text-3xl lg:text-5xl font-bold text-gray-900 mb-6 break-keep">
+            <h1 className="text-3xl lg:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6 break-keep">
               {t('title')}
             </h1>
             <div className="space-y-4 mb-8 max-w-xs sm:max-w-sm lg:max-w-none mx-auto lg:mx-0 text-left">
               <div className="flex items-start gap-3">
-                <svg className="w-7 h-7 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-7 h-7 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="text-gray-700">{t('feature1')}</p>
+                <p className="text-gray-700 dark:text-gray-300">{t('feature1')}</p>
               </div>
               <div className="flex items-start gap-3">
-                <svg className="w-7 h-7 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-7 h-7 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="text-gray-700">{t('feature2')}</p>
+                <p className="text-gray-700 dark:text-gray-300">{t('feature2')}</p>
               </div>
               <div className="flex items-start gap-3">
-                <svg className="w-7 h-7 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-7 h-7 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="text-gray-700">{t('feature3')}</p>
+                <p className="text-gray-700 dark:text-gray-300">{t('feature3')}</p>
               </div>
             </div>
             <div className="space-y-3">
               <button
                 onClick={() => signIn('google', { callbackUrl: '/calendar' })}
-                className="group relative inline-flex justify-center py-3 px-6 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 w-full"
+                className="group relative inline-flex justify-center py-3 px-6 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition duration-150 ease-in-out shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 w-full"
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                   <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -106,7 +164,7 @@ export default function HomePage() {
               
               <button
                 onClick={() => router.push('/demo/calendar')}
-                className="inline-flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 w-full"
+                className="inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-[var(--color-border-secondary)] text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-[var(--color-bg-secondary)] hover:bg-gray-50 dark:hover:bg-[var(--color-bg-tertiary)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition duration-150 ease-in-out shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 w-full"
               >
                 <span className="flex items-center">
                   <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,14 +178,14 @@ export default function HomePage() {
           </div>
           <div className="hidden lg:block">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-lg transform rotate-3 opacity-25"></div>
-              <div className="relative bg-white rounded-lg shadow-xl p-8">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 dark:from-blue-600 dark:to-purple-600 rounded-lg transform rotate-3 opacity-25"></div>
+              <div className="relative bg-white dark:bg-[var(--color-bg-secondary)] rounded-lg shadow-xl p-8">
                 <div className="space-y-4">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-[var(--color-bg-tertiary)] rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-[var(--color-bg-tertiary)] rounded w-1/2"></div>
                   <div className="grid grid-cols-7 gap-2 mt-6">
                     {[...Array(35)].map((_, i) => (
-                      <div key={i} className={`h-12 rounded ${i % 7 === 0 || i % 7 === 6 ? 'bg-gray-100' : i % 5 === 0 ? 'bg-blue-100' : 'bg-gray-50'}`}></div>
+                      <div key={i} className={`h-12 rounded ${i % 7 === 0 || i % 7 === 6 ? 'bg-gray-100 dark:bg-[var(--color-bg-tertiary)]' : i % 5 === 0 ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-gray-50 dark:bg-[var(--color-bg-secondary)]'}`}></div>
                     ))}
                   </div>
                 </div>

@@ -4,10 +4,11 @@ import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/navigation';
 import { getCookie } from '@/utils/utils';
+import { useApp } from '@/contexts/AppContext';
 
 export default function DemoSettingsPage() {
   const [notifications, setNotifications] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const { isDarkMode, toggleDarkMode } = useApp();
   const locale = useLocale();
   const [selectedLocale, setSelectedLocale] = useState(() => {
     const cookieLocale = getCookie('NEXT_LOCALE');
@@ -38,8 +39,8 @@ export default function DemoSettingsPage() {
           <div className="filter-row">
             <span className="filter-label">{t('darkMode')}</span>
             <div 
-              className={`toggle-switch ${!darkMode ? 'off' : ''}`}
-              onClick={() => setDarkMode(!darkMode)}
+              className={`toggle-switch ${!isDarkMode ? 'off' : ''}`}
+              onClick={toggleDarkMode}
             >
               <div className="toggle-slider"></div>
             </div>
