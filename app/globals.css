@@ -2,6 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CSS Variables for Theme Colors */
+:root {
+  /* Light Theme Colors */
+  --color-bg-primary: #f2f2f7;
+  --color-bg-secondary: #ffffff;
+  --color-bg-tertiary: #f8f8f8;
+  --color-bg-hover: #e5e5ea;
+  
+  --color-text-primary: #1c1c1e;
+  --color-text-secondary: #3c3c43;
+  --color-text-muted: #8e8e93;
+  --color-text-inverse: #ffffff;
+  
+  --color-border-primary: rgba(0,0,0,0.2);
+  --color-border-secondary: #e5e5ea;
+  --color-border-tertiary: #dee2e6;
+  
+  --color-accent-primary: #007aff;
+  --color-accent-hover: #0056b3;
+  --color-accent-danger: #ff3b30;
+  --color-accent-danger-hover: #d70015;
+  --color-accent-warning: #ff9500;
+  --color-accent-success: #34c759;
+  
+  --color-platform-teams: #003366;
+  --color-platform-openlms: #FF6B35;
+  
+  --color-shadow-light: rgba(0, 0, 0, 0.05);
+  --color-shadow-medium: rgba(0, 0, 0, 0.1);
+  --color-shadow-heavy: rgba(0, 0, 0, 0.2);
+  
+  --color-modal-bg: rgba(0,0,0,0.4);
+  --color-toast-bg: rgba(28, 28, 30, 0.95);
+}
+
+.dark {
+  /* Dark Theme Colors */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #1c1c1e;
+  --color-bg-tertiary: #2c2c2e;
+  --color-bg-hover: #3a3a3c;
+  
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e5e5e7;
+  --color-text-muted: #8e8e93;
+  --color-text-inverse: #1c1c1e;
+  
+  --color-border-primary: rgba(255,255,255,0.1);
+  --color-border-secondary: #38383a;
+  --color-border-tertiary: #48484a;
+  
+  --color-accent-primary: #0a84ff;
+  --color-accent-hover: #409cff;
+  --color-accent-danger: #ff453a;
+  --color-accent-danger-hover: #ff6961;
+  --color-accent-warning: #ff9f0a;
+  --color-accent-success: #32d74b;
+  
+  --color-platform-teams: #005bb5;
+  --color-platform-openlms: #ff8c5a;
+  
+  --color-shadow-light: rgba(0, 0, 0, 0.3);
+  --color-shadow-medium: rgba(0, 0, 0, 0.5);
+  --color-shadow-heavy: rgba(0, 0, 0, 0.7);
+  
+  --color-modal-bg: rgba(0,0,0,0.7);
+  --color-toast-bg: rgba(38, 38, 40, 0.95);
+}
+
 /* Global Reset and Base Styles */
 * {
     margin: 0;
@@ -11,16 +80,17 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f2f2f7;
+    background: var(--color-bg-primary);
     height: 100vh;
-    color: #1c1c1e;
+    color: var(--color-text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* App Container */
 .app-container {
     width: 100%;
     height: 100vh;
-    background: #f2f2f7;
+    background: var(--color-bg-primary);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -70,10 +140,10 @@ body {
     right: 0;
     height: auto;
     min-height: 70px;
-    background: rgba(248, 248, 248, 0.92);
+    background: var(--color-bg-tertiary);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-top: 0.5px solid rgba(0,0,0,0.2);
+    border-top: 0.5px solid var(--color-border-primary);
     display: flex;
     padding: 10px 0;
     padding-bottom: env(safe-area-inset-bottom, 20px);
@@ -91,14 +161,14 @@ body {
     border: none;
     padding: 8px 0;
     cursor: pointer;
-    color: #8e8e93;
+    color: var(--color-text-muted);
     font-size: 10px;
     font-weight: 500;
     transition: color 0.2s;
 }
 
 .tab-button.active {
-    color: #007aff;
+    color: var(--color-accent-primary);
 }
 
 .tab-icon {
@@ -111,7 +181,7 @@ body {
     margin: 15px 0;
     position: sticky;
     top: 0;
-    background: #f2f2f7;
+    background: var(--color-bg-primary);
     z-index: 50;
     padding-bottom: 5px;
 }
@@ -126,7 +196,7 @@ body {
 .calendar-title {
     font-size: 18px;
     font-weight: 600;
-    color: #000;
+    color: var(--color-text-primary);
     text-align: center;
     flex-grow: 1;
     white-space: nowrap;
@@ -140,7 +210,7 @@ body {
     border: none;
     font-size: 22px;
     cursor: pointer;
-    color: #007aff;
+    color: var(--color-accent-primary);
     padding: 5px 10px;
 }
 
@@ -155,7 +225,7 @@ body {
     text-align: center;
     font-size: 11px;
     font-weight: 500;
-    color: #8e8e93;
+    color: var(--color-text-muted);
     padding-bottom: 6px;
 }
 
@@ -165,23 +235,23 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #fff;
+    background: var(--color-bg-secondary);
     border-radius: 14px;
     position: relative;
     font-size: 15px;
     font-weight: 500;
-    color: #1c1c1e;
+    color: var(--color-text-primary);
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
 .calendar-day:hover {
-    background-color: #e5e5ea;
+    background-color: var(--color-bg-hover);
 }
 
 .calendar-day.today {
-    background: #007aff;
-    color: #fff;
+    background: var(--color-accent-primary);
+    color: var(--color-text-inverse);
 }
 
 .day-number {
@@ -208,11 +278,11 @@ body {
 }
 
 .assignment-dot.dot-teams, .dot-teams {
-    background-color: #003366;
+    background-color: var(--color-platform-teams);
 }
 
 .assignment-dot.dot-openlms, .dot-openlms {
-    background-color: #FF6B35;
+    background-color: var(--color-platform-openlms);
 }
 
 /* Filter Section */
@@ -222,7 +292,7 @@ body {
     gap: 10px;
     margin: 15px 0;
     padding: 15px;
-    background: #fff;
+    background: var(--color-bg-secondary);
     border-radius: 16px;
 }
 
@@ -235,14 +305,14 @@ body {
 .filter-label {
     font-size: 15px;
     font-weight: 500;
-    color: #000;
+    color: var(--color-text-primary);
 }
 
 /* Toggle Switch */
 .toggle-switch {
     width: 44px;
     height: 26px;
-    background: #007aff;
+    background: var(--color-accent-primary);
     border-radius: 13px;
     position: relative;
     cursor: pointer;
@@ -250,19 +320,19 @@ body {
 }
 
 .toggle-switch.off {
-    background: #e5e5ea;
+    background: var(--color-bg-hover);
 }
 
 .toggle-slider {
     width: 22px;
     height: 22px;
-    background: #fff;
+    background: var(--color-bg-secondary);
     border-radius: 50%;
     position: absolute;
     top: 2px;
     right: 2px;
     transition: all 0.3s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 3px var(--color-shadow-light);
 }
 
 .toggle-switch.off .toggle-slider {
@@ -279,20 +349,20 @@ body {
 
 /* Assignment Box */
 .assignment-box {
-    background: #fff;
+    background: var(--color-bg-secondary);
     border-radius: 16px;
     padding: 16px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px var(--color-shadow-light);
     border: 3px solid;
 }
 
 .assignment-box.teams, .teams {
-    border-color: #003366;
+    border-color: var(--color-platform-teams);
 }
 
 .assignment-box.openlms, .openlms {
-    border-color: #FF6B35;
+    border-color: var(--color-platform-openlms);
 }
 
 .assignment-box {
@@ -300,13 +370,14 @@ body {
 }
 
 .assignment-box.completed {
-    background: rgba(248, 249, 250, 0.95) !important;
+    background: var(--color-bg-tertiary) !important;
+    opacity: 0.8;
 }
 
 .assignment-box.completed .assignment-title {
     opacity: 0.7;
     text-decoration: line-through;
-    color: #6c757d;
+    color: var(--color-text-muted);
 }
 
 .completion-toggle {
@@ -321,8 +392,8 @@ body {
     font-size: 15px;
     cursor: pointer;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    background: var(--color-bg-tertiary);
+    box-shadow: 0 2px 6px var(--color-shadow-light);
     transition: all 0.2s ease;
     user-select: none;
     z-index: 3;
@@ -330,7 +401,7 @@ body {
 
 .completion-toggle:hover {
     transform: scale(1.1);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 8px var(--color-shadow-medium);
 }
 
 /* Tap functionality styles */
@@ -349,7 +420,7 @@ body {
 }
 
 .assignment-container .assignment-box:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px var(--color-shadow-light);
     transform: translateY(-2px);
 }
 
@@ -380,40 +451,40 @@ body {
 }
 
 .edit-btn {
-    background-color: #f1f5f9;
-    color: #1e293b;
-    border: 1px solid #e2e8f0;
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-secondary);
 }
 
 .edit-btn:hover {
-    background-color: #e2e8f0;
-    color: #0f172a;
+    background-color: var(--color-bg-hover);
+    color: var(--color-text-primary);
 }
 
 .delete-btn {
-    background-color: #ff3b30;
-    color: white;
+    background-color: var(--color-accent-danger);
+    color: var(--color-text-inverse);
 }
 
 .delete-btn:hover {
-    background-color: #d70015;
+    background-color: var(--color-accent-danger-hover);
 }
 
 /* Previous Assignment Modal */
 .assignment-preview {
     margin-top: 20px;
     padding: 16px;
-    background: #f8f9fa;
+    background: var(--color-bg-tertiary);
     border-radius: 12px;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--color-border-secondary);
 }
 
 .preview-title {
     font-size: 16px;
     font-weight: 600;
-    color: #495057;
+    color: var(--color-text-secondary);
     margin-bottom: 12px;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--color-border-secondary);
     padding-bottom: 8px;
 }
 
@@ -426,12 +497,12 @@ body {
 .preview-content p {
     margin: 0;
     font-size: 14px;
-    color: #6c757d;
+    color: var(--color-text-muted);
     line-height: 1.4;
 }
 
 .preview-content strong {
-    color: #495057;
+    color: var(--color-text-secondary);
     font-weight: 500;
 }
 
@@ -448,7 +519,7 @@ body {
 .loading-message {
     text-align: center;
     padding: 20px;
-    color: #6c757d;
+    color: var(--color-text-muted);
     font-style: italic;
 }
 
@@ -506,15 +577,15 @@ body {
     bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(28, 28, 30, 0.95);
-    color: white;
+    background: var(--color-toast-bg);
+    color: var(--color-text-inverse);
     padding: 12px 20px;
     border-radius: 12px;
     font-size: 15px;
     font-weight: 500;
     z-index: 10000;
     animation: slideUpIn 0.3s ease-out;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 16px var(--color-shadow-heavy);
     max-width: 90%;
     text-align: center;
     backdrop-filter: blur(10px);
@@ -539,19 +610,19 @@ body {
 .course-name {
     font-size: 17px;
     font-weight: 600;
-    color: #000;
+    color: var(--color-text-primary);
 }
 
 .assignment-lesson {
     font-size: 13px;
-    color: #8e8e93;
+    color: var(--color-text-muted);
     font-weight: 500;
     margin: 2px 0 8px 0;
 }
 
 .assignment-title {
     font-size: 15px;
-    color: #3c3c43;
+    color: var(--color-text-secondary);
     margin-bottom: 12px;
 }
 
@@ -565,23 +636,23 @@ body {
 }
 
 .deadline.normal {
-    background: #f0f0f0;
-    color: #666;
+    background: var(--color-bg-hover);
+    color: var(--color-text-muted);
 }
 
 .deadline.overdue {
-    background: #ff3b30;
-    color: #fff;
+    background: var(--color-accent-danger);
+    color: var(--color-text-inverse);
 }
 
 .deadline.due-soon {
-    background: #ff9500;
-    color: #fff;
+    background: var(--color-accent-warning);
+    color: var(--color-text-inverse);
 }
 
 .deadline.completed {
-    background: #34c759;
-    color: #fff;
+    background: var(--color-accent-success);
+    color: var(--color-text-inverse);
 }
 
 
@@ -597,15 +668,15 @@ body {
 .subject-box {
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px var(--color-shadow-light);
     transition: all 0.3s ease;
-    background-color: #fff;
+    background-color: var(--color-bg-secondary);
     border: 3px solid;
     cursor: pointer;
 }
 
 .subject-box:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px var(--color-shadow-medium);
     transform: translateY(-2px);
 }
 
@@ -625,13 +696,13 @@ body {
 .subject-name-header {
     font-size: 18px;
     font-weight: 600;
-    color: #000;
+    color: var(--color-text-primary);
     margin-bottom: 8px;
 }
 
 .expand-icon-subject {
     font-size: 20px;
-    color: #8e8e93;
+    color: var(--color-text-muted);
     transition: transform 0.3s ease;
     margin-left: 10px;
 }
@@ -641,7 +712,7 @@ body {
 }
 
 .subject-assignments {
-    background: #fff;
+    background: var(--color-bg-secondary);
     padding: 0;
     max-height: 0;
     overflow: hidden;
@@ -651,7 +722,7 @@ body {
 .subject-box.expanded .subject-assignments {
     max-height: 500px;
     padding: 0 20px 20px 20px;
-    border-top: 1px solid #e5e5ea;
+    border-top: 1px solid var(--color-border-secondary);
     margin-top: -1px;
 }
 
@@ -664,7 +735,7 @@ body {
 
 .subject-assignment-item {
     padding: 12px 0;
-    border-bottom: 1px solid #e5e5ea;
+    border-bottom: 1px solid var(--color-border-secondary);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -677,7 +748,7 @@ body {
 .subject-assignment-title {
     font-weight: 500;
     font-size: 15px;
-    color: #1c1c1e;
+    color: var(--color-text-primary);
 }
 
 .subject-assignment-due {
@@ -687,7 +758,7 @@ body {
 
 
 .subject-assignment-due.completed {
-    color: #34c759;
+    color: var(--color-accent-success);
 }
 
 
@@ -697,13 +768,13 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 15px 0 5px 0;
-    border-top: 1px solid #e5e5ea;
+    border-top: 1px solid var(--color-border-secondary);
     margin-top: 15px;
 }
 
 .nav-button {
-    background: #007aff;
-    color: #fff;
+    background: var(--color-accent-primary);
+    color: var(--color-text-inverse);
     border: none;
     padding: 8px 16px;
     border-radius: 10px;
@@ -713,8 +784,8 @@ body {
 }
 
 .nav-button:disabled {
-    background: #e5e5ea;
-    color: #8e8e93;
+    background: var(--color-bg-hover);
+    color: var(--color-text-muted);
     cursor: not-allowed;
 }
 
@@ -728,7 +799,7 @@ body {
     width: 100vw;
     height: 100vh;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    background-color: var(--color-modal-bg);
     justify-content: center;
     align-items: center;
     transform: scale(1.111);
@@ -740,14 +811,14 @@ body {
 }
 
 .popup-content {
-    background-color: #fefefe;
+    background-color: var(--color-bg-secondary);
     margin: auto;
     padding: 20px;
-    border: 1px solid #888;
+    border: 1px solid var(--color-border-secondary);
     width: 90%;
     max-width: 600px;
     border-radius: 18px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 20px var(--color-shadow-medium);
     animation: fadeInPopup 0.3s ease-out;
     max-height: 70vh;
     overflow-y: auto;
@@ -755,13 +826,13 @@ body {
 }
 
 .popup-content-fixed {
-    background: white;
+    background: var(--color-bg-secondary);
     border-radius: 12px;
     width: 90%;
     max-width: 400px;
     max-height: 70vh;
     position: relative;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 25px var(--color-shadow-heavy);
     display: flex;
     flex-direction: column;
 }
@@ -775,7 +846,7 @@ body {
 
 .popup-footer {
     padding: 15px 20px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--color-border-secondary);
     display: flex;
     justify-content: center;
 }
@@ -790,8 +861,8 @@ body {
 }
 
 .add-assignment-btn {
-    background: #3b82f6;
-    color: white;
+    background: var(--color-accent-primary);
+    color: var(--color-text-inverse);
     border: none;
     border-radius: 8px;
     padding: 10px 24px;
@@ -802,12 +873,12 @@ body {
 }
 
 .add-assignment-btn:hover {
-    background: #2563eb;
+    background: var(--color-accent-hover);
 }
 
 .popup-content-fixed .popup-header {
     padding: 20px 20px 15px 20px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--color-border-secondary);
 }
 
 #popup-assignment-list .assignment-box {
@@ -833,7 +904,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #e5e5ea;
+    border-bottom: 1px solid var(--color-border-secondary);
     padding-bottom: 10px;
     margin-bottom: 15px;
 }
@@ -841,11 +912,11 @@ body {
 .popup-header h3 {
     font-size: 17px;
     font-weight: 600;
-    color: #000;
+    color: var(--color-text-primary);
 }
 
 .popup-close {
-    color: #007aff;
+    color: var(--color-accent-primary);
     font-size: 28px;
     font-weight: normal;
     background: none;
@@ -856,13 +927,13 @@ body {
 }
 
 .popup-close:hover {
-    color: #005ecb;
+    color: var(--color-accent-hover);
 }
 
 
 .no-assignments-popup {
     text-align: center;
-    color: #8e8e93;
+    color: var(--color-text-muted);
     padding: 10px 0;
     font-size: 15px;
 }
@@ -873,7 +944,7 @@ body {
 
 .loading-message {
     text-align: center;
-    color: #8e8e93;
+    color: var(--color-text-muted);
     font-size: 14px;
     padding: 20px;
 }
@@ -885,22 +956,22 @@ body {
     right: 20px;
     width: 56px;
     height: 56px;
-    background: #007aff;
+    background: var(--color-accent-primary);
     border: none;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    box-shadow: 0 4px 12px var(--color-shadow-medium);
     cursor: pointer;
     z-index: 999;
     transition: all 0.3s ease;
 }
 
 .floating-add-button:hover {
-    background: #0056b3;
+    background: var(--color-accent-hover);
     transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
+    box-shadow: 0 6px 16px var(--color-shadow-heavy);
 }
 
 .floating-add-button:active {
@@ -908,7 +979,7 @@ body {
 }
 
 .floating-add-button .add-icon {
-    color: white;
+    color: var(--color-text-inverse);
     font-size: 24px;
     font-weight: 300;
     line-height: 1;
@@ -923,7 +994,7 @@ body {
     display: block;
     font-size: 15px;
     font-weight: 500;
-    color: #1c1c1e;
+    color: var(--color-text-primary);
     margin-bottom: 8px;
 }
 
@@ -931,10 +1002,11 @@ body {
 .form-select {
     width: 100%;
     padding: 12px 16px;
-    border: 1px solid #e5e5ea;
+    border: 1px solid var(--color-border-secondary);
     border-radius: 10px;
     font-size: 16px;
-    background: #fff;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
     transition: border-color 0.2s ease;
     -webkit-appearance: none;
     appearance: none;
@@ -943,8 +1015,8 @@ body {
 .form-input:focus,
 .form-select:focus {
     outline: none;
-    border-color: #007aff;
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 0 3px var(--color-shadow-light);
 }
 
 .form-select {
@@ -975,33 +1047,33 @@ body {
 }
 
 .btn-cancel {
-    background: #f2f2f7;
-    color: #1c1c1e;
+    background: var(--color-bg-hover);
+    color: var(--color-text-primary);
 }
 
 .btn-cancel:hover {
-    background: #e5e5ea;
+    background: var(--color-bg-tertiary);
 }
 
 .btn-submit {
-    background: #007aff;
-    color: white;
+    background: var(--color-accent-primary);
+    color: var(--color-text-inverse);
 }
 
 .btn-submit:hover {
-    background: #0056b3;
+    background: var(--color-accent-hover);
 }
 
 .btn-submit:disabled {
-    background: #e5e5ea;
-    color: #8e8e93;
+    background: var(--color-bg-hover);
+    color: var(--color-text-muted);
     cursor: not-allowed;
 }
 
 .btn-outline {
     background: transparent;
-    color: #007aff;
-    border: 1px solid #007aff;
+    color: var(--color-accent-primary);
+    border: 1px solid var(--color-accent-primary);
     padding: 10px 16px;
     border-radius: 10px;
     font-size: 14px;
@@ -1016,14 +1088,14 @@ body {
 }
 
 .btn-outline:hover {
-    background: #007aff;
-    color: white;
+    background: var(--color-accent-primary);
+    color: var(--color-text-inverse);
 }
 
 .btn-outline:disabled {
     background: transparent;
-    color: #8e8e93;
-    border-color: #e5e5ea;
+    color: var(--color-text-muted);
+    border-color: var(--color-border-secondary);
     cursor: not-allowed;
 }
 
@@ -1164,19 +1236,24 @@ body {
     /* Calendar section sticky positioning adjustment */
     .calendar-section {
         top: 10px;
-        background: white;
+        background: var(--color-bg-secondary);
         border-radius: 12px;
         padding: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 3px var(--color-shadow-light);
         margin: 0;
+    }
+    
+    /* TopNav specific adjustment for dark mode */
+    .dark nav {
+        background-color: var(--color-bg-secondary) !important;
     }
     
     /* Card-style design for assignments list */
     .assignments-list {
-        background: white;
+        background: var(--color-bg-secondary);
         border-radius: 12px;
         padding: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 3px var(--color-shadow-light);
         margin-top: 0;
     }
 }
@@ -1206,9 +1283,9 @@ body {
     
     .calendar-fixed-mobile {
         flex-shrink: 0;
-        background: #f2f2f7;
+        background: var(--color-bg-primary);
         padding: 15px 0;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 10px var(--color-shadow-medium);
     }
     
     .scrollable-content-mobile {
@@ -1216,7 +1293,7 @@ body {
         overflow-y: auto;
         overflow-x: hidden;
         padding: 0 0 90px 0; /* 바텀탭 높이만큼 하단 여백 */
-        background: #f2f2f7;
+        background: var(--color-bg-primary);
         -webkit-overflow-scrolling: touch; /* iOS 스크롤 성능 향상 */
     }
     
@@ -1252,7 +1329,7 @@ body {
 /* Character counter */
 .char-counter {
     font-size: 12px;
-    color: #8e8e93;
+    color: var(--color-text-muted);
     text-align: right;
     margin-top: 4px;
 }
@@ -1297,48 +1374,48 @@ body {
 }
 
 .link-btn {
-    background-color: #f1f5f9;
-    color: #1e293b;
-    border: 1px solid #e2e8f0;
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-secondary);
 }
 
 .link-btn:hover {
-    background-color: #e2e8f0;
-    color: #0f172a;
+    background-color: var(--color-bg-hover);
+    color: var(--color-text-primary);
 }
 
 .link-btn.disabled {
-    color: #64748b;
+    color: var(--color-text-muted);
     cursor: not-allowed;
     opacity: 0.6;
     text-decoration: none;
 }
 
 .link-btn.disabled:hover {
-    background-color: #f1f5f9;
-    color: #64748b;
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-muted);
 }
 
 .memo-btn {
-    background-color: #f1f5f9;
-    color: #1e293b;
-    border: 1px solid #e2e8f0;
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-secondary);
 }
 
 .memo-btn:hover {
-    background-color: #e2e8f0;
-    color: #0f172a;
+    background-color: var(--color-bg-hover);
+    color: var(--color-text-primary);
 }
 
 .memo-btn:disabled {
-    color: #64748b;
+    color: var(--color-text-muted);
     cursor: not-allowed;
     opacity: 0.6;
 }
 
 .memo-btn:disabled:hover {
-    background-color: #f1f5f9;
-    color: #64748b;
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-muted);
 }
 
 /* Memo modal specific styles */

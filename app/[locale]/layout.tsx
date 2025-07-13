@@ -42,7 +42,10 @@ export const viewport: Viewport = {
   initialScale: 1.0,
   maximumScale: 1.0,
   userScalable: false,
-  themeColor: '#f2f2f7'
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f2f2f7' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' }
+  ]
 };
 
 export default async function LocaleLayout({
@@ -71,7 +74,38 @@ export default async function LocaleLayout({
   const messages = await getMessages({ locale: actualLocale });
 
   return (
-    <html lang={actualLocale}>
+    <html lang={actualLocale} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const savedTheme = localStorage.getItem('theme');
+                  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  const shouldUseDark = savedTheme ? savedTheme === 'dark' : prefersDark;
+                  
+                  if (shouldUseDark) {
+                    document.documentElement.classList.add('dark');
+                    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                    if (metaThemeColor) {
+                      metaThemeColor.setAttribute('content', '#000000');
+                    }
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                    if (metaThemeColor) {
+                      metaThemeColor.setAttribute('content', '#f2f2f7');
+                    }
+                  }
+                } catch (e) {
+                  // Fallback to light mode if any error occurs
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body>
         <SessionProvider 
           refetchOnWindowFocus={false}

@@ -59,6 +59,10 @@ interface AppContextType {
   setPresetDate: (date: string | undefined) => void;
   isDemoMode: boolean;
   
+  // Theme
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+  
   // Filters
   filters: Filters;
   
@@ -106,6 +110,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [presetDate, setPresetDate] = useState<string | undefined>(undefined);
   const [isDesktop, setIsDesktop] = useState<boolean | undefined>(undefined);
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
 
@@ -175,6 +180,43 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const savedFilters = loadFiltersFromStorage();
     setFilters(savedFilters);
+  }, []);
+
+  // Initialize dark mode - sync with inline script
+  useEffect(() => {
+    const initializeDarkMode = () => {
+      // Check current state from DOM (set by inline script)
+      const isDarkFromDOM = document.documentElement.classList.contains('dark');
+      setIsDarkMode(isDarkFromDOM);
+    };
+    
+    initializeDarkMode();
+    
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (!localStorage.getItem('theme')) {
+        setIsDarkMode(e.matches);
+        if (e.matches) {
+          document.documentElement.classList.add('dark');
+          // Update theme-color meta tag for PWA
+          const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+          if (metaThemeColor) {
+            metaThemeColor.setAttribute('content', '#000000');
+          }
+        } else {
+          document.documentElement.classList.remove('dark');
+          // Update theme-color meta tag for PWA
+          const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+          if (metaThemeColor) {
+            metaThemeColor.setAttribute('content', '#f2f2f7');
+          }
+        }
+      }
+    };
+    
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
   // Handle authentication state - only redirect on protected pages (exclude demo routes)
@@ -474,6 +516,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    
+    if (newMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      // Update theme-color meta tag for PWA
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#000000');
+      }
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      // Update theme-color meta tag for PWA
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#f2f2f7');
+      }
+    }
+  };
+
   const value: AppContextType = {
     referenceToday,
     viewStartDate,
@@ -488,6 +553,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setCurrentEditingAssignment,
     isDesktop,
     isDemoMode,
+    isDarkMode,
+    toggleDarkMode,
     filters,
     navigateWeek,
     toggleFilter,

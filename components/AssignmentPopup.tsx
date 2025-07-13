@@ -93,8 +93,8 @@ export default function AssignmentPopup({ date, onClose }: AssignmentPopupProps)
             }}
           >
             {isCompleted ? 
-              <AppCheckIcon className="h-4 w-4 text-green-600" aria-label={t('completedLabel')} /> : 
-              <AppIncompleteIcon className="h-4 w-4 text-black" aria-label={t('incompleteLabel')} />
+              <AppCheckIcon className="h-4 w-4 text-green-600 dark:text-green-400" aria-label={t('completedLabel')} /> : 
+              <AppIncompleteIcon className="h-4 w-4 text-black dark:text-white" aria-label={t('incompleteLabel')} />
             }
           </div>
           
