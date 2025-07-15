@@ -35,6 +35,7 @@
   
   --color-modal-bg: rgba(0,0,0,0.4);
   --color-toast-bg: rgba(28, 28, 30, 0.95);
+  --color-toast-text: #ffffff;
 }
 
 .dark {
@@ -69,6 +70,7 @@
   
   --color-modal-bg: rgba(0,0,0,0.7);
   --color-toast-bg: rgba(38, 38, 40, 0.95);
+  --color-toast-text: #ffffff;
 }
 
 /* Global Reset and Base Styles */
@@ -578,7 +580,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     background: var(--color-toast-bg);
-    color: var(--color-text-inverse);
+    color: var(--color-toast-text);
     padding: 12px 20px;
     border-radius: 12px;
     font-size: 15px;
@@ -1449,4 +1451,68 @@ body {
     .course-name-with-indicators {
         gap: 6px;
     }
+}
+
+/* Calendar page specific styles - prevent parent container scrolling on desktop */
+@media (min-width: 1024px) {
+    /* 강력한 CSS 우선순위로 모든 상위 컨테이너 스크롤 차단 */
+    .calendar-page-main-content {
+        overflow: hidden !important;
+        max-height: 100vh !important;
+    }
+    
+    .main-content-area.calendar-page-main-content {
+        overflow: hidden !important;
+        max-height: 100vh !important;
+    }
+    
+    /* 캘린더 페이지에서 모든 레벨 스크롤 차단 */
+    .calendar-page-main-content .tab-content {
+        overflow: hidden !important;
+    }
+    
+    .app-container:has(.calendar-page-main-content) {
+        overflow: hidden !important;
+    }
+    
+    /* 캘린더 페이지에서 body, html 스크롤 차단 */
+    body:has(.calendar-page-main-content) {
+        overflow: hidden !important;
+    }
+    
+    html:has(.calendar-page-main-content) {
+        overflow: hidden !important;
+    }
+}
+
+/* Custom Scrollbar Styles - 다크/라이트 모드 통일성 */
+/* 웹킷 기반 브라우저 (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-bg-secondary);
+    border-radius: 6px;
+    border: 2px solid var(--color-bg-primary);
+    transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-bg-hover);
+}
+
+::-webkit-scrollbar-corner {
+    background: var(--color-bg-primary);
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-bg-secondary) var(--color-bg-primary);
 }

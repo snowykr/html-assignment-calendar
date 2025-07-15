@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useApp } from '@/contexts/AppContext';
 import Calendar from '@/components/Calendar';
@@ -12,6 +12,25 @@ export default function CalendarPage() {
   const [popupDate, setPopupDate] = useState<string | null>(null);
   const t = useTranslations('filters');
   const tCommon = useTranslations('common');
+
+  // 데스크탑에서 body/html 스크롤 제어
+  useEffect(() => {
+    if (isDesktop === true) {
+      // 원본 스타일 저장
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      
+      // 스크롤 차단
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      
+      // 정리 함수
+      return () => {
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+      };
+    }
+  }, [isDesktop]);
 
   const handleDayClick = (dateStr: string) => {
     setPopupDate(dateStr);
@@ -75,7 +94,7 @@ export default function CalendarPage() {
     return (
       <>
         <div className="tab-content active">
-          <div className="content lg:grid lg:grid-cols-2 lg:gap-6 xl:gap-8 lg:p-6 xl:p-8 2xl:p-12">
+          <div className="content lg:grid lg:grid-cols-2 lg:gap-6 xl:gap-8 lg:p-6 xl:p-8 2xl:p-12 lg:h-[calc(100vh-72px)]">
             <div className="lg:sticky lg:top-0 lg:h-fit">
               <Calendar onDayClick={handleDayClick} />
               
@@ -101,7 +120,7 @@ export default function CalendarPage() {
               </div>
             </div>
             
-            <div className="lg:overflow-y-auto">
+            <div className="lg:overflow-y-auto lg:h-full">
               <Assignments />
             </div>
           </div>
