@@ -1452,3 +1452,75 @@ body {
         gap: 6px;
     }
 }
+
+/* Calendar page specific styles - prevent parent container scrolling on desktop */
+@media (min-width: 1024px) {
+    /* 강력한 CSS 우선순위로 모든 상위 컨테이너 스크롤 차단 */
+    .calendar-page-main-content {
+        overflow: hidden !important;
+        overflow-y: hidden !important;
+        overflow-x: hidden !important;
+        max-height: 100vh !important;
+    }
+    
+    .main-content-area.calendar-page-main-content {
+        overflow: hidden !important;
+        overflow-y: hidden !important;
+        overflow-x: hidden !important;
+        max-height: 100vh !important;
+    }
+    
+    /* 캘린더 페이지에서 모든 레벨 스크롤 차단 */
+    .calendar-page-main-content .tab-content {
+        overflow: hidden !important;
+        overflow-y: hidden !important;
+    }
+    
+    .app-container:has(.calendar-page-main-content) {
+        overflow: hidden !important;
+        overflow-y: hidden !important;
+    }
+    
+    /* 캘린더 페이지에서 body, html 스크롤 차단 */
+    body:has(.calendar-page-main-content) {
+        overflow: hidden !important;
+        overflow-y: hidden !important;
+    }
+    
+    html:has(.calendar-page-main-content) {
+        overflow: hidden !important;
+        overflow-y: hidden !important;
+    }
+}
+
+/* Custom Scrollbar Styles - 다크/라이트 모드 통일성 */
+/* 웹킷 기반 브라우저 (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-bg-secondary);
+    border-radius: 6px;
+    border: 2px solid var(--color-bg-primary);
+    transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-bg-hover);
+}
+
+::-webkit-scrollbar-corner {
+    background: var(--color-bg-primary);
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-bg-secondary) var(--color-bg-primary);
+}
