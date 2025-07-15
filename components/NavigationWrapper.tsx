@@ -14,7 +14,6 @@ export default function NavigationWrapper({ children }: NavigationWrapperProps) 
   
   const shouldShowTopNav = !['/login', '/'].includes(pathname);
   const shouldShowBottomTabs = !['/login', '/'].includes(pathname);
-  const isDemoMode = pathname.includes('/demo/');
   const isCalendarPage = pathname.includes('/calendar');
 
   // 랜딩페이지와 로그인 페이지는 래퍼 없이 전체 화면 사용

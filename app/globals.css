@@ -1458,38 +1458,30 @@ body {
     /* 강력한 CSS 우선순위로 모든 상위 컨테이너 스크롤 차단 */
     .calendar-page-main-content {
         overflow: hidden !important;
-        overflow-y: hidden !important;
-        overflow-x: hidden !important;
         max-height: 100vh !important;
     }
     
     .main-content-area.calendar-page-main-content {
         overflow: hidden !important;
-        overflow-y: hidden !important;
-        overflow-x: hidden !important;
         max-height: 100vh !important;
     }
     
     /* 캘린더 페이지에서 모든 레벨 스크롤 차단 */
     .calendar-page-main-content .tab-content {
         overflow: hidden !important;
-        overflow-y: hidden !important;
     }
     
     .app-container:has(.calendar-page-main-content) {
         overflow: hidden !important;
-        overflow-y: hidden !important;
     }
     
     /* 캘린더 페이지에서 body, html 스크롤 차단 */
     body:has(.calendar-page-main-content) {
         overflow: hidden !important;
-        overflow-y: hidden !important;
     }
     
     html:has(.calendar-page-main-content) {
         overflow: hidden !important;
-        overflow-y: hidden !important;
     }
 }
 
