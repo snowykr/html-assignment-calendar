@@ -21,6 +21,7 @@ import {
 import { handleError, logError, showUserError, AppError } from '@/utils/error-handler';
 import { initSubjectPagination } from '@/utils/pagination';
 import { loadFiltersFromStorage, saveFiltersToStorage, DEFAULT_FILTERS } from '@/utils/filter-storage';
+import { getDOMThemeState, updateCompleteThemeState, updateMetaThemeColor } from '@/utils/theme-utils';
 import type { Assignment } from '@/utils/utils';
 
 
@@ -182,36 +183,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setFilters(savedFilters);
   }, []);
 
-  // Initialize dark mode - sync with inline script
+  // Initialize dark mode - sync React state with DOM (Single Source of Truth)
   useEffect(() => {
-    const initializeDarkMode = () => {
-      // Check current state from DOM (set by inline script)
-      const isDarkFromDOM = document.documentElement.classList.contains('dark');
+    const initializeTheme = () => {
+      // DOM의 실제 상태를 확인하고 React 상태와 동기화
+      const isDarkFromDOM = getDOMThemeState();
       setIsDarkMode(isDarkFromDOM);
+      
+      // 메타 태그도 DOM 상태와 일치하도록 업데이트
+      updateMetaThemeColor(isDarkFromDOM);
     };
     
-    initializeDarkMode();
-    
-    // Listen for system theme changes
+    initializeTheme();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once
+
+  // Listen for system theme changes
+  useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e: MediaQueryListEvent) => {
+      // Only respond to system theme changes if no explicit theme is set
       if (!localStorage.getItem('theme')) {
-        setIsDarkMode(e.matches);
-        if (e.matches) {
-          document.documentElement.classList.add('dark');
-          // Update theme-color meta tag for PWA
-          const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-          if (metaThemeColor) {
-            metaThemeColor.setAttribute('content', '#000000');
-          }
-        } else {
-          document.documentElement.classList.remove('dark');
-          // Update theme-color meta tag for PWA
-          const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-          if (metaThemeColor) {
-            metaThemeColor.setAttribute('content', '#f2f2f7');
-          }
-        }
+        updateThemeEverywhere(e.matches);
       }
     };
     
@@ -516,27 +509,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  const updateThemeEverywhere = (isDark: boolean) => {
+    // Update React state
+    setIsDarkMode(isDark);
+    
+    // Update DOM + storage + meta tag
+    updateCompleteThemeState(isDark);
+  };
+
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    
-    if (newMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      // Update theme-color meta tag for PWA
-      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-      if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', '#000000');
-      }
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      // Update theme-color meta tag for PWA
-      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-      if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', '#f2f2f7');
-      }
-    }
+    updateThemeEverywhere(newMode);
   };
 
   const value: AppContextType = {
