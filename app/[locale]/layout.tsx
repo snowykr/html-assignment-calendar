@@ -71,35 +71,33 @@ export default async function LocaleLayout({
     notFound();
   }
 
+  // 쿠키에서 테마 확인 (서버 사이드 테마 설정)
+  const themeCookie = cookieStore.get('theme')?.value;
+  const isDarkMode = themeCookie === 'dark';
+
   const messages = await getMessages({ locale: actualLocale });
+  const t = await getTranslations({ locale: actualLocale, namespace: 'app' });
 
   return (
-    <html lang={actualLocale} suppressHydrationWarning>
+    <html lang={actualLocale} className={isDarkMode ? 'dark' : ''} data-theme={isDarkMode ? 'dark' : 'light'} suppressHydrationWarning>
       <head>
+        <title>{t('title')}</title>
         <script
           dangerouslySetInnerHTML={{
             __html: `
+              // 쿠키 비활성화 환경을 위한 최소한의 백업 로직
               (function() {
                 try {
-                  const savedTheme = localStorage.getItem('theme');
-                  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  const shouldUseDark = savedTheme ? savedTheme === 'dark' : prefersDark;
+                  // 서버에서 이미 설정되었으면 skip
+                  if (document.documentElement.getAttribute('data-theme')) return;
                   
-                  if (shouldUseDark) {
-                    document.documentElement.classList.add('dark');
-                    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-                    if (metaThemeColor) {
-                      metaThemeColor.setAttribute('content', '#000000');
-                    }
-                  } else {
-                    document.documentElement.classList.remove('dark');
-                    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-                    if (metaThemeColor) {
-                      metaThemeColor.setAttribute('content', '#f2f2f7');
-                    }
-                  }
+                  // localStorage 확인 후 시스템 선호도 사용
+                  const savedTheme = localStorage.getItem('theme');
+                  const isDark = savedTheme ? savedTheme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                  if (isDark) document.documentElement.classList.add('dark');
                 } catch (e) {
-                  // Fallback to light mode if any error occurs
+                  document.documentElement.setAttribute('data-theme', 'light');
                 }
               })();
             `,
